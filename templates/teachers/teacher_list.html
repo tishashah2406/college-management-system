@@ -1,0 +1,71 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Teachers List</h2>
+
+<!-- Add Teacher Button -->
+{% if not is_student %}
+<a href="{% url 'teacher_create' %}">
+    <button>Add Teacher</button>
+</a>
+{% endif %}
+
+<!-- Search & Filter -->
+<form method="GET" style="margin-top:10px;">
+    <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+    <select name="course">
+        <option value="">All Courses</option>
+        {% for course in all_courses %}
+            <option value="{{ course.id }}" {% if selected_course == course.id|stringformat:"s" %}selected{% endif %}>
+                {{ course.name }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Search</button>
+</form>
+
+<br>
+
+<!-- Teachers Table -->
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Courses</th>
+        {% if not is_student %}
+        <th>Salary</th>
+        {% endif %}
+        {% if not is_student %}
+        <th>Actions</th>
+        {% endif %}
+    </tr>
+
+    {% for teacher in teachers %}
+   <tr>
+    <td>{{ teacher.name }}</td>
+    <td>{{ teacher.email }}</td>
+
+    <td>
+        {% for course in teacher.courses.all %}
+            {{ course.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </td>
+
+    {% if not is_student %}
+        <td>₹{{ teacher.salary }}</td>
+
+        <td>
+           <a href="{% url 'teacher_dashboard' %}">Dashboard</a>|
+            <a href="{% url 'teacher_update' teacher.id %}">Edit</a> |
+            <a href="{% url 'teacher_delete' teacher.id %}">Delete</a>
+        </td>
+    {% endif %}
+</tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No teachers available.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

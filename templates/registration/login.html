@@ -1,0 +1,131 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+    }
+
+    .login-card {
+        background: white;
+        padding: 30px;
+        width: 350px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        text-align: center;
+    }
+
+    .login-card h2 {
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+    .input-group label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    .input-group input:focus {
+        border-color: #3498db;
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 10px;
+        background: #3498db;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .login-btn:hover {
+        background: #2980b9;
+    }
+
+    .error-msg {
+        color: red;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .success-msg {
+        color: green;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .extra-links {
+        margin-top: 15px;
+    }
+
+    .extra-links a {
+        text-decoration: none;
+        color: #3498db;
+        font-size: 14px;
+    }
+
+    .extra-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+
+    <h2>Login</h2>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <p class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="Enter username" required autofocus>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter password" required>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <div class="extra-links">
+        <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+    </div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

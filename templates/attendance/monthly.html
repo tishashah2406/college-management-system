@@ -1,0 +1,31 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h2>📅 Monthly Attendance Report</h2>
+
+<form method="GET" class="mb-3">
+    <input type="month" name="month" class="form-control"
+       value="{{ month_input }}" required>
+    <button class="btn btn-primary mt-2">View</button>
+</form>
+
+<table class="table table-bordered text-center">
+    <tr>
+        <th>Student</th>
+        <th>Present</th>
+        <th>Total</th>
+        <th>%</th>
+    </tr>
+
+{% for d in data %}
+<tr>
+    <td>{{ d.student }}</td>
+    <td>{{ d.present }}</td>
+    <td>{{ d.total }}</td>
+    <td>{{ d.percentage }}%</td>
+</tr>
+{% endfor %}
+
+</table>
+
+{% endblock %}

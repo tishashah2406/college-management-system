@@ -1,0 +1,12 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<h2>Delete Student</h2>
+
+<p>Are you sure you want to delete {{ student.name }}?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Confirm Delete</button>
+</form>
+{% endblock %}

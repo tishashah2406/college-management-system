@@ -1,0 +1,12 @@
+{% extends 'base.html'%}
+{% block title %}Course Progress{% endblock %}
+
+{% block content %}
+<h2>Confirm Delete Assignment</h2>
+<p>Are you sure you want to delete the assignment: <strong>{{assignment.title}}</strong>?</p>
+<form method="post">
+    {% csrf_token%}
+  <button type="submit" class="btn btn-danger">Yes, Delete</button>
+  <a href="{% url 'course_assignments' assignments.course.id %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

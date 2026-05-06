@@ -1,0 +1,60 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<style>
+    .delete-box {
+        background: white;
+        padding: 30px;
+        max-width: 400px;
+        margin: 50px auto;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    h2 {
+        color: #0f172a;
+        margin-bottom: 20px;
+    }
+
+    p {
+        color: #475569;
+        margin-bottom: 20px;
+    }
+
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+
+    .btn-secondary {
+        background: #64748b;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="delete-box">
+    <h2>⚠ Delete Submission</h2>
+
+    <p>Are you sure you want to delete this submission?</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Yes, Delete</button>
+        <a href="{% url 'student_submission_dashboard' %}">
+            <button type="button" class="btn-secondary">Cancel</button>
+        </a>
+    </form>
+</div>
+
+{% endblock %}

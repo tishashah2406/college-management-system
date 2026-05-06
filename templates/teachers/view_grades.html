@@ -1,0 +1,21 @@
+{%extends 'base.html'%}
+{% block content %}
+<h2>Grades for {{ assignment.title }}</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Student</th>
+        <th>Grade</th>
+    </tr>
+
+    {% for submission in submissions %}
+    <tr>
+        <td>{{ submission.student.name }}</td>
+        <td>{{ submission.grade|default:"Not graded" }}</td>
+    </tr>
+
+    {% empty %}
+    <tr><td colspan="2">No submissions found.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

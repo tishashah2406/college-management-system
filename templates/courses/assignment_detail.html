@@ -1,0 +1,23 @@
+<p><strong>Status:</strong> 
+    {% if submission %}
+        <span class="badge bg-success">Submitted</span>
+    {% else %}
+        <span class="badge bg-warning text-dark">Pending</span>
+    {% endif %}
+</p>
+
+{% if submission %} <p><strong>Submitted At:</strong> {{ submission.submitted_at }}</p>
+
+
+<p>
+    <a href="{{ submission.file.url }}" class="btn btn-info">
+        Download Submission
+    </a>
+</p>
+
+
+{% else %} <a href="{% url 'submit_assignment' assignment.course.id assignment.id %}" 
+   class="btn btn-primary">
+    Submit Assignment
+</a>
+{% endif %}

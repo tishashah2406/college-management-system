@@ -1,0 +1,56 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<h2>My Attendance Dashboard</h2>
+
+<form method="get" class="mb-3">
+    <label>Course:</label>
+    <select name="course">
+        <option value="">All Courses</option>
+        {% for course in courses %}
+            <option value="{{ course.id }}" {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                {{ course.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Month:</label>
+    <input type="month" name="month" value="{{ month_input }}">
+
+    <button type="submit">Filter</button>
+</form>
+
+{% for course_data in attendance_data %}
+<div>
+    <h4>{{ course_data.course.name }}</h4>
+    <p>Total: {{ course_data.total }}, Present: {{ course_data.present }}, Absent: {{ course_data.absent }}</p>
+
+    {% if course_data.records %}
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+        {% for record in course_data.records %}
+        <tr>
+            <td>{{ record.date }}</td>
+            <td>
+                {% if record.status == "Present" %}
+                    ✔ Present
+                {% else %}
+                    ✘ Absent
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No attendance records for this course this month.</p>
+    {% endif %}
+</div>
+{% empty %}
+<p>No attendance data available.</p>
+{% endfor %}
+
+<a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+{% endblock %}

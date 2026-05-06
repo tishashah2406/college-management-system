@@ -1,0 +1,48 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h2>📄 Assignment Submissions</h2>
+ <p><strong>Total:</strong> {{ submissions|length }}</p>
+<table>
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Assignment</th>
+        <th>File</th>
+        <th>Date</th>
+        <th>Action</th>
+    </tr>
+
+    {% for sub in submissions %}
+    <tr>
+        <td>{{ sub.student.name }}</td>
+        <td>{{ sub.assignment.course.name }}</td>
+        <td>{{ sub.assignment.title }}</td>
+
+        <td>
+            <a href="{{ sub.file.url }}" target="_blank" class="btn btn-primary">
+                View
+            </a>
+        </td>
+
+        <td>{{ sub.submitted_at }}</td>
+
+        <td>
+            <a href="{% url 'grade_assignment' sub.assignment.id %}" class="btn btn-warning">
+                ⭐ Grade
+            </a>
+        </td>
+    </tr>
+
+    {% empty %}
+    <tr>
+        <td colspan="6">No submissions yet</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+    ⬅ Back to Dashboard
+</a>
+
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">➕ Add Note for {{ course.name }}</h2>
+
+    <div class="card p-4 shadow-sm">
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- ✅ TITLE -->
+            <div class="mb-3">
+                <label class="form-label">Note Title</label>
+                <input type="text" name="title" class="form-control" placeholder="Enter note title" required>
+            </div>
+
+            <!-- ✅ FILE UPLOAD -->
+            <div class="mb-3">
+                <label class="form-label">Upload File</label>
+                <input type="file" name="file" class="form-control" required
+                       accept=".pdf,.doc,.docx,.ppt,.pptx">
+                <small class="text-muted">
+                    Allowed: PDF, DOC, DOCX, PPT, PPTX
+                </small>
+            </div>
+
+            <!-- ✅ BUTTONS -->
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    📤 Upload Note
+                </button>
+
+                <a href="{% url 'course_notes' course.id %}" class="btn btn-secondary">
+                    ❌ Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

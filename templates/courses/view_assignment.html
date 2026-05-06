@@ -1,0 +1,46 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<h2>Assignment Details</h2>
+
+<hr>
+
+<!-- Course Info -->
+<h3>Course: {{ course.name }} ({{ course.code }})</h3>
+
+<!-- Assignment Info -->
+<h3>Title: {{ assignment.title }}</h3>
+
+<p><strong>Description:</strong></p>
+<p>{{ assignment.description }}</p>
+
+<p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
+
+<hr>
+
+<!-- Submission Section -->
+{% if submission %}
+    <h3 style="color: green;">✅ Already Submitted</h3>
+    <p><strong>Your Answer:</strong></p>
+    <p>{{ submission.content }}</p>
+
+{% else %}
+    <h3>Submit Your Assignment</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <textarea name="content" rows="6" cols="60" placeholder="Write your answer here..." required></textarea>
+        <br><br>
+
+        <button type="submit">Submit Assignment</button>
+    </form>
+{% endif %}
+
+<br>
+
+<a href="{% url 'course_assignments' course.id %}">⬅ Back to Assignments</a>
+
+{% endblock %}

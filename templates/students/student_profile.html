@@ -1,0 +1,169 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .profile-container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    h2 {
+        color: #0f172a;
+        margin-bottom: 20px;
+    }
+
+    /* Profile Card */
+    .profile-card {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Avatar */
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #3498db;
+        margin-bottom: 10px;
+    }
+
+    /* Buttons */
+    .btn-modern {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        margin: 5px;
+        transition: 0.3s;
+    }
+
+    .btn-modern:hover {
+        background: #2980b9;
+    }
+
+    .btn-secondary {
+        background: #64748b;
+    }
+
+    .btn-secondary:hover {
+        background: #475569;
+    }
+
+    /* Info Section */
+    .info-section {
+        text-align: left;
+        margin-top: 15px;
+    }
+
+    .info-section p {
+        margin: 8px 0;
+        color: #334155;
+    }
+
+    /* Courses Card */
+    .courses-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .courses-card h3 {
+        margin-bottom: 10px;
+        color: #0f172a;
+    }
+
+    .course-item {
+        padding: 8px 12px;
+        background: #f1f5f9;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        color: #1e293b;
+    }
+</style>
+
+<div class="profile-container">
+
+    <h2>👤 My Profile</h2>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if student.profile_pic %}
+                <img id="preview" src="{{ student.profile_pic.url }}" class="avatar">
+            {% else %}
+                <img id="preview" src="{% static 'images/default.png' %}" class="avatar">
+            {% endif %}
+
+            <br>
+
+            <input type="file" name="profile_pic" id="fileInput" hidden>
+
+            <button type="button" class="btn-modern"
+                    onclick="document.getElementById('fileInput').click()">
+                Change Picture
+            </button>
+
+            <br><br>
+
+            <button type="submit" class="btn-modern">Save</button>
+        </form>
+
+        <!-- Info -->
+        <div class="info-section">
+            <p><strong>Name:</strong> {{ student.name }}</p>
+            <p><strong>Email:</strong> {{ student.user.email|default:"No Email" }}</p>
+            <p><strong>Age:</strong> {{ student.age|default:"N/A" }}</p>
+        </div>
+
+        <!-- Edit Button -->
+        <a href="{% url 'edit_student_profile' student.id %}">
+            <button class="btn-modern btn-secondary">Edit Profile</button>
+        </a>
+
+    </div>
+
+    <!-- Courses -->
+    <div class="courses-card">
+        <h3>📚 Courses Enrolled</h3>
+
+        {% if courses %}
+            {% for course in courses %}
+                <div class="course-item">
+                    {{ course.name }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No courses assigned</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- JS for Image Preview -->
+<script>
+    const fileInput = document.getElementById("fileInput");
+    const preview = document.getElementById("preview");
+
+    fileInput.addEventListener("change", function() {
+        const file = this.files[0];
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+        }
+    });
+</script>
+
+{% endblock %}

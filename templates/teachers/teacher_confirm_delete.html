@@ -1,0 +1,15 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<h2>Delete Teacher</h2>
+
+<p>Are you sure you want to delete <strong>{{ teacher.name }}</strong>?</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Confirm Delete</button>
+</form>
+
+<br>
+<a href="{% url 'teacher_list' %}">Cancel</a>
+{% endblock %}

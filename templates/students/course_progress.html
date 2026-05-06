@@ -1,0 +1,14 @@
+{% extends 'base.html'%}
+{% block title %}Course Progress{% endblock %}
+{% block content%}
+<h2>Course Progress: {{ course.name}}</h2>
+<p><strong>Student:</strong>{{ student.name}}</p>
+<p><strong>Progress:</strong>{{ progress.progress_percentage}}</p>
+<p><strong>Last Updated:</strong>{{ progress.last_updated}}</p>
+<hr>
+<a href="{% url 'student_dashboard' %}">
+    <button> Back to dashboard</button>
+</a>
+{% endblock %}
+
+

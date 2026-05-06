@@ -1,0 +1,19 @@
+{%extends 'base.html'%}
+{% block content %}
+<h2>Apply Leave</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <label>Start Date:</label>
+    <input type="date" name="start_date" required><br><br>
+
+    <label>End Date:</label>
+    <input type="date" name="end_date" required><br><br>
+
+    <label>Reason:</label><br>
+    <textarea name="reason" required></textarea><br><br>
+
+    <button type="submit">Apply</button>
+</form>
+{%endblock%}

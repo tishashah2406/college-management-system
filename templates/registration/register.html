@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+
+<style>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+    }
+
+    .register-card {
+        background: white;
+        padding: 30px;
+        width: 380px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .register-card h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    .input-group input:focus {
+        border-color: #3498db;
+    }
+
+    .radio-group {
+        margin-bottom: 15px;
+    }
+
+    .radio-group label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .register-btn {
+        width: 100%;
+        padding: 10px;
+        background: #2ecc71;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .register-btn:hover {
+        background: #27ae60;
+    }
+
+    .error-msg {
+        color: red;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    .login-link a {
+        color: #3498db;
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    #salary_field {
+        display: none;
+        transition: 0.3s;
+    }
+</style>
+
+<div class="register-container">
+    <div class="register-card">
+
+        <h2> Register</h2>
+
+        {% if messages %}
+    {% for message in messages %}
+        <p class="error-msg">{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <div class="input-group">
+                <input type="number" name="age" placeholder="Age" required>
+            </div>
+
+            <div class="radio-group">
+                <label>Register as:</label><br>
+                <input type="radio" name="user_type" value="student" checked> Student
+                <input type="radio" name="user_type" value="teacher"> Teacher
+            </div>
+
+            <div class="input-group" id="salary_field">
+                <input type="number" name="salary" placeholder="Salary">
+            </div>
+
+            <button type="submit" class="register-btn">Register</button>
+        </form>
+
+        <div class="login-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+    const salaryField = document.getElementById('salary_field');
+
+    userTypeRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            salaryField.style.display = this.value === 'teacher' ? 'block' : 'none';
+        });
+    });
+</script>
+
+{% endblock %}

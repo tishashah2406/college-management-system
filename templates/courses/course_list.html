@@ -1,0 +1,70 @@
+{% extends 'home.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+{% block content %}
+<h2>All Courses</h2>
+
+<p>
+    {% if can_edit %}
+<a href="{% url 'add_course' %}">
+    <button>Add Course</button>
+</a>
+{% endif %}
+</p>
+
+<form method="GET" style="margin-top:10px;">
+    <input type="text" name="q" placeholder="Search by name or code" value="{{ query|default:'' }}" class="form-control" style="width:300px; display:inline-block;">
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Duration (months)</th>
+            <th>Fees (₹)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for course in courses %}
+        <tr>
+            <td>{{ course.name }}</td>
+            <td>{{ course.code }}</td>
+            <td>{{ course.duration }}</td>
+            <td>{{ course.fees }}</td>
+            <td>
+
+{% if is_student %}
+
+    {% if course in user.student.courses.all %}
+        <!-- ✅ Already enrolled -->
+        <form method="POST" action="{% url 'unenroll_course' course.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Unenroll</button>
+        </form>
+    {% else %}
+        <!-- ✅ Not enrolled -->
+        <form method="POST" action="{% url 'enroll_course' course.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">Enroll</button>
+        </form>
+    {% endif %}
+    
+{% elif can_edit %}
+    <a href="{% url 'course_dashboard' course.id %}">Dashboard</a> |
+    <a href="{% url 'edit_course' course.id %}">Edit</a> |
+    <a href="{% url 'course_delete' course.id %}">Delete</a>
+
+{% endif %}
+
+</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No courses available.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h2>Course Dashboard: {{ course.name }} ({{ course.code }})</h2>
+
+<h3>Course Details</h3>
+<p><strong>Duration:</strong> {{ course.duration }} months</p>
+<p><strong>Fees:</strong> ₹{{ course.fees }}</p>
+
+<hr>
+
+<!-- BUTTON SECTION -->
+<div style="margin: 15px 0;">
+    <a href="{% url 'course_assignments' course.id %}">
+        <button style="background-color:#007bff; color:white; padding:8px 15px; border:none; border-radius:5px;">
+             View Assignments
+        </button>
+    </a>
+
+    <a href="{% url 'course_notes' course.id %}">
+        <button style="background-color:#28a745; color:white; padding:8px 15px; border:none; border-radius:5px; margin-left:10px;">
+            View Notes
+        </button>
+    </a>
+    
+</div>
+
+<hr>
+
+<h3>Teachers Assigned</h3>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Salary</th>
+    <th>Action</th>
+</tr>
+
+{% for teacher in assigned_teachers %}
+<tr>
+    <td>{{ teacher.name }}</td>
+    <td>{{ teacher.email }}</td>
+    <td>₹{{ teacher.salary }}</td>
+    <td>
+        <a href="{% url 'remove_teacher_from_course' course.id teacher.id %}">
+            <button style="background-color:red; color:white;">Remove</button>
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="4">No teachers assigned</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<hr>
+
+<h3>Students Enrolled</h3>
+<table border="1" cellpadding="8" cellspacing="0">
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Age</th>
+    <th>Action</th>
+</tr>
+
+{% for student in assigned_students %}
+<tr>
+    <td>{{ student.name }}</td>
+    <td>{{ student.email }}</td>
+    <td>{{ student.age }}</td>
+    <td>
+        <a href="{% url 'remove_student_from_course' course.id student.id %}">
+            <button style="background-color:red; color:white;">Remove</button>
+        </a>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="4">No students enrolled</td>
+</tr>
+{% endfor %}
+
+</table>
+
+<br>
+
+<a href="{% url 'course_list' %}">
+    <button style="padding:8px 15px;">⬅ Back to Courses</button>
+</a>
+
+{% endblock %}

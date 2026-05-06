@@ -1,0 +1,96 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="mb-4">📊 Attendance Dashboard</h2>
+
+<!-- 🔹 FILTER FORM -->
+<form method="GET" class="row g-3 mb-4">
+
+    <!-- Student -->
+    <div class="col-md-4">
+        <label class="form-label">Select Student:</label>
+        <select name="student" class="form-select">
+            <option value="">--Select--</option>
+            {% for s in students %}
+                <option value="{{ s.id }}"
+                {% if request.GET.student == s.id|stringformat:"s" %}selected{% endif %}>
+                    {{ s.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Date -->
+    <div class="col-md-4">
+        <label class="form-label">Select Date:</label>
+        <input type="date" name="date" value="{{ selected_date }}" class="form-control">
+    </div>
+
+    <!-- Button -->
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">
+            🔍 View Attendance
+        </button>
+    </div>
+
+</form>
+
+<!-- 🔹 TABLE -->
+{% if attendance_data %}
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <h5 class="mb-3">📋 Attendance Records</h5>
+
+        <table class="table table-bordered table-hover text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in attendance_data %}
+                <tr>
+                    <td>{{ data.course.name }}</td>
+
+                    <td>
+                        {% if data.status == "Present" %}
+                            <span class="badge bg-success">Present</span>
+                        {% else %}
+                            <span class="badge bg-danger">Absent</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ data.date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+{% else %}
+    <div class="alert alert-warning">
+        No attendance found. Please select student and date.
+    </div>
+{% endif %}
+
+<!-- 🔹 CHART -->
+{% if chart_labels %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h5 class="mb-3">📊 Attendance Chart</h5>
+
+        <canvas id="attendanceChart" height="100"></canvas>
+    </div>
+</div>
+{% endif %}
+
+</div>
+
+{% endblock %}

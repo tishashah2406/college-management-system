@@ -1,0 +1,147 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* LIGHT THEME */
+body {
+    background: #f4f6f9;
+    color: #1e293b;
+}
+
+/* CARD */
+.card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+}
+
+th {
+    background: #3498db;
+    padding: 12px;
+    color: #ffffff;
+}
+
+td {
+    background: #ffffff;
+    padding: 12px;
+    text-align: center;
+    color: #1e293b;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover td {
+    background: #f1f5f9;
+}
+
+/* BUTTONS */
+.btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-warning {
+    background: #f39c12;
+    color: white;
+}
+
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* HEADER */
+h2 {
+    color: #0f172a;
+}
+</style>
+
+<div class="card">
+
+<h2>📄 My Submissions</h2>
+
+{% if submissions %}
+
+<table>
+    <tr>
+        <th>Assignment</th>
+        <th>Course</th>
+        <th>Submitted At</th>
+        <th>File</th>
+        <th>Grade</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for sub in submissions %}
+    <tr>
+        <td>{{ sub.assignment.title }}</td>
+        <td>{{ sub.assignment.course.name }}</td>
+        <td>{{ sub.submitted_at }}</td>
+        <td>
+            {% if sub.grade %}
+                {{ sub.grade }}
+            {% else %}
+                Not graded
+            {% endif %}
+        </td>
+
+        <td>
+            {% if sub.file %}
+                <a href="{{ sub.file.url }}" target="_blank" class="btn btn-primary">View</a>
+            {% else %}
+                No File
+            {% endif %}
+        </td>
+
+        <td>
+            <a href="{% url 'student_edit_submission' sub.id %}" class="btn btn-warning">
+                Edit
+            </a>
+
+            <a href="{% url 'student_delete_submission' sub.id %}" class="btn btn-danger">
+                Delete
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% else %}
+
+<p>No submissions found.</p>
+
+{% endif %}
+
+<br>
+
+<a href="{% url 'student_dashboard' %}" class="btn btn-primary">
+    ⬅ Back to Dashboard
+</a>
+
+</div>
+
+{% endblock %}

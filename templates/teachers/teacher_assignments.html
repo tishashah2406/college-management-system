@@ -1,0 +1,32 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h2>📝 Assignments</h2>
+
+{% for course in courses %}
+    <div class="card-section">
+        <h3>{{ course.name }}</h3>
+
+        <a href="{% url 'create_assignment' course.id %}" class="btn btn-success">
+            ➕ Create Assignment
+        </a>
+
+        <ul>
+            {% for a in assignments %}
+                {% if a.course.id == course.id %}
+                    <li>
+                        <strong>{{ a.title }}</strong> - Due: {{ a.due_date }}
+                    </li>
+                {% endif %}
+            {% empty %}
+                <li>No assignments</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+
+<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+    ⬅ Back to Dashboard
+</a>
+
+{% endblock %}

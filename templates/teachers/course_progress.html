@@ -1,0 +1,31 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<h2>Course Progress</h2>
+
+<table border="1">
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Progress</th>
+    </tr>
+
+    {% for item in progress_data %}
+    <tr>
+        <td>{{ item.student.name }}</td>
+        <td>{{ item.course.name }}</td>
+        <td>
+            {{ item.progress }}%
+            <br>
+            <progress value="{{ item.progress }}" max="100"></progress>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No data available</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

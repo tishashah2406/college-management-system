@@ -1,0 +1,92 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<style>
+    h2 {
+        color: #0f172a;
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        color: #334155;
+        margin-bottom: 15px;
+    }
+
+    /* Grid layout */
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    /* Card style */
+    .course-card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: 0.3s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .course-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .course-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 15px;
+    }
+
+    /* Button */
+    .btn-modern {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.3s;
+        width: fit-content;
+    }
+
+    .btn-modern:hover {
+        background: #2980b9;
+    }
+
+    /* Empty message */
+    .empty-msg {
+        color: #64748b;
+    }
+</style>
+
+<h2>📘 My Assignments Dashboard</h2>
+
+<h3>My Courses</h3>
+
+<div class="course-grid">
+
+{% for course in courses %}
+    <div class="course-card">
+        <div class="course-name">
+            📚 {{ course.name }}
+        </div>
+
+        <a href="{% url 'view_assignments' course.id %}">
+            <button class="btn-modern">View Assignments</button>
+        </a>
+    </div>
+
+{% empty %}
+    <p class="empty-msg">No courses enrolled</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

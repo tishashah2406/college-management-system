@@ -1,0 +1,48 @@
+{% extends 'home.html' %}
+{% block content %}
+
+<h2>📊 Course Progress</h2>
+<p><strong>Total Records:</strong> {{ progress_list|length }}</p>
+
+<table>
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Progress</th>
+        <th>Action</th>
+    </tr>
+
+    {% for p in progress_list %}
+    <tr>
+        <td>{{ p.student.name }}</td>
+        <td>{{ p.course.name }}</td>
+
+        <td>
+            {{ p.progress }}%
+            <br>
+            <progress value="{{ p.progress }}" max="100"></progress>
+        </td>
+
+        <td>
+            <a href="{% url 'update_progress' p.student.id p.course.id teacher.id %}" class="btn btn-success">
+                ➕
+            </a>
+
+            <a href="{% url 'remove_progress' p.student.id p.course.id %}" class="btn btn-danger">
+                ➖
+            </a>
+        </td>
+    </tr>
+
+    {% empty %}
+    <tr>
+        <td colspan="4">No progress data</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+    ⬅ Back to Dashboard
+</a>
+
+{% endblock %}

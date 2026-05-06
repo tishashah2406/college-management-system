@@ -1,0 +1,49 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>📘 Create Assignment</h2>
+    <h4>Course: {{ course.name }}</h4>
+
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label><strong>Assignment Title</strong></label><br>
+            <input type="text" name="title" class="form-control" placeholder="Enter title" required>
+        </div>
+
+        <br>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label><strong>Description</strong></label><br>
+            <textarea name="description" class="form-control" rows="4" placeholder="Enter description"></textarea>
+        </div>
+
+        <br>
+
+        <!-- Due Date -->
+        <div class="mb-3">
+            <label><strong>Due Date</strong></label><br>
+            <input type="date" name="due_date" class="form-control" required>
+        </div>
+
+        <br>
+
+        <!-- Buttons -->
+        <button type="submit" class="btn btn-success">
+            ✅ Create Assignment
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

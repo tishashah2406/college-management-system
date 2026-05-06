@@ -1,0 +1,27 @@
+{% extends "base.html"%}
+{%load static %}
+<link rel ="stylesheet" href="{% static "css/style.css"%}">
+{% block title %}Course Progress{% endblock %}
+{% block content %}
+<h2>Course Progress: {{ course.name }}</h2>
+{% if progress %}
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>student</th>
+            <th>Progress(%)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in progress %}
+        <tr>
+            <td>{{items.student.name}}</td>
+            <td>{{items.progress}}</td>
+        </tr>
+        {%endfor%}
+    </tbody>
+</table>
+{%else%}
+<p>No students enrolled in this course.</p>
+{%endif%}
+{%endblock%}

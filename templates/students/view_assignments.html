@@ -1,0 +1,119 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<style>
+    h2 {
+        color: #0f172a;
+        margin-bottom: 20px;
+    }
+
+    /* Assignment Card (Modern) */
+    .assignment-card {
+        background: #ffffff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: 0.3s;
+    }
+
+    .assignment-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .assignment-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    .assignment-desc {
+        color: #475569;
+        margin-bottom: 10px;
+    }
+
+    .due-date {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 12px;
+    }
+
+    /* Button */
+    .btn-modern {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 7px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    .btn-modern:hover {
+        background: #2980b9;
+    }
+
+    /* Submitted Badge */
+    .submitted {
+        display: inline-block;
+        margin-top: 10px;
+        background: #2ecc71;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    /* Back Button */
+    .back-btn {
+        margin-top: 20px;
+        background: #64748b;
+    }
+
+    .back-btn:hover {
+        background: #475569;
+    }
+</style>
+
+<h2>📘 Assignments - {{ course.name }}</h2>
+
+{% for assignment in assignments %}
+
+    <div class="assignment-card">
+        <div class="assignment-title">
+            {{ assignment.title }}
+        </div>
+
+        <div class="assignment-desc">
+            {{ assignment.description }}
+        </div>
+
+        <div class="due-date">
+            ⏰ Due: {{ assignment.due_date }}
+        </div>
+
+        <!-- Submit Button -->
+        <a href="{% url 'submit_assignment' course.id assignment.id %}">
+            <button class="btn-modern">Submit</button>
+        </a>
+
+        <!-- Status -->
+        {% for sub in submissions %}
+            {% if sub.assignment.id == assignment.id %}
+                <div class="submitted">✅ Submitted</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+{% empty %}
+    <p>No assignments available</p>
+{% endfor %}
+
+<a href="{% url 'student_assignments_dashboard' %}">
+    <button class="btn-modern back-btn">⬅ Back</button>
+</a>
+
+{% endblock %}

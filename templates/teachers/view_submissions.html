@@ -1,0 +1,51 @@
+{%extends 'base.html'%}
+{% block content %}
+<h2>Assignment Submissions</h2>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Assignment</th>
+        <th>Submitted At</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for submission in submissions %}
+    <tr>
+        <td>{{ submission.student.name }}</td>
+        <td>{{ submission.assignment.course.name }}</td>
+        <td>{{ submission.assignment.title }}</td>
+        <td>{{ submission.submitted_at }}</td>
+
+        <td>
+            <a href="{% url 'view_submission' submission.id %}">View</a> |
+            <a href="{% url 'grade_submission' submission.id %}">Grade</a> |
+            <a href="{% url 'delete_submission' submission.id %}">Delete</a>
+        </td>
+    </tr>
+
+    {% empty %}
+    <tr><td colspan="5">No submissions found.</td></tr>
+    {% endfor %}
+    <h3>Students Who Did NOT Submit</h3>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Student</th>
+        <th>Course</th>
+        <th>Status</th>
+    </tr>
+
+    {% for student in not_submitted_students %}
+    <tr>
+        <td>{{ student.name }}</td>
+        <td>{{ assignment.course.name }}</td>
+        <td style="color:red;">Not Submitted </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">All students have submitted </td>
+    </tr>
+    {% endfor %}
+</table>

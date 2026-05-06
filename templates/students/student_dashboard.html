@@ -1,0 +1,125 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<style>
+    body {
+        color: #1e293b !important;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #0f172a !important;
+    }
+
+    p, li {
+        color: #334155 !important;
+    }
+
+    table {
+        width: 100%;
+        background: white;
+        border-collapse: collapse;
+    }
+
+    table th {
+        background: #3498db;
+        color: white !important;
+        padding: 10px;
+        border: 1px solid #ddd;
+    }
+
+    table td {
+        color: #1e293b !important;   /* ✅ FIX: readable text */
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    hr {
+        border: 1px solid #ddd;
+    }
+
+    h2, h3 {
+        color: #0f172a !important;
+    }
+
+    /* optional better UI */
+    table tr:nth-child(even) {
+        background: #f8fafc;
+    }
+
+</style>
+
+<h2>Student Dashboard</h2>
+
+<h3>Student Information</h3>
+<p><strong>Name:</strong> {{ student.name }}</p>
+<p><strong>Email:</strong> {{ student.user.email }}</p>
+<p><strong>Age:</strong> {{ student.age }}</p>
+
+<hr>
+
+<h3>Courses Enrolled</h3>
+<ul>
+{% for course in courses %}
+    <li>{{ course.name }}</li>
+{% empty %}
+    <li>No courses enrolled</li>
+{% endfor %}
+</ul>
+
+<hr>
+
+<h3>Course Progress</h3>
+
+<table>
+<tr>
+    <th>Course</th>
+    <th>Progress</th>
+</tr>
+
+{% for p in progress_list %}
+<tr>
+    <td>{{ p.course.name }}</td>
+    <td>
+        {{ p.progress }}%
+        <br>
+        <progress value="{{ p.progress }}" max="100"></progress>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="2">No progress available</td>
+</tr>
+{% endfor %}
+</table>
+
+<hr>
+
+<h3>Teachers Teaching These Courses</h3>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Email</th>
+</tr>
+
+{% for teacher in teachers %}
+<tr>
+    <td>{{ teacher.name }}</td>
+    <td>{{ teacher.email }}</td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="2">No teachers found</td>
+</tr>
+{% endfor %}
+</table>
+
+<br>
+
+<a href="{% url 'student_list' %}">
+    <button class="btn btn-secondary">Back</button>
+</a>
+
+{% endblock %}
