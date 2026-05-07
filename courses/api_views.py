@@ -149,7 +149,29 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+    # ===================== MY COURSES =====================
+
+    @action(detail=False, methods=['get'])
+    def my_courses(self, request):
+
+        student = Student.objects.filter(
+            user=request.user
+        ).first()
+
+        if not student:
+            return Response(
+                {"error": "Student profile not found"},
+                status=404
+            )
+
+        courses = student.courses.all()
+
+        serializer = self.get_serializer(
+            courses,
+            many=True
+        )
+
+        return Response(serializer.data)
 # ===================== ASSIGNMENT VIEWSET =====================
 
 class AssignmentViewSet(viewsets.ModelViewSet):
