@@ -223,8 +223,7 @@ def delete_note(request, note_id):
     course_id = note.course.id
     note.delete()
 
-    return redirect('course_notes', course_id=course_id)
-
+    return redirect('course_notes', course_id=course_id) 
 # ---------------- ASSIGNMENTS ----------------
 @login_required
 def course_assignments(request, course_id):

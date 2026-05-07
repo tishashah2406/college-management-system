@@ -14,7 +14,6 @@ from .serializers import (
     CourseProgressSerializer
 )
 
-
 # ===================== COURSE VIEWSET =====================
 
 class CourseViewSet(viewsets.ModelViewSet):
