@@ -149,8 +149,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response(serializer.data)
-
-
+    
 # ===================== ASSIGNMENT VIEWSET =====================
 
 class AssignmentViewSet(viewsets.ModelViewSet):
