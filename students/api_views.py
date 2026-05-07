@@ -70,7 +70,6 @@ class StudentViewSet(ModelViewSet):
                 many=True
             ).data,
         })
-
     # ================= SUBMIT ASSIGNMENT =================
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def submit_assignment(self, request):
@@ -112,6 +111,7 @@ class StudentViewSet(ModelViewSet):
             created = True
 
         # late submission check
+        
         is_late = False
         if assignment.due_date:
             is_late = submission.submitted_at.date() > assignment.due_date

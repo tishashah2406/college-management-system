@@ -1,14 +1,11 @@
-from rest_framework.views import APIView
+from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 
-from django.contrib.auth.decorators import login_required
-
 from .models import Course, Note, Assignment, Submission
-from students.models import CourseProgress
+from students.models import CourseProgress, Student
 from teachers.models import Teacher
-from students.models import Student
 
 from .serializers import (
     CourseSerializer,
@@ -17,48 +14,21 @@ from .serializers import (
     CourseProgressSerializer
 )
 
-# ===================== COURSE APIs =====================
 
-class CourseAPI(APIView):
+# ===================== COURSE VIEWSET =====================
 
-    def get(self, request):
-        courses = Course.objects.all()
-        serializer = CourseSerializer(courses, many=True)
-        return Response(serializer.data)
+class CourseViewSet(viewsets.ModelViewSet):
 
-    def post(self, request):
-        serializer = CourseSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
 
-class CourseDetailAPI(APIView):
+    # ===================== ENROLL =====================
 
-    def get(self, request, pk):
-        course = get_object_or_404(Course, id=pk)
-        serializer = CourseSerializer(course)
-        return Response(serializer.data)
+    @action(detail=True, methods=['post'])
+    def enroll(self, request, pk=None):
 
-    def put(self, request, pk):
-        course = get_object_or_404(Course, id=pk)
-        serializer = CourseSerializer(course, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk):
-        course = get_object_or_404(Course, id=pk)
-        course.delete()
-        return Response({"message": "Course deleted"})
-# ===================== ENROLL / UNENROLL =====================
-
-class EnrollAPI(APIView):
-
-    def post(self, request, course_id):
         student = Student.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id)
+        course = self.get_object()
 
         student.courses.add(course)
 
@@ -70,30 +40,33 @@ class EnrollAPI(APIView):
 
         return Response({"message": "Enrolled successfully"})
 
-class UnenrollAPI(APIView):
+    # ===================== UNENROLL =====================
 
-    def post(self, request, course_id):
+    @action(detail=True, methods=['post'])
+    def unenroll(self, request, pk=None):
+
         student = Student.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id)
+        course = self.get_object()
 
         student.courses.remove(course)
 
         return Response({"message": "Unenrolled successfully"})
 
-# ===================== PROGRESS =====================
+    # ===================== GET PROGRESS =====================
 
-class ProgressAPI(APIView):
+    @action(detail=True, methods=['get'])
+    def progress(self, request, pk=None):
 
-    def get(self, request, course_id):
         try:
             student = Student.objects.get(user=request.user)
 
             progress = CourseProgress.objects.get(
                 student=student,
-                course_id=course_id
+                course_id=pk
             )
 
             serializer = CourseProgressSerializer(progress)
+
             return Response(serializer.data)
 
         except Student.DoesNotExist:
@@ -104,64 +77,88 @@ class ProgressAPI(APIView):
 
         except CourseProgress.DoesNotExist:
             return Response(
-                {"error": "Progress not found for this course"},
+                {"error": "Progress not found"},
                 status=404
             )
 
-class UpdateProgressAPI(APIView):
+    # ===================== UPDATE PROGRESS =====================
 
-    def post(self, request, course_id):
+    @action(detail=True, methods=['post'])
+    def update_progress(self, request, pk=None):
+
         student = Student.objects.get(user=request.user)
 
         progress, _ = CourseProgress.objects.get_or_create(
             student=student,
-            course_id=course_id
+            course_id=pk
         )
 
         progress.progress = min(progress.progress + 10, 100)
         progress.save()
 
-        return Response({"progress": progress.progress})
+        return Response({
+            "progress": progress.progress
+        })
 
+    # ===================== NOTES =====================
 
-# ===================== NOTES =====================
+    @action(detail=True, methods=['get'])
+    def notes(self, request, pk=None):
 
-class NoteAPI(APIView):
-
-    def get(self, request, course_id):
-        notes = Note.objects.filter(course_id=course_id)
+        notes = Note.objects.filter(course_id=pk)
         serializer = NoteSerializer(notes, many=True)
+
         return Response(serializer.data)
 
-class AddNoteAPI(APIView):
+    # ===================== ADDNOTE =====================
 
-    def post(self, request, course_id):
-        course = get_object_or_404(Course, id=course_id)
+    @action(detail=True, methods=['post'])
+    def add_note(self, request, pk=None):
 
-        note = Note.objects.create(
-            course=course,
-            title=request.data.get("title"),
-            file=request.FILES.get("file")
+       course = self.get_object()
+
+       title = request.data.get("title")
+       file = request.FILES.get("file")
+
+       if not title:
+          return Response(
+            {"error": "Title is required"},
+            status=status.HTTP_400_BAD_REQUEST
         )
 
-        return Response({"message": "Note created"})
-    
-# ===================== ASSIGNMENTS =====================
+       note = Note.objects.create(
+        course=course,
+        title=title,
+        file=file
+    )
 
-class AssignmentAPI(APIView):
+       return Response({
+        "message": "Note created"
+    })
 
-    def get(self, request, course_id):
-        assignments = Assignment.objects.filter(course_id=course_id)
-        serializer = AssignmentSerializer(assignments, many=True)
+    # ===================== ASSIGNMENTS =====================
+
+    @action(detail=True, methods=['get'])
+    def assignments(self, request, pk=None):
+
+        assignments = Assignment.objects.filter(course_id=pk)
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
         return Response(serializer.data)
 
-class AssignmentCreateAPI(APIView):
 
-    def post(self, request):
-        serializer = AssignmentSerializer(data=request.data)
+# ===================== ASSIGNMENT VIEWSET =====================
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+class AssignmentViewSet(viewsets.ModelViewSet):
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+    queryset = Assignment.objects.all()
+    serializer_class = AssignmentSerializer
+
+class NoteViewSet(viewsets.ModelViewSet):
+
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer

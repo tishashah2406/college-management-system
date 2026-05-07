@@ -65,4 +65,3 @@ class TeacherViewSet(ModelViewSet):
             "leaves": list(leaves.values()),
             
         })
-   
