@@ -23,13 +23,12 @@ class AuthMixin:
 
         return redirect('home')
 
-
 # ================= LOGIN VIEW =================
 class LoginView(AuthMixin, View):
     template_name = 'registration/login.html'
 
     def get(self, request):
-        # Prevent logged-in users from accessing login page
+        
         if request.user.is_authenticated:
             return self.redirect_user(request, request.user)
         return render(request, self.template_name)
@@ -38,7 +37,7 @@ class LoginView(AuthMixin, View):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        # Validation
+    
         if not username or not password:
             messages.error(request, "All fields are required")
             return render(request, self.template_name)

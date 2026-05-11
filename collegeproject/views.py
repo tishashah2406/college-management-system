@@ -16,7 +16,7 @@ def home(request):
             student = Student.objects.filter(user=request.user).first()
             is_student = True
 
-            # Student should only see themselves
+           
             recent_students = [student] if student else []
             recent_teachers = Teacher.objects.none()
 
@@ -33,11 +33,11 @@ def home(request):
             recent_teachers = []
 
     else:
-        #  Anonymous users → no sensitive data
+       
         recent_students = []
         recent_teachers = []
 
-    # Counts (safe to show)
+   
     students_count = Student.objects.count()
     teachers_count = Teacher.objects.count()
     courses_count = Course.objects.count()

@@ -11,7 +11,8 @@ from .serializers import (
     CourseSerializer,
     NoteSerializer,
     AssignmentSerializer,
-    CourseProgressSerializer
+    CourseProgressSerializer,
+    SubmissionSerializer
 )
 
 # ===================== COURSE VIEWSET =====================
@@ -172,7 +173,6 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 # ===================== ASSIGNMENT VIEWSET =====================
-
 class AssignmentViewSet(viewsets.ModelViewSet):
 
     queryset = Assignment.objects.all()

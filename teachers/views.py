@@ -646,3 +646,5 @@ def save_teacher_salary(teacher, salary_data):
         final_salary=salary_data["final_salary"],
     )
 
+
+
