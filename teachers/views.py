@@ -102,52 +102,103 @@ def teacher_delete(request, pk):
 from students.models import Submission,Assignment
 from django.db import connection
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
 @login_required
 def teacher_dashboard(request):
-    teacher = Teacher.objects.get(user=request.user)
+
+    # Check Teacher Group
+    if not request.user.groups.filter(
+        name='Teacher'
+    ).exists():
+
+        messages.error(
+            request,
+            "Access denied"
+        )
+
+        return redirect('login')
+
+    # Safe Teacher Fetch
+    teacher = Teacher.objects.filter(
+        user=request.user
+    ).first()
+
+    if not teacher:
+
+        messages.error(
+            request,
+            "Teacher profile not found"
+        )
+
+        return redirect('login')
 
     # Teacher courses
     courses = teacher.courses.all()
 
-    # Students in those courses
-    students = Student.objects.filter(courses__in=courses).distinct()
+    # Students in courses
+    students = Student.objects.filter(
+        courses__in=courses
+    ).distinct()
 
-    # Progress (auto create)
+    # Auto create progress
     for course in courses:
-        for student in students.filter(courses=course):
+
+        for student in students.filter(
+            courses=course
+        ):
+
             CourseProgress.objects.get_or_create(
                 student=student,
                 course=course,
-                defaults={'progress': 0}
+                defaults={
+                    'progress': 0
+                }
             )
 
-    progress_list = CourseProgress.objects.filter(course__in=courses)
+    progress_list = CourseProgress.objects.filter(
+        course__in=courses
+    )
 
-    # Assignments of teacher's courses
+    # Assignments
+    assignments = Assignment.objects.filter(
+        course__in=courses
+    ).distinct()
 
-    # FINAL FIXED SUBMISSION QUERY
-    assignments = Assignment.objects.filter(course__in=courses).distinct()
-
+    # Submissions
     submissions = Submission.objects.filter(
-    assignment__course__in=courses
-).select_related('student', 'assignment')
-    
-    leaves = TeacherLeave.objects.filter(teacher=teacher)
+        assignment__course__in=courses
+    ).select_related(
+        'student',
+        'assignment'
+    )
 
-    salary_data = calculate_teacher_salary(teacher)
+    # Leaves
+    leaves = TeacherLeave.objects.filter(
+        teacher=teacher
+    )
 
-    return render(request, 'teachers/teacher_dashboard.html', {
-        'teacher': teacher,
-        'courses': courses,
-        'students': students,
-        'progress_list': progress_list,
-        'assignments': assignments,
-        'submissions': submissions,
-        'leaves': leaves,
-        'salary': salary_data,
+    # Salary
+    salary_data = calculate_teacher_salary(
+        teacher
+    )
 
-    })
-
+    return render(
+        request,
+        'teachers/teacher_dashboard.html',
+        {
+            'teacher': teacher,
+            'courses': courses,
+            'students': students,
+            'progress_list': progress_list,
+            'assignments': assignments,
+            'submissions': submissions,
+            'leaves': leaves,
+            'salary': salary_data,
+        }
+    )
 # ---------------- Remove Student from Course ----------------
 def remove_student_from_course(request, teacher_id, student_id, course_id):
     student = get_object_or_404(Student, id=student_id)
@@ -314,7 +365,6 @@ def mark_attendance(request):
         course = get_object_or_404(Course, id=course_id)
         students = course.enrolled_students.all()
 
-    # SAVE
     if request.method == "POST":
         course_id = request.POST.get('course')
         selected_date = request.POST.get('date')
@@ -487,7 +537,7 @@ def grade_assignment(request, assignment_id):
         'assignment': assignment,
         'submissions': submissions
     })
-
+        
 def view_assignments(request,course_id):
     course = get_object_or_404(Course,id=course_id)
     assignments = Assignment.objects.filter(course=course)
@@ -645,6 +695,3 @@ def save_teacher_salary(teacher, salary_data):
         deduction=salary_data["deduction"],
         final_salary=salary_data["final_salary"],
     )
-
-
-

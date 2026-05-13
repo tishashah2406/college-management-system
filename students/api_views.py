@@ -15,7 +15,6 @@ from courses.serializers import (
     SubmissionSerializer
 )
 
-
 class StudentViewSet(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
