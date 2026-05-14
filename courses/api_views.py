@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Course, Note, Assignment, Submission
 from students.models import CourseProgress, Student
 from teachers.models import Teacher
-
+from django.db.models import Avg
 from .serializers import (
     CourseSerializer,
     NoteSerializer,
@@ -39,7 +39,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response({"message": "Enrolled successfully"})
-
     # ===================== UNENROLL =====================
 
     @action(detail=True, methods=['post'])
@@ -51,7 +50,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         student.courses.remove(course)
 
         return Response({"message": "Unenrolled successfully"})
-
+    
     # ===================== GET PROGRESS =====================
 
     @action(detail=True, methods=['get'])
@@ -173,6 +172,49 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
     
+    @action(detail=True, methods=['get'])
+    def analytics(self, request, pk=None):
+
+        course = self.get_object()
+
+        total_students = Student.objects.filter(
+            courses=course
+        ).count()
+
+        total_assignments = Assignment.objects.filter(
+            course=course
+        ).count()
+
+        total_submissions = Submission.objects.filter(
+            assignment__course=course
+        ).count()
+
+        average_progress = CourseProgress.objects.filter(
+            course=course
+        ).aggregate(
+            Avg("progress")
+        )["progress__avg"] or 0
+
+        return Response({
+
+            "course":
+                course.name,
+
+            "total_students":
+                total_students,
+
+            "total_assignments":
+                total_assignments,
+
+            "total_submissions":
+                total_submissions,
+
+            "average_progress":
+                round(average_progress, 2)
+        })
+    
+    
+        
 # ===================== ASSIGNMENT VIEWSET =====================
 class AssignmentViewSet(viewsets.ModelViewSet):
 

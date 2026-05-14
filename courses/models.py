@@ -53,7 +53,7 @@ class Submission(models.Model):
     file = models.FileField(upload_to='submissions/')
     submitted_at = models.DateTimeField(auto_now_add=True)
 
-    marks = models.IntegerField(null=True, blank=True)
+    grade = models.IntegerField(null=True, blank=True)
     feedback = models.TextField(blank=True)
 
     def __str__(self):
