@@ -396,3 +396,4 @@ class StudentViewSet(ModelViewSet):
             "leaderboard":
                 leaderboard[:10]
         })
+    
