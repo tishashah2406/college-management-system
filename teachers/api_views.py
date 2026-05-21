@@ -132,7 +132,7 @@ class TeacherViewSet(ModelViewSet):
                 "completion_percentage":
                     round(progress, 2)
             })
-
+ 
         # ================= TOP STUDENTS =================
 
         top_students = []

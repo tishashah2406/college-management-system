@@ -2,6 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from .models import Course, Note, Assignment, Submission
 from students.models import CourseProgress, Student
@@ -101,10 +103,12 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     # ===================== NOTES =====================
 
+    @method_decorator(cache_page(60 * 10))
     @action(detail=True, methods=['get'])
     def notes(self, request, pk=None):
 
         notes = Note.objects.filter(course_id=pk)
+
         serializer = NoteSerializer(notes, many=True)
 
         return Response(serializer.data)
@@ -213,8 +217,6 @@ class CourseViewSet(viewsets.ModelViewSet):
                 round(average_progress, 2)
         })
     
-    
-        
 # ===================== ASSIGNMENT VIEWSET =====================
 class AssignmentViewSet(viewsets.ModelViewSet):
 

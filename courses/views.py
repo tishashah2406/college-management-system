@@ -125,7 +125,6 @@ def enroll_course(request, course_id):
 
     return redirect('course_list')
 
-
 def unenroll_course(request, course_id):
     student = Student.objects.get(user=request.user)
     course = get_object_or_404(Course, id=course_id)
@@ -312,7 +311,6 @@ def assignment_confirm_delete(request, pk):
     return render(request, 'courses/assignment_confirm_delete.html', {
         'assignment': assignment
     })
-
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

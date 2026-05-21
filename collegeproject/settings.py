@@ -162,3 +162,10 @@ SIMPLE_JWT = {
 }
 
 LOGIN_REDIRECT_URL = '/teachers/dashboard/'
+
+CACHES = {
+    "default": {
+        "BACKEND":
+        "django.core.cache.backends.locmem.LocMemCache",
+    }
+}
