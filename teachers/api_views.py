@@ -30,6 +30,8 @@ class TeacherViewSet(ModelViewSet):
         methods=['get'],
         permission_classes=[IsAuthenticated]
     )
+
+    
     def dashboard(self, request):
 
         teacher = get_object_or_404(
