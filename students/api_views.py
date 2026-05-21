@@ -5,6 +5,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.db.models import Avg
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+
+from django.views.decorators.vary import vary_on_headers
+
 
 from .models import Student, CourseProgress, Submission
 from courses.models import Assignment
@@ -21,7 +27,9 @@ class StudentViewSet(ModelViewSet):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
-    # ================= LOGGED-IN DASHBOARD =================
+    # ================ LOGGED-IN DASHBOARD =================
+    @method_decorator(cache_page(60 * 5))
+    @method_decorator(vary_on_headers("Authorization"))
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def dashboard(self, request):
 
@@ -117,6 +125,9 @@ class StudentViewSet(ModelViewSet):
         if assignment.due_date:
             is_late = submission.submitted_at.date() > assignment.due_date
 
+        cache.clear()
+
+
         return Response({
             "message": "Submitted successfully",
             "created": created,
@@ -125,7 +136,7 @@ class StudentViewSet(ModelViewSet):
         })
     
     #assignment_progress
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def progress_report(self,request):
         student = Student.objects.filter(user=request.user).first()
 
@@ -153,13 +164,10 @@ class StudentViewSet(ModelViewSet):
                 "progress_percentage":round(progress,2)
             })
 
-            return Response(data)
-        
-    @action(
-    detail=False,
-    methods=['get'],
-    permission_classes=[IsAuthenticated]
-)
+        return Response(data)
+    @method_decorator(cache_page(60 * 10))
+    @method_decorator(vary_on_headers("Authorization"))   
+    @action(detail=False,methods=['get'],permission_classes=[IsAuthenticated])
     def student_analytics(self, request):
 
         student = Student.objects.filter(

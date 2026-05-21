@@ -108,6 +108,7 @@ def course_delete(request, course_id):
         'course': course
     })
 
+
 # ---------------- ENROLL ----------------
 @login_required
 def enroll_course(request, course_id):
@@ -126,10 +127,18 @@ def enroll_course(request, course_id):
     return redirect('course_list')
 
 def unenroll_course(request, course_id):
+
     student = Student.objects.get(user=request.user)
+
     course = get_object_or_404(Course, id=course_id)
 
     student.courses.remove(course)
+
+    CourseProgress.objects.filter(
+        student=student,
+        course=course
+    ).delete()
+
     return redirect('course_list')
 
 # ---------------- PROGRESS ----------------
