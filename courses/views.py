@@ -41,7 +41,6 @@ def course_list(request):
         'student': student,
     })
 
-
 # ---------------- COURSE DASHBOARD ----------------
 @login_required
 def course_dashboard(request, course_id):

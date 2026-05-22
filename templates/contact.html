@@ -2,92 +2,274 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<!-- HERO -->
+<section class="contact-hero">
+    <div class="hero-overlay">
+        <div class="hero-content text-center">
 
-    <h1>
-        Contact Us
-    </h1>
+            <h1 class="hero-title">Contact Us</h1>
 
-    {% if success %}
+            <p class="hero-subtitle">
+                We’re here to help. Send us a message and we’ll respond quickly.
+            </p>
 
-        <div class="alert alert-success">
+        </div>
+    </div>
+</section>
 
-            Message Sent Successfully
+<!-- MAIN SECTION -->
+<section class="container contact-section">
+
+    <div class="row g-5 align-items-stretch">
+
+        <!-- FORM -->
+        <div class="col-lg-7" data-aos="fade-up">
+
+            <div class="contact-card">
+
+                <h3 class="section-title">Send a Message</h3>
+
+                {% if success %}
+                    <div class="alert alert-success animated-alert">
+                        ✅ Message sent successfully!
+                    </div>
+                {% endif %}
+
+                <form method="POST" class="contact-form">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <input type="text" name="name" required>
+                        <label>Name</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" name="email" required>
+                        <label>Email</label>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="subject" required>
+                        <label>Subject</label>
+                    </div>
+
+                    <div class="form-group">
+                        <textarea name="message" rows="5" required></textarea>
+                        <label>Message</label>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Send Message →
+                    </button>
+
+                </form>
+            </div>
 
         </div>
 
-    {% endif %}
+        <!-- INFO -->
+        <div class="col-lg-5" data-aos="fade-left">
 
-    <form method="POST">
+            <div class="info-card">
 
-        {% csrf_token %}
+                <h3>📍 Contact Information</h3>
+                <p>We are available 24/7 for support.</p>
 
-        <div class="mb-3">
+                <div class="info-item">
+                    <span>Email:</span>
+                    <p>support@university.com</p>
+                </div>
 
-            <label>
-                Name
-            </label>
+                <div class="info-item">
+                    <span>Phone:</span>
+                    <p>+91 98765 43210</p>
+                </div>
 
-            <input
-            type="text"
-            name="name"
-            class="form-control"
-            required>
+                <div class="info-item">
+                    <span>Location:</span>
+                    <p>Ahmedabad, India</p>
+                </div>
 
-        </div>
+                <hr>
 
-        <div class="mb-3">
+                <h5>Follow Us</h5>
+                <p>Facebook • Instagram • LinkedIn</p>
 
-            <label>
-                Email
-            </label>
-
-            <input
-            type="email"
-            name="email"
-            class="form-control"
-            required>
+            </div>
 
         </div>
 
-        <div class="mb-3">
+    </div>
 
-            <label>
-                Subject
-            </label>
+</section>
 
-            <input
-            type="text"
-            name="subject"
-            class="form-control"
-            required>
+<!-- STYLES -->
+<style>
 
-        </div>
+/* HERO */
+.contact-hero {
+    height: 45vh;
+    background: linear-gradient(135deg, #0d6efd, #4f46e5);
+    position: relative;
+    color: white;
+}
 
-        <div class="mb-3">
+.hero-overlay {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-            <label>
-                Message
-            </label>
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
 
-            <textarea
-            name="message"
-            rows="5"
-            class="form-control"
-            required></textarea>
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
 
-        </div>
+/* SECTION */
+.contact-section {
+    margin-top: -60px;
+    margin-bottom: 60px;
+}
 
-        <button
-        type="submit"
-        class="btn btn-primary">
+/* CARDS */
+.contact-card, .info-card {
+    background: #fff;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
 
-            Send Message
+/* SECTION TITLE */
+.section-title {
+    font-weight: 700;
+    margin-bottom: 25px;
+}
 
-        </button>
+/* FLOATING INPUTS */
+.form-group {
+    position: relative;
+    margin-bottom: 25px;
+}
 
-    </form>
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 14px 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: 0.3s;
+    font-size: 15px;
+}
 
-</div>
+.form-group label {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    color: #888;
+    font-size: 14px;
+    transition: 0.3s;
+    pointer-events: none;
+    background: white;
+    padding: 0 5px;
+}
+
+/* FLOAT EFFECT */
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.15);
+}
+
+.form-group input:focus + label,
+.form-group textarea:focus + label,
+.form-group input:not(:placeholder-shown) + label,
+.form-group textarea:not(:placeholder-shown) + label {
+    top: -10px;
+    font-size: 12px;
+    color: #0d6efd;
+}
+
+/* BUTTON */
+.btn-submit {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    background: linear-gradient(135deg, #0d6efd, #4f46e5);
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* INFO */
+.info-card {
+    background: #111827;
+    color: white;
+}
+
+.info-item {
+    margin: 15px 0;
+}
+
+.info-item span {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.info-item p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* ALERT */
+.animated-alert {
+    animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+</style>
+
+<!-- ANIMATION -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    AOS.init({
+        duration: 900,
+        once: true
+    });
+
+    gsap.from(".hero-title", {
+        y: -40,
+        opacity: 0,
+        duration: 1
+    });
+
+    gsap.from(".hero-subtitle", {
+        y: 20,
+        opacity: 0,
+        delay: 0.3,
+        duration: 1
+    });
+
+});
+</script>
 
 {% endblock %}

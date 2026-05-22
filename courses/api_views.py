@@ -152,6 +152,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response(serializer.data)
+    
     # ===================== MY COURSES =====================
 
     @action(detail=False, methods=['get'])
