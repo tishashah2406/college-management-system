@@ -127,7 +127,6 @@ class StudentViewSet(ModelViewSet):
 
         cache.clear()
 
-
         return Response({
             "message": "Submitted successfully",
             "created": created,
@@ -165,6 +164,7 @@ class StudentViewSet(ModelViewSet):
             })
 
         return Response(data)
+    
     @method_decorator(cache_page(60 * 10))
     @method_decorator(vary_on_headers("Authorization"))   
     @action(detail=False,methods=['get'],permission_classes=[IsAuthenticated])
