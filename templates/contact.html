@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1>
+        Contact Us
+    </h1>
+
+    {% if success %}
+
+        <div class="alert alert-success">
+
+            Message Sent Successfully
+
+        </div>
+
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <div class="mb-3">
+
+            <label>
+                Name
+            </label>
+
+            <input
+            type="text"
+            name="name"
+            class="form-control"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+                Email
+            </label>
+
+            <input
+            type="email"
+            name="email"
+            class="form-control"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+                Subject
+            </label>
+
+            <input
+            type="text"
+            name="subject"
+            class="form-control"
+            required>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>
+                Message
+            </label>
+
+            <textarea
+            name="message"
+            rows="5"
+            class="form-control"
+            required></textarea>
+
+        </div>
+
+        <button
+        type="submit"
+        class="btn btn-primary">
+
+            Send Message
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

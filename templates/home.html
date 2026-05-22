@@ -191,87 +191,384 @@
 <div class="main">
 
     <!-- TOPBAR -->
-    <div class="topbar">
-        <h2>📊 College Dashboard</h2>
+   <!-- TOPBAR -->
+
+<div class="topbar">
+
+    <h2>
+        🎓 College Dashboard
+    </h2>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+
+        <!-- PUBLIC PAGES -->
+
+        <a
+        href="/"
+        class="btn btn-outline-dark">
+
+            Home
+
+        </a>
+
+        <a
+        href="/about/"
+        class="btn btn-outline-dark">
+
+            About
+
+        </a>
+
+        <a
+        href="/contact/"
+        class="btn btn-outline-dark">
+
+            Contact
+
+        </a>
+
+        <!-- LOGIN / LOGOUT -->
 
         {% if user.is_authenticated %}
-            <form method="post" action="{% url 'logout' %}">
+
+            <form
+            method="post"
+            action="{% url 'logout' %}">
+
                 {% csrf_token %}
-                <button class="logout-btn">Logout</button>
+
+                <button class="logout-btn">
+
+                    Logout
+
+                </button>
+
             </form>
+
+        {% else %}
+
+            <a
+            href="{% url 'login' %}"
+            class="btn btn-primary">
+
+                Login
+
+            </a>
+
         {% endif %}
+
     </div>
 
+</div>
     {% block content %}
 
-    <!-- CARDS -->
-    <div class="cards">
-        <div class="card students">
-            <h2>{{ students_count }}</h2>
-            <p>Total Students</p>
+{% if not user.is_authenticated %}
+
+<!-- HERO SECTION -->
+
+<div class="hero-section">
+
+    <div class="hero-overlay">
+
+        <div class="hero-content">
+
+            <h1>
+                Welcome To College Management System
+            </h1>
+
+            <p>
+                Smart platform for students, teachers,
+                courses, attendance and analytics.
+            </p>
+
+           
+
         </div>
 
-        <div class="card teachers">
-            <h2>{{ teachers_count }}</h2>
-            <p>Total Teachers</p>
-        </div>
-
-        <div class="card courses">
-            <h2>{{ courses_count }}</h2>
-            <p>Total Courses</p>
-        </div>
     </div>
 
-    <!-- TABLES -->
-    <h2>Recent Students</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Courses</th>
-        </tr>
+</div>
 
-        {% for student in recent_students %}
-        <tr>
-            <td>{{ student.name }}</td>
-            <td>{{ student.email }}</td>
-            <td>
-                {% for course in student.courses.all %}
-                    {{ course.name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    No courses
-                {% endfor %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<!-- FEATURES -->
 
-    <h2>Recent Teachers</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Courses</th>
-            <th>Salary</th>
-        </tr>
+<div class="container mt-5">
 
-        {% for teacher in recent_teachers %}
-        <tr>
-            <td>{{ teacher.name }}</td>
-            <td>{{ teacher.email }}</td>
-            <td>
-                {% for course in teacher.courses.all %}
-                    {{ course.name }}{% if not forloop.last %}, {% endif %}
-                {% empty %}
-                    No courses
-                {% endfor %}
-            </td>
-            <td>₹ {{ teacher.salary }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h2 class="text-center mb-5">
+        Our Features
+    </h2>
 
-    {% endblock %}
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <div class="feature-box">
+
+                <h3>
+                    🎓 Student Management
+                </h3>
+
+                <p>
+                    Manage students, profiles,
+                    attendance and performance.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="feature-box">
+
+                <h3>
+                    👩‍🏫 Teacher Portal
+                </h3>
+
+                <p>
+                    Teachers can upload assignments,
+                    attendance and grades.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="feature-box">
+
+                <h3>
+                    📊 Analytics Dashboard
+                </h3>
+
+                <p>
+                    Track performance with
+                    modern analytics.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ABOUT SECTION -->
+
+<div class="container mt-5">
+
+    <div class="about-section">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-6">
+
+                <img
+                src="{% static 'images/university.jpg' %}"
+                class="img-fluid rounded">
+
+            </div>
+
+            <div class="col-md-6">
+
+                <h2>
+                    About Our University
+                </h2>
+
+                <p>
+                    Our university provides quality
+                    education with modern technology
+                    and smart learning systems.
+                </p>
+
+                <p>
+                    We help students build successful
+                    careers with practical learning.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- CONTACT SECTION -->
+
+<div class="container mt-5 mb-5">
+
+    <div class="contact-box">
+
+        <h2 class="mb-4">
+            Contact Us
+        </h2>
+
+        <p>
+            📍 Ahmedabad, Gujarat
+        </p>
+
+        <p>
+            📧 college@gmail.com
+        </p>
+
+        <p>
+            📞 +91 9876543210
+        </p>
+
+    </div>
+
+</div>
+
+{% else %}
+
+<!-- DASHBOARD CARDS -->
+
+<div class="cards">
+
+    <div class="card students">
+
+        <h2>
+            {{ students_count }}
+        </h2>
+
+        <p>
+            Total Students
+        </p>
+
+    </div>
+
+    <div class="card teachers">
+
+        <h2>
+            {{ teachers_count }}
+        </h2>
+
+        <p>
+            Total Teachers
+        </p>
+
+    </div>
+
+    <div class="card courses">
+
+        <h2>
+            {{ courses_count }}
+        </h2>
+
+        <p>
+            Total Courses
+        </p>
+
+    </div>
+
+</div>
+
+<!-- STUDENTS TABLE -->
+
+<h2 class="mt-5">
+    Recent Students
+</h2>
+
+<table>
+
+    <tr>
+
+        <th>Name</th>
+        <th>Email</th>
+        <th>Courses</th>
+
+    </tr>
+
+    {% for student in recent_students %}
+
+    <tr>
+
+        <td>{{ student.name }}</td>
+
+        <td>{{ student.email }}</td>
+
+        <td>
+
+            {% for course in student.courses.all %}
+
+                {{ course.name }}
+
+                {% if not forloop.last %}
+                    ,
+                {% endif %}
+
+            {% empty %}
+
+                No courses
+
+            {% endfor %}
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<!-- TEACHERS TABLE -->
+
+<h2 class="mt-5">
+    Recent Teachers
+</h2>
+
+<table>
+
+    <tr>
+
+        <th>Name</th>
+        <th>Email</th>
+        <th>Courses</th>
+        <th>Salary</th>
+
+    </tr>
+
+    {% for teacher in recent_teachers %}
+
+    <tr>
+
+        <td>{{ teacher.name }}</td>
+
+        <td>{{ teacher.email }}</td>
+
+        <td>
+
+            {% for course in teacher.courses.all %}
+
+                {{ course.name }}
+
+                {% if not forloop.last %}
+                    ,
+                {% endif %}
+
+            {% empty %}
+
+                No courses
+
+            {% endfor %}
+
+        </td>
+
+        <td>
+            ₹ {{ teacher.salary }}
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endif %}
+
+{% endblock %}
 
 </div>
 

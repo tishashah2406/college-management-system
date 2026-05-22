@@ -78,7 +78,6 @@ class StudentViewSet(ModelViewSet):
                 many=True
             ).data,
         })
-
     # ================= SUBMIT ASSIGNMENT =================
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def submit_assignment(self, request):

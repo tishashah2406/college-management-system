@@ -10,11 +10,18 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home),
+     path(
+        'about/',
+        views.about,
+        name='about'
+    ),
+
     path('accounts/', include('django.contrib.auth.urls')),
     path('students/', include('students.urls')),
      path('teachers/', include('teachers.urls')),
     path('accounts/', include('accounts.urls')),   
     path('courses/', include('courses.urls')),
+    path('', include('core.urls')),
     
    
      path('api/', include('teachers.api_urls')),
