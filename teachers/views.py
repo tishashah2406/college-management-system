@@ -519,6 +519,7 @@ def grade_submissions(request,assignment_id):
                 'submissions':submissions
             })
 
+
 @login_required
 def grade_assignment(request, assignment_id):
     assignment = get_object_or_404(Assignment, id=assignment_id)
@@ -537,7 +538,7 @@ def grade_assignment(request, assignment_id):
         'assignment': assignment,
         'submissions': submissions
     })
-        
+   
 def view_assignments(request,course_id):
     course = get_object_or_404(Course,id=course_id)
     assignments = Assignment.objects.filter(course=course)

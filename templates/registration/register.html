@@ -4,152 +4,250 @@
 {% block content %}
 
 <style>
-    .register-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 80vh;
-    }
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+}
 
-    .register-card {
-        background: white;
-        padding: 30px;
-        width: 380px;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
+.register-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    padding:20px;
+}
 
-    .register-card h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        color: #2c3e50;
-    }
+.register-card{
+    width:450px;
+    background:#fff;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.15);
+}
 
-    .input-group {
-        margin-bottom: 15px;
-    }
+.register-header{
+    text-align:center;
+    margin-bottom:30px;
+}
 
-    .input-group input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        outline: none;
-    }
+.register-header h2{
+    margin:0;
+    color:#222;
+    font-size:32px;
+}
 
-    .input-group input:focus {
-        border-color: #3498db;
-    }
+.register-header p{
+    color:#777;
+    margin-top:8px;
+}
 
-    .radio-group {
-        margin-bottom: 15px;
-    }
+.input-group{
+    margin-bottom:18px;
+}
 
-    .radio-group label {
-        margin-right: 10px;
-        font-weight: bold;
-    }
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#333;
+}
 
-    .register-btn {
-        width: 100%;
-        padding: 10px;
-        background: #2ecc71;
-        border: none;
-        color: white;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-    }
+.input-group input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:15px;
+    outline:none;
+    transition:0.3s;
+}
 
-    .register-btn:hover {
-        background: #27ae60;
-    }
+.input-group input:focus{
+    border-color:#4f46e5;
+    box-shadow:0 0 0 3px rgba(79,70,229,.15);
+}
 
-    .error-msg {
-        color: red;
-        text-align: center;
-        margin-bottom: 10px;
-    }
+.role-selection{
+    margin-bottom:20px;
+}
 
-    .login-link {
-        text-align: center;
-        margin-top: 15px;
-    }
+.role-selection label{
+    font-weight:600;
+    color:#333;
+    display:block;
+    margin-bottom:10px;
+}
 
-    .login-link a {
-        color: #3498db;
-        text-decoration: none;
-    }
+.role-options{
+    display:flex;
+    gap:20px;
+}
 
-    .login-link a:hover {
-        text-decoration: underline;
-    }
+.role-options label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+}
 
-    #salary_field {
-        display: none;
-        transition: 0.3s;
-    }
+#salary_field{
+    display:none;
+}
+
+.register-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#4f46e5;
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.register-btn:hover{
+    background:#4338ca;
+}
+
+.error-msg{
+    background:#ffe5e5;
+    color:#d63031;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.success-msg{
+    background:#e8f8ec;
+    color:#27ae60;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.login-link{
+    text-align:center;
+    margin-top:20px;
+}
+
+.login-link a{
+    color:#4f46e5;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.login-link a:hover{
+    text-decoration:underline;
+}
 </style>
 
 <div class="register-container">
+
     <div class="register-card">
 
-        <h2> Register</h2>
+        <div class="register-header">
+            <h2>Create Account</h2>
+            <p>Join the College Management Portal</p>
+        </div>
 
         {% if messages %}
-    {% for message in messages %}
-        <p class="error-msg">{{ message }}</p>
-    {% endfor %}
-{% endif %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <form method="POST">
             {% csrf_token %}
 
             <div class="input-group">
-                <input type="text" name="username" placeholder="Username" required>
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter username" required>
             </div>
 
             <div class="input-group">
-                <input type="email" name="email" placeholder="Email" required>
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter email address" required>
             </div>
 
             <div class="input-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create password" required>
             </div>
 
             <div class="input-group">
-                <input type="number" name="age" placeholder="Age" required>
+                <label>Age</label>
+                <input type="number" name="age" placeholder="Enter age" required>
             </div>
 
-            <div class="radio-group">
-                <label>Register as:</label><br>
-                <input type="radio" name="user_type" value="student" checked> Student
-                <input type="radio" name="user_type" value="teacher"> Teacher
+            <div class="role-selection">
+                <label>Register As</label>
+
+                <div class="role-options">
+                    <label>
+                        <input type="radio"
+                               name="user_type"
+                               value="student"
+                               checked>
+                        Student
+                    </label>
+
+                    <label>
+                        <input type="radio"
+                               name="user_type"
+                               value="teacher">
+                        Teacher
+                    </label>
+                </div>
             </div>
 
             <div class="input-group" id="salary_field">
-                <input type="number" name="salary" placeholder="Salary">
+                <label>Salary</label>
+                <input type="number"
+                       name="salary"
+                       placeholder="Enter salary">
             </div>
 
-            <button type="submit" class="register-btn">Register</button>
+            <button type="submit" class="register-btn">
+                Create Account
+            </button>
         </form>
 
         <div class="login-link">
-            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+            Already have an account?
+            <a href="{% url 'login' %}">
+                Login
+            </a>
         </div>
 
     </div>
+
 </div>
 
 <script>
-    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
-    const salaryField = document.getElementById('salary_field');
+const userTypeRadios = document.querySelectorAll(
+    'input[name="user_type"]'
+);
 
-    userTypeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            salaryField.style.display = this.value === 'teacher' ? 'block' : 'none';
-        });
+const salaryField = document.getElementById(
+    'salary_field'
+);
+
+userTypeRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+
+        if(this.value === 'teacher'){
+            salaryField.style.display = 'block';
+        } else {
+            salaryField.style.display = 'none';
+        }
+
     });
+});
 </script>
 
 {% endblock %}

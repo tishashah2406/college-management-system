@@ -100,7 +100,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         return Response({
             "progress": progress.progress
         })
-
     # ===================== NOTES =====================
 
     @method_decorator(cache_page(60 * 10))

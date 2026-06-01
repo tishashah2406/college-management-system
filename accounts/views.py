@@ -51,6 +51,24 @@ class LoginView(AuthMixin, View):
         login(request, user)
         return self.redirect_user(request, user)
 
+def redirect_user(self, request, user):
+    print("Username:", user.username)
+    print("Superuser:", user.is_superuser)
+
+    if user.is_superuser:
+        print("Redirecting to admin")
+        return redirect('admin:index')
+
+    if user.groups.filter(name='Teacher').exists():
+        print("Redirecting to teacher")
+        return redirect('teacher_dashboard')
+
+    if user.groups.filter(name='Student').exists():
+        print("Redirecting to student")
+        return redirect('student_dashboard')
+
+    print("Redirecting to home")
+    return redirect('home')
 
 # ================= REGISTER VIEW =================
 class RegisterView(AuthMixin, View):

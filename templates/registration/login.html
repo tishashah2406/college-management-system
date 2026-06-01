@@ -3,128 +3,169 @@
 {% block content %}
 
 <style>
-    .login-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 80vh;
-    }
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+}
 
-    .login-card {
-        background: white;
-        padding: 30px;
-        width: 350px;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        text-align: center;
-    }
+.login-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+}
 
-    .login-card h2 {
-        margin-bottom: 20px;
-        color: #2c3e50;
-    }
+.login-card{
+    width:400px;
+    background:#fff;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
 
-    .input-group {
-        margin-bottom: 15px;
-        text-align: left;
-    }
+.login-header{
+    text-align:center;
+    margin-bottom:30px;
+}
 
-    .input-group label {
-        font-weight: bold;
-        display: block;
-        margin-bottom: 5px;
-    }
+.login-header h2{
+    margin:0;
+    color:#222;
+    font-size:32px;
+}
 
-    .input-group input {
-        width: 100%;
-        padding: 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        outline: none;
-    }
+.login-header p{
+    color:#777;
+    margin-top:8px;
+}
 
-    .input-group input:focus {
-        border-color: #3498db;
-    }
+.input-group{
+    margin-bottom:20px;
+}
 
-    .login-btn {
-        width: 100%;
-        padding: 10px;
-        background: #3498db;
-        border: none;
-        color: white;
-        border-radius: 6px;
-        font-size: 16px;
-        cursor: pointer;
-    }
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#333;
+}
 
-    .login-btn:hover {
-        background: #2980b9;
-    }
+.input-group input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    font-size:15px;
+    outline:none;
+    transition:0.3s;
+}
 
-    .error-msg {
-        color: red;
-        margin-bottom: 10px;
-        font-size: 14px;
-    }
+.input-group input:focus{
+    border-color:#4f46e5;
+    box-shadow:0 0 0 3px rgba(79,70,229,0.15);
+}
 
-    .success-msg {
-        color: green;
-        margin-bottom: 10px;
-        font-size: 14px;
-    }
+.login-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#4f46e5;
+    color:white;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
 
-    .extra-links {
-        margin-top: 15px;
-    }
+.login-btn:hover{
+    background:#4338ca;
+}
 
-    .extra-links a {
-        text-decoration: none;
-        color: #3498db;
-        font-size: 14px;
-    }
+.error-msg{
+    background:#ffe5e5;
+    color:#d63031;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
 
-    .extra-links a:hover {
-        text-decoration: underline;
-    }
+.success-msg{
+    background:#e8f8ec;
+    color:#27ae60;
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+}
+
+.register-link{
+    text-align:center;
+    margin-top:20px;
+}
+
+.register-link a{
+    color:#4f46e5;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.register-link a:hover{
+    text-decoration:underline;
+}
 </style>
 
 <div class="login-container">
+
     <div class="login-card">
 
-    <h2>Login</h2>
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Login to your account</p>
+        </div>
 
-    <!-- Django Messages -->
-    {% if messages %}
-        {% for message in messages %}
-            <p class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
-                {{ message }}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text"
+                       name="username"
+                       placeholder="Enter your username"
+                       required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password"
+                       name="password"
+                       placeholder="Enter your password"
+                       required>
+            </div>
+
+            <button type="submit" class="login-btn">
+                Login
+            </button>
+        </form>
+
+        <div class="register-link">
+            <p>
+                Don't have an account?
+                <a href="{% url 'register' %}">
+                    Register
+                </a>
             </p>
-        {% endfor %}
-    {% endif %}
-
-    <form method="POST">
-        {% csrf_token %}
-
-        <div class="input-group">
-            <label>Username</label>
-            <input type="text" name="username" placeholder="Enter username" required autofocus>
         </div>
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" name="password" placeholder="Enter password" required>
-        </div>
-
-        <button type="submit" class="login-btn">Login</button>
-    </form>
-
-    <div class="extra-links">
-        <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
     </div>
-
-</div>
-
 
 </div>
 

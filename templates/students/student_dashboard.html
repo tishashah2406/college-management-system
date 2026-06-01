@@ -3,123 +3,238 @@
 {% block content %}
 
 <style>
-    body {
-        color: #1e293b !important;
-    }
+.dashboard-container{
+    padding:30px;
+    background:#f8fafc;
+    min-height:100vh;
+}
 
-    h1, h2, h3, h4, h5, h6 {
-        color: #0f172a !important;
-    }
+.dashboard-title{
+    font-size:32px;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:25px;
+}
 
-    p, li {
-        color: #334155 !important;
-    }
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
 
-    table {
-        width: 100%;
-        background: white;
-        border-collapse: collapse;
-    }
+.card{
+    background:#fff;
+    border-radius:16px;
+    padding:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
 
-    table th {
-        background: #3498db;
-        color: white !important;
-        padding: 10px;
-        border: 1px solid #ddd;
-    }
+.card h4{
+    color:#64748b;
+    margin-bottom:10px;
+}
 
-    table td {
-        color: #1e293b !important;   /* ✅ FIX: readable text */
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: center;
-    }
+.card p{
+    font-size:22px;
+    font-weight:700;
+    color:#0f172a;
+}
 
-    hr {
-        border: 1px solid #ddd;
-    }
+.section{
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
 
-    h2, h3 {
-        color: #0f172a !important;
-    }
+.section h3{
+    margin-bottom:20px;
+    color:#0f172a;
+}
 
-    /* optional better UI */
-    table tr:nth-child(even) {
-        background: #f8fafc;
-    }
+.course-list{
+    list-style:none;
+    padding:0;
+}
 
+.course-list li{
+    padding:12px;
+    margin-bottom:10px;
+    background:#f1f5f9;
+    border-radius:10px;
+}
+
+.progress-item{
+    margin-bottom:20px;
+}
+
+.progress-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:8px;
+}
+
+.progress-bar{
+    height:10px;
+    background:#e2e8f0;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.progress-fill{
+    height:100%;
+    background:linear-gradient(90deg,#4f46e5,#7c3aed);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    background:#4f46e5;
+    color:white;
+    padding:12px;
+}
+
+table td{
+    padding:12px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.back-btn{
+    display:inline-block;
+    padding:12px 20px;
+    background:#4f46e5;
+    color:white;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:600;
+}
+
+.back-btn:hover{
+    background:#4338ca;
+    color:white;
+}
+
+.student-info{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
 </style>
 
-<h2>Student Dashboard</h2>
+<div class="dashboard-container">
 
-<h3>Student Information</h3>
-<p><strong>Name:</strong> {{ student.name }}</p>
-<p><strong>Email:</strong> {{ student.user.email }}</p>
-<p><strong>Age:</strong> {{ student.age }}</p>
+    <h2 class="dashboard-title">
+        🎓 Student Dashboard
+    </h2>
 
-<hr>
+    <!-- Student Info Cards -->
+    <div class="cards">
 
-<h3>Courses Enrolled</h3>
-<ul>
-{% for course in courses %}
-    <li>{{ course.name }}</li>
-{% empty %}
-    <li>No courses enrolled</li>
-{% endfor %}
-</ul>
+        <div class="card">
+            <h4>Name</h4>
+            <p>{{ student.name }}</p>
+        </div>
 
-<hr>
+        <div class="card">
+            <h4>Email</h4>
+            <p style="font-size:16px">
+                {{ student.user.email }}
+            </p>
+        </div>
 
-<h3>Course Progress</h3>
+        <div class="card">
+            <h4>Age</h4>
+            <p>{{ student.age }}</p>
+        </div>
 
-<table>
-<tr>
-    <th>Course</th>
-    <th>Progress</th>
-</tr>
+        <div class="card">
+            <h4>Courses</h4>
+            <p>{{ courses|length }}</p>
+        </div>
 
-{% for p in progress_list %}
-<tr>
-    <td>{{ p.course.name }}</td>
-    <td>
-        {{ p.progress }}%
-        <br>
-        <progress value="{{ p.progress }}" max="100"></progress>
-    </td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="2">No progress available</td>
-</tr>
-{% endfor %}
-</table>
+    </div>
 
-<hr>
+    <!-- Courses -->
+    <div class="section">
 
-<h3>Teachers Teaching These Courses</h3>
+        <h3>📚 Enrolled Courses</h3>
 
-<table>
-<tr>
-    <th>Name</th>
-    <th>Email</th>
-</tr>
+        <ul class="course-list">
+            {% for course in courses %}
+                <li>{{ course.name }}</li>
+            {% empty %}
+                <li>No courses enrolled</li>
+            {% endfor %}
+        </ul>
 
-{% for teacher in teachers %}
-<tr>
-    <td>{{ teacher.name }}</td>
-    <td>{{ teacher.email }}</td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="2">No teachers found</td>
-</tr>
-{% endfor %}
-</table>
+    </div>
 
-<br>
+    <!-- Progress -->
+    <div class="section">
 
-<a href="{% url 'student_list' %}">
-    <button class="btn btn-secondary">Back</button>
-</a>
+        <h3>📈 Course Progress</h3>
+
+        {% for p in progress_list %}
+
+        <div class="progress-item">
+
+            <div class="progress-header">
+                <span>{{ p.course.name }}</span>
+                <span>{{ p.progress }}%</span>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill"
+                     style="width:{{ p.progress }}%;">
+                </div>
+            </div>
+
+        </div>
+
+        {% empty %}
+            <p>No progress available.</p>
+        {% endfor %}
+
+    </div>
+
+    <!-- Teachers -->
+    <div class="section">
+
+        <h3>👨‍🏫 Course Teachers</h3>
+
+        <table>
+
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+
+            {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.name }}</td>
+                <td>{{ teacher.email }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">
+                    No teachers found
+                </td>
+            </tr>
+            {% endfor %}
+
+        </table>
+
+    </div>
+
+    <a href="{% url 'student_list' %}" class="back-btn">
+        ← Back
+    </a>
+
+</div>
 
 {% endblock %}
