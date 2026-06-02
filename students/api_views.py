@@ -55,6 +55,7 @@ class StudentViewSet(ModelViewSet):
                 many=True
             ).data,
         })
+
     # ================= DASHBOARD BY ID =================
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path="dashboard-by-id")
     def dashboard_by_id(self, request, pk=None):

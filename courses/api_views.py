@@ -81,7 +81,6 @@ class CourseViewSet(viewsets.ModelViewSet):
                 {"error": "Progress not found"},
                 status=404
             )
-
     # ===================== UPDATE PROGRESS =====================
 
     @action(detail=True, methods=['post'])
@@ -111,7 +110,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = NoteSerializer(notes, many=True)
 
         return Response(serializer.data)
-
     # ===================== ADDNOTE =====================
 
     @action(detail=True, methods=['post'])

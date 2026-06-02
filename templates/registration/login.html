@@ -1,168 +1,206 @@
+```html
 {% extends 'home.html' %}
 
 {% block content %}
 
 <style>
-body{
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
     font-family:'Segoe UI',sans-serif;
 }
 
-.login-container{
+.login-page{
     min-height:100vh;
+    display:flex;
+}
+
+.left-panel{
+    flex:1;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:60px;
+}
+
+.left-panel h1{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+.left-panel p{
+    font-size:18px;
+    line-height:1.8;
+    max-width:500px;
+}
+
+.logo{
+    font-size:60px;
+    margin-bottom:20px;
+}
+
+.right-panel{
+    flex:1;
     display:flex;
     justify-content:center;
     align-items:center;
-    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    background:#f8fafc;
 }
 
 .login-card{
     width:400px;
-    background:#fff;
+    background:white;
     padding:40px;
     border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
 }
 
-.login-header{
-    text-align:center;
-    margin-bottom:30px;
+.login-card h2{
+    margin-bottom:10px;
+    color:#0f172a;
 }
 
-.login-header h2{
-    margin:0;
-    color:#222;
-    font-size:32px;
+.login-card p{
+    color:#64748b;
+    margin-bottom:25px;
 }
 
-.login-header p{
-    color:#777;
-    margin-top:8px;
-}
-
-.input-group{
+.form-group{
     margin-bottom:20px;
 }
 
-.input-group label{
+.form-group label{
     display:block;
     margin-bottom:8px;
     font-weight:600;
-    color:#333;
 }
 
-.input-group input{
+.form-group input{
     width:100%;
     padding:14px;
-    border:1px solid #ddd;
+    border:1px solid #d1d5db;
     border-radius:10px;
-    font-size:15px;
     outline:none;
-    transition:0.3s;
 }
 
-.input-group input:focus{
+.form-group input:focus{
     border-color:#4f46e5;
-    box-shadow:0 0 0 3px rgba(79,70,229,0.15);
 }
 
 .login-btn{
     width:100%;
     padding:14px;
-    border:none;
-    border-radius:10px;
     background:#4f46e5;
     color:white;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
     font-size:16px;
     font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
 }
 
 .login-btn:hover{
     background:#4338ca;
 }
 
+.extra-links{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.extra-links a{
+    text-decoration:none;
+    color:#4f46e5;
+}
+
 .error-msg{
-    background:#ffe5e5;
-    color:#d63031;
-    padding:12px;
+    background:#fee2e2;
+    color:#dc2626;
+    padding:10px;
     border-radius:8px;
     margin-bottom:15px;
 }
 
 .success-msg{
-    background:#e8f8ec;
-    color:#27ae60;
-    padding:12px;
+    background:#dcfce7;
+    color:#16a34a;
+    padding:10px;
     border-radius:8px;
     margin-bottom:15px;
 }
 
-.register-link{
-    text-align:center;
-    margin-top:20px;
-}
-
-.register-link a{
-    color:#4f46e5;
-    text-decoration:none;
-    font-weight:600;
-}
-
-.register-link a:hover{
-    text-decoration:underline;
+@media(max-width:768px){
+    .left-panel{
+        display:none;
+    }
 }
 </style>
 
-<div class="login-container">
+<div class="login-page">
 
-    <div class="login-card">
+    <div class="left-panel">
+        <div class="logo">🎓</div>
 
-        <div class="login-header">
+        <h1>College Management System</h1>
+
+        <p>
+            
+            Manage students, teachers, courses,
+            attendance, assignments and reports
+            from one secure platform.
+        </p>
+    </div>
+
+    <div class="right-panel">
+
+        <div class="login-card">
+
             <h2>Welcome Back</h2>
-            <p>Login to your account</p>
-        </div>
+            <p>Sign in to continue</p>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
-                    {{ message }}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text"
+                           name="username"
+                           placeholder="Enter username"
+                           required>
                 </div>
-            {% endfor %}
-        {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password"
+                           name="password"
+                           placeholder="Enter password"
+                           required>
+                </div>
 
-            <div class="input-group">
-                <label>Username</label>
-                <input type="text"
-                       name="username"
-                       placeholder="Enter your username"
-                       required>
-            </div>
+                <button type="submit" class="login-btn">
+                    Sign In
+                </button>
+            </form>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password"
-                       name="password"
-                       placeholder="Enter your password"
-                       required>
-            </div>
-
-            <button type="submit" class="login-btn">
-                Login
-            </button>
-        </form>
-
-        <div class="register-link">
-            <p>
-                Don't have an account?
+            <div class="extra-links">
+                <a href="#">Forgot Password?</a>
                 <a href="{% url 'register' %}">
                     Register
                 </a>
-            </p>
+            </div>
+
         </div>
 
     </div>
@@ -170,3 +208,4 @@ body{
 </div>
 
 {% endblock %}
+```
