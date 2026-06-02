@@ -399,31 +399,62 @@ def attendance_dashboard(request):
     courses = Course.objects.all()
 
     student_id = request.GET.get('student')
-    selected_date = request.GET.get('date')  #  NEW
+    selected_date = request.GET.get('date')
 
     attendance_data = []
 
+    present_count = 0
+    absent_count = 0
+    attendance_percentage = 0
+
     if student_id and selected_date:
-        student = get_object_or_404(Student, id=student_id)
+
+        student = get_object_or_404(
+            Student,
+            id=student_id
+        )
 
         records = Attendance.objects.filter(
             student=student,
-            date=selected_date   #  FILTER BY DATE
+            date=selected_date
         )
 
         for record in records:
+
             attendance_data.append({
                 'course': record.course,
                 'status': record.status,
                 'date': record.date
             })
 
-    return render(request, 'attendance/attendance_dashboard.html', {
-        'students': students,
-        'courses': courses,
-        'attendance_data': attendance_data,
-        'selected_date': selected_date
-    })
+            if record.status == "Present":
+                present_count += 1
+            else:
+                absent_count += 1
+
+        total = present_count + absent_count
+
+        if total > 0:
+            attendance_percentage = round(
+                (present_count / total) * 100,
+                1
+            )
+
+    return render(
+        request,
+        'attendance/attendance_dashboard.html',
+        {
+            'students': students,
+            'courses': courses,
+            'attendance_data': attendance_data,
+            'selected_date': selected_date,
+
+            # Statistics
+            'present_count': present_count,
+            'absent_count': absent_count,
+            'attendance_percentage': attendance_percentage,
+        }
+    )
 
 @login_required
 def get_students_by_course(request):
@@ -440,21 +471,24 @@ def get_students_by_course(request):
     ]
 
     return JsonResponse({'students': data})
+from datetime import datetime
 
 @login_required
 def monthly_attendance(request):
+
     month_input = request.GET.get('month')
 
     if not month_input:
         month_input = datetime.now().strftime('%Y-%m')
 
-    data = []
-
     year, month = month_input.split('-')
+
+    data = []
 
     students = Student.objects.all()
 
     for student in students:
+
         records = Attendance.objects.filter(
             student=student,
             date__year=int(year),
@@ -462,9 +496,15 @@ def monthly_attendance(request):
         )
 
         total = records.count()
-        present = records.filter(status="Present").count()
 
-        percentage = (present / total * 100) if total > 0 else 0
+        present = records.filter(
+            status="Present"
+        ).count()
+
+        percentage = (
+            (present / total) * 100
+            if total > 0 else 0
+        )
 
         data.append({
             'student': student.name,
@@ -473,11 +513,43 @@ def monthly_attendance(request):
             'percentage': round(percentage, 2)
         })
 
-    return render(request, 'attendance/monthly.html', {
-        'data': data,
-        'month_input': month_input   
-    })
+    # ==========================
+    # Dashboard Statistics
+    # ==========================
 
+    percentages = [
+        d['percentage']
+        for d in data
+    ]
+
+    avg_attendance = (
+        round(sum(percentages) / len(percentages), 1)
+        if percentages else 0
+    )
+
+    highest_attendance = (
+        max(percentages)
+        if percentages else 0
+    )
+
+    lowest_attendance = (
+        min(percentages)
+        if percentages else 0
+    )
+
+    return render(
+        request,
+        'attendance/monthly.html',
+        {
+            'data': data,
+            'month_input': month_input,
+
+            # Statistics
+            'avg_attendance': avg_attendance,
+            'highest_attendance': highest_attendance,
+            'lowest_attendance': lowest_attendance,
+        }
+    )
 @login_required
 def create_assignment(request, course_id):
     teacher = request.user.teacher

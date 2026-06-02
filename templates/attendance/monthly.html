@@ -1,31 +1,128 @@
 {% extends 'home.html' %}
+
 {% block content %}
 
-<h2>📅 Monthly Attendance Report</h2>
+<div class="dashboard-page">
 
-<form method="GET" class="mb-3">
-    <input type="month" name="month" class="form-control"
-       value="{{ month_input }}" required>
-    <button class="btn btn-primary mt-2">View</button>
-</form>
+    <div class="page-header">
+        <h2>📅 Monthly Attendance Report</h2>
+        <p>Monitor attendance performance of all students</p>
+    </div>
 
-<table class="table table-bordered text-center">
-    <tr>
-        <th>Student</th>
-        <th>Present</th>
-        <th>Total</th>
-        <th>%</th>
-    </tr>
+    <!-- Filter -->
+    <div class="dashboard-card">
 
-{% for d in data %}
-<tr>
-    <td>{{ d.student }}</td>
-    <td>{{ d.present }}</td>
-    <td>{{ d.total }}</td>
-    <td>{{ d.percentage }}%</td>
-</tr>
-{% endfor %}
+        <form method="GET" class="row g-3">
 
-</table>
+            <div class="col-md-6">
+                <label class="form-label">
+                    Select Month
+                </label>
+
+                <input
+                    type="month"
+                    name="month"
+                    class="form-control"
+                    value="{{ month_input }}"
+                    required>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+
+                <button class="btn btn-primary w-100">
+                    View Report
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h3>{{ data|length }}</h3>
+            <span>Total Students</span>
+        </div>
+
+        <div class="stat-card success">
+            <h3>{{ avg_attendance }}%</h3>
+            <span>Average Attendance</span>
+        </div>
+
+        <div class="stat-card primary">
+            <h3>{{ highest_attendance }}%</h3>
+            <span>Highest Attendance</span>
+        </div>
+
+        <div class="stat-card danger">
+            <h3>{{ lowest_attendance }}%</h3>
+            <span>Lowest Attendance</span>
+        </div>
+
+    </div>
+
+    <!-- Table -->
+    <div class="dashboard-card">
+
+        <table class="modern-table">
+
+            <thead>
+
+                <tr>
+                    <th>Student</th>
+                    <th>Present</th>
+                    <th>Total</th>
+                    <th>Attendance</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% for d in data %}
+
+            <tr>
+
+                <td>{{ d.student }}</td>
+
+                <td>
+                    <span class="badge bg-success">
+                        {{ d.present }}
+                    </span>
+                </td>
+
+                <td>{{ d.total }}</td>
+
+                <td style="width:250px">
+
+                    <div class="progress">
+
+                        <div
+                            class="progress-bar bg-primary"
+                            style="width:{{ d.percentage }}%">
+                        </div>
+
+                    </div>
+
+                    <small>
+                        {{ d.percentage }}%
+                    </small>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 
 {% endblock %}
