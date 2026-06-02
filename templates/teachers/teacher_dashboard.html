@@ -3,189 +3,270 @@
 
 {% block content %}
 
-<style>
-    body {
-        background: #f4f6f9;
-        color: #1e293b;
-    }
+<div class="dashboard-page">
 
-    h2 {
-        margin-bottom: 20px;
-        color: #0f172a;
-    }
+    <!-- Header -->
+    <div class="page-header">
+        <h2>👨‍🏫 Teacher Dashboard</h2>
+        <p>Manage courses, students, leaves and salary details.</p>
+    </div>
 
-    h3 {
-        margin-bottom: 15px;
-        color: #1e293b;
-    }
+    <!-- Stats Cards -->
+    <div class="stats-grid">
 
-    /* SECTION CARD */
-    .card-section {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        margin-bottom: 20px;
-    }
+        <div class="stat-card">
+            <h3>{{ courses|length }}</h3>
+            <span>Total Courses</span>
+        </div>
 
-    /* TABLE */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 10px;
-    }
+        <div class="stat-card success">
+            <h3>{{ students|length }}</h3>
+            <span>Total Students</span>
+        </div>
 
-    th {
-        background: #3498db;
-        color: white;
-        padding: 10px;
-        text-align: center;
-    }
+        <div class="stat-card primary">
+            <h3>{{ leaves|length }}</h3>
+            <span>Leave Requests</span>
+        </div>
 
-    td {
-        padding: 10px;
-        text-align: center;
-        border-bottom: 1px solid #eee;
-    }
+        <div class="stat-card danger">
+            <h3>₹{{ salary.final_salary }}</h3>
+            <span>Final Salary</span>
+        </div>
 
-    tr:nth-child(even) td {
-        background: #f8fafc;
-    }
+    </div>
 
-    tr:hover td {
-        background: #eef2f7;
-    }
+    <!-- Teacher Profile -->
+    <div class="dashboard-card">
 
-    /* BUTTONS */
-    .btn {
-        padding: 6px 12px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 14px;
-        display: inline-block;
-        margin: 2px;
-    }
+        <h3 class="section-title">👤 Teacher Information</h3>
 
-    .btn-primary { background: #3498db; color: white; }
-    .btn-success { background: #2ecc71; color: white; }
-    .btn-warning { background: #f39c12; color: white; }
-    .btn-danger { background: #e74c3c; color: white; }
+        <div class="row">
 
-    .btn:hover {
-        opacity: 0.9;
-    }
+            <div class="col-md-4">
+                <div class="info-box">
+                    <strong>Name</strong><br>
+                    {{ teacher.name }}
+                </div>
+            </div>
 
-    ul {
-        padding-left: 20px;
-    }
-</style>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <strong>Email</strong><br>
+                    {{ teacher.user.email }}
+                </div>
+            </div>
 
-<h2>📊 Teacher Dashboard</h2>
-
-<!-- ================= TEACHER INFO ================= -->
-
-<div class="card-section">
-    <h3>👤 Teacher Information</h3>
-
-<p><strong>Name:</strong> {{ teacher.name }}</p>
-<p><strong>Email:</strong> {{ teacher.user.email }}</p>
-<p><strong>Salary:</strong> ₹ {{ teacher.salary }}</p>
-
-<a href="{% url 'enroll_student' teacher.id %}" class="btn btn-primary">
-    ➕ Enroll Student
-</a>
-<a href="/teachers/leave/apply/" class="btn btn-primary">
-    📝 Apply Leave
-</a>
-</div>
-<h3>My Leaves</h3>
-
-<table>
-<tr>
-    <th>Start</th>
-    <th>End</th>
-    <th>Status</th>
-</tr>
-
-{% for leave in leaves %}
-<tr>
-    <td>{{ leave.start_date }}</td>
-    <td>{{ leave.end_date }}</td>
-    <td>{{ leave.status }}</td>
-</tr>
-{% endfor %}
-</table>
-<h3>Salary Details</h3>
-
-<p><b>Base Salary:</b> {{ salary.base_salary }}</p>
-
-<p><b>Total Leave Days:</b> {{ salary.total_leave_days }}</p>
-
-<p><b>Deduction:</b> {{ salary.deduction }}</p>
-
-<hr>
-
-<h2 style="color:green;">
-    Final Salary: {{ salary.final_salary }}
-</h2>
-<!-- ================= COURSES ================= -->
-
-<div class="card-section">
-    <h3>📚 Courses Assigned</h3>
-
-<ul>
-    {% for course in courses %}
-        <li>{{ course.name }}</li>
-    {% empty %}
-        <li>No courses assigned</li>
-    {% endfor %}
-</ul>
-
-</div>
+            <div class="col-md-3">
+        <div class="info-box">
+            <strong>Phone</strong><br>
+            {{ teacher.phone|default:"Not Added" }}
+        </div>
+    </div>
 
 
-<!-- ================= STUDENTS ================= -->
+            <div class="col-md-4">
+                <div class="info-box">
+                    <strong>Salary</strong><br>
+                    ₹{{ teacher.salary }}
+                </div>
+            </div>
 
-<div class="card-section">
-    <h3>👨‍🎓 Students</h3>
+        </div>
 
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Action</th>
-    </tr>
+        <br>
 
-    {% for student in students %}
-    <tr>
-        <td>{{ student.name }}</td>
-        <td>{{ student.user.email }}</td>
+        <a href="{% url 'enroll_student' teacher.id %}" class="btn btn-primary">
+            ➕ Enroll Student
+        </a>
 
-        <td>
-            {% for course in student.courses.all %}
-                {% if course in courses %}
-                    <a href="{% url 'remove_student_from_course' teacher.id student.id course.id %}" 
-                       class="btn btn-danger">
-                        Remove {{ course.name }}
-                    </a><br>
-                {% endif %}
+        <a href="/teachers/leave/apply/" class="btn btn-success">
+            📝 Apply Leave
+        </a>
+
+    </div>
+
+    <!-- Salary Details -->
+    <div class="dashboard-card">
+
+        <h3 class="section-title">💰 Salary Details</h3>
+
+        <div class="row">
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <strong>Base Salary</strong><br>
+                    ₹{{ salary.base_salary }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <strong>Leave Days</strong><br>
+                    {{ salary.total_leave_days }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <strong>Deduction</strong><br>
+                    ₹{{ salary.deduction }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="info-box">
+                    <strong>Final Salary</strong><br>
+                    ₹{{ salary.final_salary }}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Courses -->
+    <div class="dashboard-card">
+
+        <h3 class="section-title">📚 Assigned Courses</h3>
+
+        <div class="row">
+
+            {% for course in courses %}
+            <div class="col-md-4 mb-3">
+
+                <div class="course-card">
+
+                    <h5>{{ course.name }}</h5>
+
+                    
+
+                </div>
+
+            </div>
+            {% empty %}
+                <p>No courses assigned.</p>
             {% endfor %}
-        </td>
-    </tr>
 
-    {% empty %}
-    <tr>
-        <td colspan="3">No students found</td>
-    </tr>
-    {% endfor %}
-</table>
+        </div>
+
+    </div>
+
+    <!-- Students Table -->
+    <div class="dashboard-card">
+
+        <h3 class="section-title">👨‍🎓 Students</h3>
+
+        <table class="modern-table">
+
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Courses</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for student in students %}
+            <tr>
+
+                <td>{{ student.name }}</td>
+
+                <td>{{ student.user.email }}</td>
+
+                <td>
+                    {% for course in student.courses.all %}
+                        <span class="course-badge">
+                            {{ course.name }}
+                        </span>
+                    {% endfor %}
+                </td>
+
+                <td>
+
+                    {% for course in student.courses.all %}
+                        {% if course in courses %}
+
+                        <a href="{% url 'remove_student_from_course' teacher.id student.id course.id %}"
+                           class="btn btn-danger btn-sm">
+
+                           Remove
+                        </a>
+
+                        {% endif %}
+                    {% endfor %}
+
+                </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No students found</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Leaves -->
+    <div class="dashboard-card">
+
+        <h3 class="section-title">📝 Leave History</h3>
+
+        <table class="modern-table">
+
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for leave in leaves %}
+            <tr>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date }}</td>
+
+                <td>
+                    {% if leave.status == "Approved" %}
+                        <span class="badge bg-success">
+                            Approved
+                        </span>
+
+                    {% elif leave.status == "Rejected" %}
+                        <span class="badge bg-danger">
+                            Rejected
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-warning">
+                            Pending
+                        </span>
+
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <a href="{% url 'teacher_list' %}" class="btn btn-primary">
+        ← Back
+    </a>
 
 </div>
-
-<!-- ================= BACK ================= -->
-
-<a href="{% url 'teacher_list' %}" class="btn btn-primary">
-    ⬅ Back
-</a>
 
 {% endblock %}

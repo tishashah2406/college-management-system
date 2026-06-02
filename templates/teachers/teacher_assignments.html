@@ -1,32 +1,65 @@
 {% extends 'home.html' %}
 {% block content %}
 
-<h2>📝 Assignments</h2>
+<div class="dashboard-page">
 
-{% for course in courses %}
-    <div class="card-section">
-        <h3>{{ course.name }}</h3>
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📝 Assignments Dashboard</h2>
+        <p>Manage and track assignments for each course</p>
+    </div>
 
-        <a href="{% url 'create_assignment' course.id %}" class="btn btn-success">
-            ➕ Create Assignment
-        </a>
+    <!-- Courses Loop -->
+    {% for course in courses %}
 
-        <ul>
+    <div class="dashboard-card">
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+
+            <h3 class="section-title">
+                📚 {{ course.name }}
+            </h3>
+
+            <a href="{% url 'create_assignment' course.id %}" class="btn btn-success btn-sm">
+                ➕ Create Assignment
+            </a>
+
+        </div>
+
+        <ul class="modern-list">
+
             {% for a in assignments %}
                 {% if a.course.id == course.id %}
-                    <li>
-                        <strong>{{ a.title }}</strong> - Due: {{ a.due_date }}
-                    </li>
-                {% endif %}
-            {% empty %}
-                <li>No assignments</li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endfor %}
 
-<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
-    ⬅ Back to Dashboard
-</a>
+                <li class="list-item">
+                    <div>
+                        <strong>{{ a.title }}</strong>
+                        <br>
+                        <small>📅 Due: {{ a.due_date }}</small>
+                    </div>
+                </li>
+
+                {% endif %}
+
+            {% empty %}
+                <li class="list-item empty">
+                    No assignments found for this course
+                </li>
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+    {% endfor %}
+
+    <!-- Back Button -->
+    <div style="margin-top:20px;">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
 
 {% endblock %}

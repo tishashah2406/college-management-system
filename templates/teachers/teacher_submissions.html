@@ -1,48 +1,101 @@
 {% extends 'home.html' %}
 {% block content %}
 
-<h2>📄 Assignment Submissions</h2>
- <p><strong>Total:</strong> {{ submissions|length }}</p>
-<table>
-    <tr>
-        <th>Student</th>
-        <th>Course</th>
-        <th>Assignment</th>
-        <th>File</th>
-        <th>Date</th>
-        <th>Action</th>
-    </tr>
+<div class="dashboard-page">
 
-    {% for sub in submissions %}
-    <tr>
-        <td>{{ sub.student.name }}</td>
-        <td>{{ sub.assignment.course.name }}</td>
-        <td>{{ sub.assignment.title }}</td>
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📄 Assignment Submissions</h2>
+        <p>Review and grade student submissions</p>
+    </div>
 
-        <td>
-            <a href="{{ sub.file.url }}" target="_blank" class="btn btn-primary">
-                View
-            </a>
-        </td>
+    <!-- Stats -->
+    <div class="stats-grid">
 
-        <td>{{ sub.submitted_at }}</td>
+        <div class="stat-card primary">
+            <h3>{{ submissions|length }}</h3>
+            <span>Total Submissions</span>
+        </div>
 
-        <td>
-            <a href="{% url 'grade_assignment' sub.assignment.id %}" class="btn btn-warning">
-                ⭐ Grade
-            </a>
-        </td>
-    </tr>
+    </div>
 
-    {% empty %}
-    <tr>
-        <td colspan="6">No submissions yet</td>
-    </tr>
-    {% endfor %}
-</table>
+    <!-- Table Card -->
+    <div class="dashboard-card">
 
-<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
-    ⬅ Back to Dashboard
-</a>
+        <h3 class="section-title">📋 Submissions List</h3>
+
+        <table class="modern-table">
+
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Assignment</th>
+                    <th>File</th>
+                    <th>Submitted At</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for sub in submissions %}
+            <tr>
+
+                <td>
+                    <strong>{{ sub.student.name }}</strong>
+                </td>
+
+                <td>
+                    <span class="course-badge">
+                        {{ sub.assignment.course.name }}
+                    </span>
+                </td>
+
+                <td>
+                    {{ sub.assignment.title }}
+                </td>
+
+                <td>
+                    <a href="{{ sub.file.url }}" target="_blank" class="btn btn-primary btn-sm">
+                        👁 View File
+                    </a>
+                </td>
+
+                <td>
+                    <small>{{ sub.submitted_at }}</small>
+                </td>
+
+                <td>
+                    <a href="{% url 'grade_assignment' sub.assignment.id %}"
+                       class="btn btn-warning btn-sm">
+                        ⭐ Grade
+                    </a>
+                </td>
+
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align:center; padding:20px;">
+                    No submissions yet
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Back Button -->
+    <div style="margin-top:20px;">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
 
 {% endblock %}

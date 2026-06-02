@@ -138,10 +138,9 @@ def teacher_dashboard(request):
     # Teacher courses
     courses = teacher.courses.all()
 
-    # Students in courses
     students = Student.objects.filter(
         courses__in=courses
-    ).distinct()
+    ).prefetch_related('courses').distinct()
 
     # Auto create progress
     for course in courses:

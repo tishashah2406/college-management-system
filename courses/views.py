@@ -20,7 +20,6 @@ def home(request):
 
     return redirect('login')
 
-
 # ---------------- COURSE LIST ----------------
 @login_required
 def course_list(request):
@@ -106,7 +105,6 @@ def course_delete(request, course_id):
     return render(request, 'courses/course_confirm_delete.html', {
         'course': course
     })
-
 
 # ---------------- ENROLL ----------------
 @login_required

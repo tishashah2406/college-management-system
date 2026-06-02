@@ -1,295 +1,155 @@
 {% extends 'home.html' %}
-
 {% block content %}
 
-<div class="container-fluid">
+<div class="container py-4">
 
     <!-- Header -->
+    <div class="p-4 mb-4 text-white rounded-4"
+         style="background: linear-gradient(135deg,#4e73df,#224abe);">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-1">Attendance Dashboard</h2>
+        <p class="mb-0 opacity-75">Track your attendance performance</p>
 
-        <div>
+    </div>
 
-            <h2 class="page-title">
-                Attendance Dashboard
-            </h2>
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
 
-            <p class="text-muted">
-                View attendance records and statistics
-            </p>
+            <form method="get">
+                <div class="row g-3">
+
+                    <div class="col-md-5">
+                        <label class="form-label">Course</label>
+                        <select name="course" class="form-select">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}"
+                                    {% if course.id|stringformat:"s" == selected_course_id %}selected{% endif %}>
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label">Month</label>
+                        <input type="month" name="month"
+                               value="{{ month_input }}"
+                               class="form-control">
+                    </div>
+
+                    <div class="col-md-2 d-grid align-items-end">
+                        <button class="btn btn-primary">
+                            Filter
+                        </button>
+                    </div>
+
+                </div>
+            </form>
 
         </div>
-
-        <a href="{% url 'student_dashboard' %}"
-           class="btn btn-primary">
-
-            <i class="bi bi-arrow-left"></i>
-            Back
-
-        </a>
-
     </div>
 
-    <!-- Filter Section -->
-
-    <div class="search-card">
-
-        <form method="get">
-
-            <div class="row g-3">
-
-                <div class="col-md-5">
-
-                    <label class="form-label">
-                        Course
-                    </label>
-
-                    <select name="course" class="form-select">
-
-                        <option value="">
-                            All Courses
-                        </option>
-
-                        {% for course in courses %}
-
-                        <option
-                            value="{{ course.id }}"
-                            {% if course.id|stringformat:"s" == selected_course_id %}
-                                selected
-                            {% endif %}>
-
-                            {{ course.name }}
-
-                        </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-                <div class="col-md-5">
-
-                    <label class="form-label">
-                        Month
-                    </label>
-
-                    <input
-                        type="month"
-                        name="month"
-                        value="{{ month_input }}"
-                        class="form-control">
-
-                </div>
-
-                <div class="col-md-2 d-flex align-items-end">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-100">
-
-                        Filter
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </form>
-
-    </div>
-
-    <!-- Attendance Data -->
-
+    <!-- Attendance Cards -->
     {% for course_data in attendance_data %}
 
-    <div class="card mb-4">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+            <!-- Course Title -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold mb-0">{{ course_data.course.name }}</h4>
+            </div>
 
-            <h4>
+            <!-- Stats -->
+            <div class="row g-3 mb-4">
 
-                {{ course_data.course.name }}
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 bg-light text-center">
+                        <small class="text-muted">Total Classes</small>
+                        <h3 class="fw-bold">{{ course_data.total }}</h3>
+                    </div>
+                </div>
 
-            </h4>
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 bg-success bg-opacity-10 text-center">
+                        <small class="text-success">Present</small>
+                        <h3 class="fw-bold text-success">{{ course_data.present }}</h3>
+                    </div>
+                </div>
 
-        </div>
-
-        <!-- Statistics -->
-
-        <div class="row mb-4">
-
-            <div class="col-md-4">
-
-                <div class="dashboard-card text-center">
-
-                    <small>Total Classes</small>
-
-                    <h2>
-
-                        {{ course_data.total }}
-
-                    </h2>
-
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 bg-danger bg-opacity-10 text-center">
+                        <small class="text-danger">Absent</small>
+                        <h3 class="fw-bold text-danger">{{ course_data.absent }}</h3>
+                    </div>
                 </div>
 
             </div>
 
-            <div class="col-md-4">
-
-                <div class="dashboard-card text-center">
-
-                    <small>Present</small>
-
-                    <h2 class="text-success">
-
-                        {{ course_data.present }}
-
-                    </h2>
-
+            <!-- Progress -->
+            {% if course_data.total > 0 %}
+            <div class="mb-4">
+                <div class="d-flex justify-content-between mb-1">
+                    <small class="text-muted">Attendance Percentage</small>
+                    <small class="fw-bold">
+                        {% widthratio course_data.present course_data.total 100 %}%
+                    </small>
                 </div>
 
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="dashboard-card text-center">
-
-                    <small>Absent</small>
-
-                    <h2 class="text-danger">
-
-                        {{ course_data.absent }}
-
-                    </h2>
-
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success"
+                         style="width:{% widthratio course_data.present course_data.total 100 %}%">
+                    </div>
                 </div>
-
             </div>
+            {% endif %}
 
-        </div>
-
-        <!-- Percentage -->
-
-        {% if course_data.total > 0 %}
-
-        <div class="mb-4">
-
-            <label class="mb-2">
-
-                Attendance Percentage
-
-            </label>
-
-            <div class="progress">
-
-                <div
-                    class="progress-bar bg-success"
-                    role="progressbar"
-                    style="width:{% widthratio course_data.present course_data.total 100 %}%">
-
-                    {% widthratio course_data.present course_data.total 100 %}%
-
+            <!-- Table -->
+            {% if course_data.records %}
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in course_data.records %}
+                        <tr>
+                            <td>{{ record.date }}</td>
+                            <td>
+                                {% if record.status == "Present" %}
+                                    <span class="badge rounded-pill bg-success">
+                                        Present
+                                    </span>
+                                {% else %}
+                                    <span class="badge rounded-pill bg-danger">
+                                        Absent
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="alert alert-light border">
+                    No attendance records found for this course.
                 </div>
-
-            </div>
-
-        </div>
-
-        {% endif %}
-
-        <!-- Records Table -->
-
-        {% if course_data.records %}
-
-        <div class="table-card">
-
-            <table class="table table-hover align-middle">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Date</th>
-                        <th>Status</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for record in course_data.records %}
-
-                    <tr>
-
-                        <td>
-
-                            {{ record.date }}
-
-                        </td>
-
-                        <td>
-
-                            {% if record.status == "Present" %}
-
-                                <span class="badge bg-success">
-
-                                    Present
-
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge bg-danger">
-
-                                    Absent
-
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
+            {% endif %}
 
         </div>
-
-        {% else %}
-
-        <div class="alert alert-info">
-
-            No attendance records found for this course.
-
-        </div>
-
-        {% endif %}
-
     </div>
 
     {% empty %}
 
-    <div class="card">
-
-        <div class="text-center p-5">
-
-            <h4>No Attendance Data Available</h4>
-
-            <p class="text-muted">
-
-                Attendance records will appear here.
-
-            </p>
-
-        </div>
-
+    <div class="text-center py-5">
+        <h5>No Attendance Data Available</h5>
+        <p class="text-muted">Select a course to view records</p>
     </div>
 
     {% endfor %}

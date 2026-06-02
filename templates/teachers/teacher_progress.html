@@ -1,48 +1,102 @@
 {% extends 'home.html' %}
 {% block content %}
 
-<h2>📊 Course Progress</h2>
-<p><strong>Total Records:</strong> {{ progress_list|length }}</p>
+<div class="dashboard-page">
 
-<table>
-    <tr>
-        <th>Student</th>
-        <th>Course</th>
-        <th>Progress</th>
-        <th>Action</th>
-    </tr>
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📊 Course Progress Dashboard</h2>
+        <p>Track student progress across assigned courses</p>
+    </div>
 
-    {% for p in progress_list %}
-    <tr>
-        <td>{{ p.student.name }}</td>
-        <td>{{ p.course.name }}</td>
+    <!-- Summary Card -->
+    <div class="stats-grid">
 
-        <td>
-            {{ p.progress }}%
-            <br>
-            <progress value="{{ p.progress }}" max="100"></progress>
-        </td>
+        <div class="stat-card primary">
+            <h3>{{ progress_list|length }}</h3>
+            <span>Total Records</span>
+        </div>
 
-        <td>
-            <a href="{% url 'update_progress' p.student.id p.course.id teacher.id %}" class="btn btn-success">
-                ➕
-            </a>
+    </div>
 
-            <a href="{% url 'remove_progress' p.student.id p.course.id %}" class="btn btn-danger">
-                ➖
-            </a>
-        </td>
-    </tr>
+    <!-- Progress Table Card -->
+    <div class="dashboard-card">
 
-    {% empty %}
-    <tr>
-        <td colspan="4">No progress data</td>
-    </tr>
-    {% endfor %}
-</table>
+        <h3 class="section-title">📈 Progress Overview</h3>
 
-<a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
-    ⬅ Back to Dashboard
-</a>
+        <table class="modern-table">
+
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Progress</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for p in progress_list %}
+            <tr>
+
+                <td>
+                    <strong>{{ p.student.name }}</strong>
+                </td>
+
+                <td>
+                    <span class="course-badge">
+                        {{ p.course.name }}
+                    </span>
+                </td>
+
+                <td style="min-width:200px;">
+                    <div style="margin-bottom:5px;">
+                        <strong>{{ p.progress }}%</strong>
+                    </div>
+
+                    <progress value="{{ p.progress }}" max="100"
+                        style="width:100%; height:10px; accent-color:#4f46e5;">
+                    </progress>
+                </td>
+
+                <td>
+
+                    <a href="{% url 'update_progress' p.student.id p.course.id teacher.id %}"
+                       class="btn btn-success btn-sm">
+                        ➕ Increase
+                    </a>
+
+                    <a href="{% url 'remove_progress' p.student.id p.course.id %}"
+                       class="btn btn-danger btn-sm">
+                        ➖ Decrease
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align:center; padding:20px;">
+                    No progress data available
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Back Button -->
+    <div style="margin-top:20px;">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
 
 {% endblock %}

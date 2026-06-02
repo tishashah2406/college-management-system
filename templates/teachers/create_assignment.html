@@ -3,52 +3,54 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="dashboard-page">
 
-    <h2>📘 Create Assignment</h2>
-    <h4>Course: {{ course.name }}</h4>
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📘 Create Assignment</h2>
+        <p>Course: <strong>{{ course.name }}</strong></p>
+    </div>
 
-    <hr>
+    <!-- Form Card -->
+    <div class="dashboard-card">
 
-    <form method="POST">
-        {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-        <!-- Title -->
-        <div class="mb-3">
-            <label><strong>Assignment Title</strong></label><br>
-            <input type="text" name="title" class="form-control" placeholder="Enter title" required>
-        </div>
+            <!-- Title -->
+            <div class="mb-3">
+                <label><strong>Assignment Title</strong></label>
+                <input type="text" name="title" class="form-control" placeholder="Enter title" required>
+            </div>
 
-        <br>
+            <!-- Description -->
+            <div class="mb-3">
+                <label><strong>Description</strong></label>
+                <textarea name="description" class="form-control" rows="4" placeholder="Enter description"></textarea>
+            </div>
 
-        <!-- Description -->
-        <div class="mb-3">
-            <label><strong>Description</strong></label><br>
-            <textarea name="description" class="form-control" rows="4" placeholder="Enter description"></textarea>
-        </div>
+            <!-- Due Date -->
+            <div class="mb-3">
+                <label><strong>Due Date</strong></label>
+                <input type="date" name="due_date" class="form-control" required>
+            </div>
 
-        <br>
+            <!-- Buttons -->
+            <div style="display:flex; gap:10px; margin-top:20px;">
 
-        <!-- Due Date -->
-        <div class="mb-3">
-            <label><strong>Due Date</strong></label><br>
-            <input type="date" name="due_date" class="form-control" required>
-        </div>
+                <button type="submit" class="btn btn-success">
+                    ✅ Create Assignment
+                </button>
 
-        <br>
+                <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">
+                    ⬅ Back
+                </a>
 
-        <!-- Buttons -->
-        <button type="submit" class="btn btn-success">
-            ✅ Create Assignment
-        </button>
+            </div>
 
-        <a href="<a href="{% url 'teacher_dashboard' %}">">
-            <button type="button" class="btn btn-secondary">
-                ⬅ Back
-            </button>
-        </a>
+        </form>
 
-    </form>
+    </div>
 
 </div>
 

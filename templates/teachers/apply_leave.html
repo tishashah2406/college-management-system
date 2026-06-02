@@ -1,19 +1,55 @@
-{%extends 'base.html'%}
+{% extends 'base.html' %}
 {% block content %}
-<h2>Apply Leave</h2>
 
-<form method="POST">
-    {% csrf_token %}
+<div class="dashboard-page">
 
-    <label>Start Date:</label>
-    <input type="date" name="start_date" required><br><br>
+    <!-- Header -->
+    <div class="page-header">
+        <h2>📝 Apply for Leave</h2>
+        <p>Submit your leave request for approval</p>
+    </div>
 
-    <label>End Date:</label>
-    <input type="date" name="end_date" required><br><br>
+    <!-- Form Card -->
+    <div class="dashboard-card">
 
-    <label>Reason:</label><br>
-    <textarea name="reason" required></textarea><br><br>
+        <form method="POST">
+            {% csrf_token %}
 
-    <button type="submit">Apply</button>
-</form>
-{%endblock%}
+            <!-- Start Date -->
+            <div class="mb-3">
+                <label><strong>Start Date</strong></label>
+                <input type="date" name="start_date" class="form-control" required>
+            </div>
+
+            <!-- End Date -->
+            <div class="mb-3">
+                <label><strong>End Date</strong></label>
+                <input type="date" name="end_date" class="form-control" required>
+            </div>
+
+            <!-- Reason -->
+            <div class="mb-3">
+                <label><strong>Reason</strong></label>
+                <textarea name="reason" rows="4" class="form-control" placeholder="Write your reason..." required></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div style="display:flex; gap:10px; margin-top:20px;">
+
+                <button type="submit" class="btn btn-success">
+                    ✅ Apply Leave
+                </button>
+
+                <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">
+                    ⬅ Back
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

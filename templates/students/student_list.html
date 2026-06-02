@@ -23,7 +23,6 @@
 
 <button type="submit">Search</button>
 
-
 </form>
 
 <br>
@@ -36,7 +35,6 @@
         <th>Courses</th>
         <th>Actions</th>
     </tr>
-
 
 {% for student in students %}
 <tr>
@@ -66,30 +64,23 @@
     <a href="{% url 'student_dashboard_admin' student.id %}"
        class="action-icon view-icon"
        title="View">
-
-        <i class="bi bi-eye"></i>
-
+        <i class="bi bi-eye-fill"></i>
     </a>
 
     <a href="{% url 'student_update' student.id %}"
        class="action-icon edit-icon"
        title="Edit">
-
         <i class="bi bi-pencil-square"></i>
-
     </a>
 
     <a href="{% url 'student_delete' student.id %}"
        class="action-icon delete-icon"
        title="Delete"
        onclick="return confirm('Delete this student?');">
-
-        <i class="bi bi-trash"></i>
-
+        <i class="bi bi-trash-fill"></i>
     </a>
 
 </td>
-    </td>
 </tr>
 
 {% empty %}
@@ -97,7 +88,6 @@
     <td colspan="5" style="text-align:center;">No students available.</td>
 </tr>
 {% endfor %}
-
 
 </table>
 
