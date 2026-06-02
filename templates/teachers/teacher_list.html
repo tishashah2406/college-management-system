@@ -56,10 +56,33 @@
         <td>₹{{ teacher.salary }}</td>
 
         <td>
-           <a href="{% url 'teacher_dashboard' %}">Dashboard</a>|
-            <a href="{% url 'teacher_update' teacher.id %}">Edit</a> |
-            <a href="{% url 'teacher_delete' teacher.id %}">Delete</a>
-        </td>
+
+    <a href="{% url 'teacher_dashboard' %}"
+       class="action-icon view-icon"
+       title="Dashboard">
+
+        <i class="bi bi-speedometer2"></i>
+
+    </a>
+
+    <a href="{% url 'teacher_update' teacher.id %}"
+       class="action-icon edit-icon"
+       title="Edit">
+
+        <i class="bi bi-pencil-square"></i>
+
+    </a>
+
+    <a href="{% url 'teacher_delete' teacher.id %}"
+       class="action-icon delete-icon"
+       title="Delete"
+       onclick="return confirm('Delete this teacher?');">
+
+        <i class="bi bi-trash"></i>
+
+    </a>
+
+</td>
     {% endif %}
 </tr>
     {% empty %}

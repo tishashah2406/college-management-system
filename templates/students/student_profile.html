@@ -97,59 +97,76 @@
     <h2>👤 My Profile</h2>
 
     <!-- Profile Card -->
-    <div class="profile-card">
+    <div class="profile-cover">
 
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+    {% if student.profile_pic %}
+        <img src="{{ student.profile_pic.url }}"
+             id="preview"
+             class="profile-avatar">
+    {% else %}
+        <img src="{% static 'images/default.png' %}"
+             id="preview"
+             class="profile-avatar">
+    {% endif %}
 
-            {% if student.profile_pic %}
-                <img id="preview" src="{{ student.profile_pic.url }}" class="avatar">
-            {% else %}
-                <img id="preview" src="{% static 'images/default.png' %}" class="avatar">
-            {% endif %}
+</div>
 
-            <br>
+<div class="profile-card text-center">
 
-            <input type="file" name="profile_pic" id="fileInput" hidden>
+    <h2>{{ student.name }}</h2>
 
-            <button type="button" class="btn-modern"
-                    onclick="document.getElementById('fileInput').click()">
-                Change Picture
-            </button>
+    <p class="text-muted">
+        Student
+    </p>
 
-            <br><br>
+    <a href="{% url 'edit_student_profile' student.id %}"
+       class="btn btn-primary">
+        Edit Profile
+    </a>
 
-            <button type="submit" class="btn-modern">Save</button>
-        </form>
+</div>
 
         <!-- Info -->
-        <div class="info-section">
-            <p><strong>Name:</strong> {{ student.name }}</p>
-            <p><strong>Email:</strong> {{ student.user.email|default:"No Email" }}</p>
-            <p><strong>Age:</strong> {{ student.age|default:"N/A" }}</p>
+       <div class="row mt-4">
+
+    <div class="col-md-4">
+        <div class="info-box">
+            <strong>Email</strong><br>
+            {{ student.user.email }}
         </div>
-
-        <!-- Edit Button -->
-        <a href="{% url 'edit_student_profile' student.id %}">
-            <button class="btn-modern btn-secondary">Edit Profile</button>
-        </a>
-
     </div>
 
+    <div class="col-md-4">
+        <div class="info-box">
+            <strong>Age</strong><br>
+            {{ student.age }}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="info-box">
+            <strong>Courses</strong><br>
+            {{ courses|length }}
+        </div>
+    </div>
+
+</div>
     <!-- Courses -->
-    <div class="courses-card">
-        <h3>📚 Courses Enrolled</h3>
+    <div class="profile-card mt-4">
 
-        {% if courses %}
-            {% for course in courses %}
-                <div class="course-item">
-                    {{ course.name }}
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>No courses assigned</p>
-        {% endif %}
-    </div>
+    <h4>Enrolled Courses</h4>
+
+    {% for course in courses %}
+
+        <span class="course-badge">
+            {{ course.name }}
+        </span>
+
+    {% empty %}
+
+        <p>No courses enrolled.</p>
+
+    {% endfor %}
 
 </div>
 

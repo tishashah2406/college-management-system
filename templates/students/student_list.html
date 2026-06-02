@@ -62,12 +62,33 @@
     </td>
 
     <td>
-        <a href="{% url 'student_dashboard_admin' student.id %}">Dashboard</a> |
-        <a href="{% url 'student_update' student.id %}">Edit</a> |
-        <a href="{% url 'student_delete' student.id %}" 
-           onclick="return confirm('Are you sure you want to delete this student?');">
-           Delete
-        </a>
+
+    <a href="{% url 'student_dashboard_admin' student.id %}"
+       class="action-icon view-icon"
+       title="View">
+
+        <i class="bi bi-eye"></i>
+
+    </a>
+
+    <a href="{% url 'student_update' student.id %}"
+       class="action-icon edit-icon"
+       title="Edit">
+
+        <i class="bi bi-pencil-square"></i>
+
+    </a>
+
+    <a href="{% url 'student_delete' student.id %}"
+       class="action-icon delete-icon"
+       title="Delete"
+       onclick="return confirm('Delete this student?');">
+
+        <i class="bi bi-trash"></i>
+
+    </a>
+
+</td>
     </td>
 </tr>
 

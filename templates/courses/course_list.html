@@ -1,70 +1,223 @@
 {% extends 'home.html' %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
 
 {% block content %}
-<h2>All Courses</h2>
 
-<p>
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <h2 class="page-title">
+        Courses
+    </h2>
+
     {% if can_edit %}
-<a href="{% url 'add_course' %}">
-    <button>Add Course</button>
-</a>
-{% endif %}
-</p>
-
-<form method="GET" style="margin-top:10px;">
-    <input type="text" name="q" placeholder="Search by name or code" value="{{ query|default:'' }}" class="form-control" style="width:300px; display:inline-block;">
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
-
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Name</th>
-            <th>Code</th>
-            <th>Duration (months)</th>
-            <th>Fees (₹)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for course in courses %}
-        <tr>
-            <td>{{ course.name }}</td>
-            <td>{{ course.code }}</td>
-            <td>{{ course.duration }}</td>
-            <td>{{ course.fees }}</td>
-            <td>
-
-{% if is_student %}
-
-    {% if course in user.student.courses.all %}
-        <!-- ✅ Already enrolled -->
-        <form method="POST" action="{% url 'unenroll_course' course.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Unenroll</button>
-        </form>
-    {% else %}
-        <!-- ✅ Not enrolled -->
-        <form method="POST" action="{% url 'enroll_course' course.id %}" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-success">Enroll</button>
-        </form>
+    <a href="{% url 'add_course' %}" class="btn btn-primary add-btn">
+        + Add Course
+    </a>
     {% endif %}
-    
-{% elif can_edit %}
-    <a href="{% url 'course_dashboard' course.id %}">Dashboard</a> |
-    <a href="{% url 'edit_course' course.id %}">Edit</a> |
-    <a href="{% url 'course_delete' course.id %}">Delete</a>
 
-{% endif %}
+</div>
 
-</td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No courses available.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Course Statistics -->
+
+<div class="dashboard-card mb-4">
+
+    <small>Total Courses</small>
+
+    <h2>
+        {{ courses|length }}
+    </h2>
+
+</div>
+
+<!-- Search -->
+
+<div class="search-card">
+
+    <form method="GET">
+
+        <div class="row g-2">
+
+            <div class="col-md-10">
+
+                <input
+                    type="text"
+                    name="q"
+                    class="form-control"
+                    placeholder="Search by course name or code..."
+                    value="{{ query|default:'' }}">
+
+            </div>
+
+            <div class="col-md-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary w-100">
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+<!-- Courses Table -->
+
+<div class="table-card">
+
+    <table class="table table-hover align-middle">
+
+        <thead>
+
+            <tr>
+
+                <th>Name</th>
+                <th>Code</th>
+                <th>Duration</th>
+                <th>Fees</th>
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for course in courses %}
+
+            <tr>
+
+                <td>
+
+                    <strong>
+                        {{ course.name }}
+                    </strong>
+
+                </td>
+
+                <td>
+
+                    <span class="badge bg-secondary">
+                        {{ course.code }}
+                    </span>
+
+                </td>
+
+                <td>
+
+                    {{ course.duration }} Months
+
+                </td>
+
+                <td>
+
+                    ₹ {{ course.fees }}
+
+                </td>
+
+                <td>
+
+                    {% if is_student %}
+
+                        {% if course in user.student.courses.all %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'unenroll_course' course.id %}"
+                                style="display:inline;">
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm">
+
+                                    Unenroll
+
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'enroll_course' course.id %}"
+                                style="display:inline;">
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success btn-sm">
+
+                                    Enroll
+
+                                </button>
+
+                            </form>
+
+                        {% endif %}
+
+                    {% elif can_edit %}
+
+                        <a
+                            href="{% url 'course_dashboard' course.id %}"
+                            class="action-icon view-icon"
+                            title="Dashboard">
+
+                            <i class="bi bi-speedometer2"></i>
+
+                        </a>
+
+                        <a
+                            href="{% url 'edit_course' course.id %}"
+                            class="action-icon edit-icon"
+                            title="Edit">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                        </a>
+
+                        <a
+                            href="{% url 'course_delete' course.id %}"
+                            class="action-icon delete-icon"
+                            title="Delete"
+                            onclick="return confirm('Delete this course?');">
+
+                            <i class="bi bi-trash"></i>
+
+                        </a>
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% empty %}
+
+            <tr>
+
+                <td colspan="5" class="text-center text-muted">
+
+                    No courses available.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
 {% endblock %}

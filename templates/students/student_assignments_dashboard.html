@@ -2,90 +2,116 @@
 
 {% block content %}
 
-<style>
-    h2 {
-        color: #0f172a;
-        margin-bottom: 20px;
-    }
+<div class="container-fluid">
 
-    h3 {
-        color: #334155;
-        margin-bottom: 15px;
-    }
+    <!-- Header -->
 
-    /* Grid layout */
-    .course-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    /* Card style */
-    .course-card {
-        background: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        transition: 0.3s;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+        <div>
 
-    .course-card:hover {
-        transform: translateY(-4px);
-    }
+            <h2 class="page-title">
+                Assignments Dashboard
+            </h2>
 
-    .course-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1e293b;
-        margin-bottom: 15px;
-    }
+            <p class="text-muted">
+                View assignments for your enrolled courses
+            </p>
 
-    /* Button */
-    .btn-modern {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: 0.3s;
-        width: fit-content;
-    }
-
-    .btn-modern:hover {
-        background: #2980b9;
-    }
-
-    /* Empty message */
-    .empty-msg {
-        color: #64748b;
-    }
-</style>
-
-<h2>📘 My Assignments Dashboard</h2>
-
-<h3>My Courses</h3>
-
-<div class="course-grid">
-
-{% for course in courses %}
-    <div class="course-card">
-        <div class="course-name">
-            📚 {{ course.name }}
         </div>
 
-        <a href="{% url 'view_assignments' course.id %}">
-            <button class="btn-modern">View Assignments</button>
+        <a href="{% url 'student_dashboard' %}"
+           class="btn btn-primary">
+
+            <i class="bi bi-arrow-left"></i>
+            Back
+
         </a>
+
     </div>
 
-{% empty %}
-    <p class="empty-msg">No courses enrolled</p>
-{% endfor %}
+    <!-- Statistics -->
+
+    <div class="dashboard-card mb-4">
+
+        <small>Total Enrolled Courses</small>
+
+        <h2>
+            {{ courses|length }}
+        </h2>
+
+    </div>
+
+    <!-- Course Cards -->
+
+    <div class="row">
+
+        {% for course in courses %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center mb-3">
+
+                        <i class="bi bi-book text-primary fs-3 me-3"></i>
+
+                        <div>
+
+                            <h5 class="mb-0">
+                                {{ course.name }}
+                            </h5>
+
+                            <small class="text-muted">
+                                Course Assignments
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                    <a href="{% url 'view_assignments' course.id %}"
+                       class="btn btn-primary w-100">
+
+                        <i class="bi bi-file-earmark-text"></i>
+
+                        View Assignments
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-12">
+
+            <div class="card text-center p-5">
+
+                <i class="bi bi-book fs-1 text-muted"></i>
+
+                <h4 class="mt-3">
+                    No Courses Enrolled
+                </h4>
+
+                <p class="text-muted">
+
+                    You are not enrolled in any courses yet.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
 
 </div>
 

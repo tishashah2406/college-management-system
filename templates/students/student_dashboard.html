@@ -1,240 +1,367 @@
 {% extends 'home.html' %}
+{% load static %}
 
 {% block content %}
 
-<style>
-.dashboard-container{
-    padding:30px;
-    background:#f8fafc;
-    min-height:100vh;
-}
+<div class="container-fluid">
 
-.dashboard-title{
-    font-size:32px;
-    font-weight:700;
-    color:#0f172a;
-    margin-bottom:25px;
-}
+    <!-- Header -->
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    margin-bottom:30px;
-}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-.card{
-    background:#fff;
-    border-radius:16px;
-    padding:25px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
+        <div>
 
-.card h4{
-    color:#64748b;
-    margin-bottom:10px;
-}
+            <h2 class="page-title">
+                Student Dashboard
+            </h2>
 
-.card p{
-    font-size:22px;
-    font-weight:700;
-    color:#0f172a;
-}
-
-.section{
-    background:white;
-    border-radius:16px;
-    padding:25px;
-    margin-bottom:25px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-.section h3{
-    margin-bottom:20px;
-    color:#0f172a;
-}
-
-.course-list{
-    list-style:none;
-    padding:0;
-}
-
-.course-list li{
-    padding:12px;
-    margin-bottom:10px;
-    background:#f1f5f9;
-    border-radius:10px;
-}
-
-.progress-item{
-    margin-bottom:20px;
-}
-
-.progress-header{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:8px;
-}
-
-.progress-bar{
-    height:10px;
-    background:#e2e8f0;
-    border-radius:10px;
-    overflow:hidden;
-}
-
-.progress-fill{
-    height:100%;
-    background:linear-gradient(90deg,#4f46e5,#7c3aed);
-}
-
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-
-table th{
-    background:#4f46e5;
-    color:white;
-    padding:12px;
-}
-
-table td{
-    padding:12px;
-    border-bottom:1px solid #e5e7eb;
-}
-
-.back-btn{
-    display:inline-block;
-    padding:12px 20px;
-    background:#4f46e5;
-    color:white;
-    text-decoration:none;
-    border-radius:10px;
-    font-weight:600;
-}
-
-.back-btn:hover{
-    background:#4338ca;
-    color:white;
-}
-
-.student-info{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-}
-</style>
-
-<div class="dashboard-container">
-
-    <h2 class="dashboard-title">
-        🎓 Student Dashboard
-    </h2>
-
-    <!-- Student Info Cards -->
-    <div class="cards">
-
-        <div class="card">
-            <h4>Name</h4>
-            <p>{{ student.name }}</p>
-        </div>
-
-        <div class="card">
-            <h4>Email</h4>
-            <p style="font-size:16px">
-                {{ student.user.email }}
+            <p class="text-muted">
+                Complete overview of student information and performance
             </p>
+
         </div>
 
-        <div class="card">
-            <h4>Age</h4>
-            <p>{{ student.age }}</p>
+        <a href="{% url 'student_list' %}"
+           class="btn btn-primary">
+
+            <i class="bi bi-arrow-left"></i>
+            Back
+
+        </a>
+
+    </div>
+
+    <!-- Student Profile -->
+
+    <div class="card mb-4">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-2 text-center">
+
+                <img
+                    src="{% static 'images/university.jpg' %}"
+                    class="profile-img"
+                    alt="Student">
+
+            </div>
+
+            <div class="col-md-10">
+
+                <h3 class="mb-2">
+                    {{ student.name }}
+                </h3>
+
+                <p class="text-muted mb-1">
+                    <i class="bi bi-envelope"></i>
+                    {{ student.user.email }}
+                </p>
+
+                <p class="text-muted mb-0">
+                    <i class="bi bi-person"></i>
+                    Age: {{ student.age }}
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <h4>Courses</h4>
-            <p>{{ courses|length }}</p>
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+
+            <div class="dashboard-card">
+
+                <small>Total Courses</small>
+
+                <h2>
+                    {{ courses|length }}
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="dashboard-card">
+
+                <small>Total Teachers</small>
+
+                <h2>
+                    {{ teachers|length }}
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="dashboard-card">
+
+                <small>Progress Records</small>
+
+                <h2>
+                    {{ progress_list|length }}
+                </h2>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="dashboard-card">
+
+                <small>Student Age</small>
+
+                <h2>
+                    {{ student.age }}
+                </h2>
+
+            </div>
+
         </div>
 
     </div>
 
     <!-- Courses -->
-    <div class="section">
 
-        <h3>📚 Enrolled Courses</h3>
+    <div class="card mb-4">
 
-        <ul class="course-list">
-            {% for course in courses %}
-                <li>{{ course.name }}</li>
-            {% empty %}
-                <li>No courses enrolled</li>
-            {% endfor %}
-        </ul>
+        <h4 class="mb-3">
+
+            <i class="bi bi-book"></i>
+
+            Enrolled Courses
+
+        </h4>
+
+        {% for course in courses %}
+
+            <span class="badge bg-primary me-2 mb-2">
+
+                {{ course.name }}
+
+            </span>
+
+        {% empty %}
+
+            <p class="text-muted">
+
+                No courses enrolled.
+
+            </p>
+
+        {% endfor %}
 
     </div>
 
-    <!-- Progress -->
-    <div class="section">
+    <!-- Progress Chart -->
 
-        <h3>📈 Course Progress</h3>
+    <div class="card mb-4">
+
+        <h4 class="mb-4">
+
+            <i class="bi bi-bar-chart"></i>
+
+            Course Progress
+
+        </h4>
+
+        <canvas id="progressChart"></canvas>
+
+    </div>
+
+    <!-- Progress Details -->
+
+    <div class="card mb-4">
+
+        <h4 class="mb-3">
+
+            Progress Details
+
+        </h4>
 
         {% for p in progress_list %}
 
-        <div class="progress-item">
+        <div class="mb-3">
 
-            <div class="progress-header">
-                <span>{{ p.course.name }}</span>
-                <span>{{ p.progress }}%</span>
+            <div class="d-flex justify-content-between">
+
+                <strong>
+
+                    {{ p.course.name }}
+
+                </strong>
+
+                <span>
+
+                    {{ p.progress }}%
+
+                </span>
+
             </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill"
-                     style="width:{{ p.progress }}%;">
+            <div class="progress">
+
+                <div
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width:{{ p.progress }}%;">
+
                 </div>
+
             </div>
 
         </div>
 
         {% empty %}
-            <p>No progress available.</p>
+
+            <p class="text-muted">
+
+                No progress available.
+
+            </p>
+
         {% endfor %}
 
     </div>
 
     <!-- Teachers -->
-    <div class="section">
 
-        <h3>👨‍🏫 Course Teachers</h3>
+    <div class="table-card">
 
-        <table>
+        <h4 class="mb-3">
 
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
+            <i class="bi bi-mortarboard"></i>
 
-            {% for teacher in teachers %}
-            <tr>
-                <td>{{ teacher.name }}</td>
-                <td>{{ teacher.email }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2">
-                    No teachers found
-                </td>
-            </tr>
-            {% endfor %}
+            Course Teachers
+
+        </h4>
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>Name</th>
+                    <th>Email</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for teacher in teachers %}
+
+                <tr>
+
+                    <td>
+
+                        {{ teacher.name }}
+
+                    </td>
+
+                    <td>
+
+                        {{ teacher.email }}
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="2">
+
+                        No teachers found
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
 
         </table>
 
     </div>
 
-    <a href="{% url 'student_list' %}" class="back-btn">
-        ← Back
-    </a>
-
 </div>
+
+<!-- Chart -->
+
+<script>
+
+const chartElement =
+document.getElementById('progressChart');
+
+if(chartElement){
+
+new Chart(chartElement,{
+
+    type:'bar',
+
+    data:{
+
+        labels:[
+
+            {% for p in progress_list %}
+            '{{ p.course.name }}',
+            {% endfor %}
+
+        ],
+
+        datasets:[{
+
+            label:'Progress (%)',
+
+            data:[
+
+                {% for p in progress_list %}
+                {{ p.progress }},
+                {% endfor %}
+
+            ],
+
+            borderWidth:1
+
+        }]
+
+    },
+
+    options:{
+
+        responsive:true,
+
+        scales:{
+
+            y:{
+
+                beginAtZero:true,
+                max:100
+
+            }
+
+        }
+
+    }
+
+});
+
+}
+
+</script>
 
 {% endblock %}
