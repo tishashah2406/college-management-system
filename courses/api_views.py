@@ -110,6 +110,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         serializer = NoteSerializer(notes, many=True)
 
         return Response(serializer.data)
+
     # ===================== ADDNOTE =====================
 
     @action(detail=True, methods=['post'])
