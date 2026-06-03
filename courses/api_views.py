@@ -81,6 +81,7 @@ class CourseViewSet(viewsets.ModelViewSet):
                 {"error": "Progress not found"},
                 status=404
             )
+        
     # ===================== UPDATE PROGRESS =====================
 
     @action(detail=True, methods=['post'])
@@ -174,6 +175,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response(serializer.data)
+
     
     @action(detail=True, methods=['get'])
     def analytics(self, request, pk=None):

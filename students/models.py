@@ -91,5 +91,6 @@ class Submission(models.Model):
     submitted_at = models.DateTimeField(auto_now_add=True)
     grade = models.IntegerField(null=True, blank=True)
 
+
     class Meta:
         db_table = 'students_submission'   

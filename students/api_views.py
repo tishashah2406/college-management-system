@@ -79,7 +79,7 @@ class StudentViewSet(ModelViewSet):
                 many=True
             ).data,
         })
-    
+
     # ================= SUBMIT ASSIGNMENT =================
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def submit_assignment(self, request):
@@ -139,6 +139,7 @@ class StudentViewSet(ModelViewSet):
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def progress_report(self,request):
         student = Student.objects.filter(user=request.user).first()
+
 
         if not student:
             return Response({"error":"student not student"},status=404)

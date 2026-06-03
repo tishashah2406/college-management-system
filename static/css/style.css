@@ -11,7 +11,7 @@
     --danger:#ef4444;
 
     --bg:#f8fafc;
-    --card:#ffffff;
+    --card:#0f0f0f;
 
     --text:#111827;
     --text-light:#6b7280;
@@ -74,7 +74,7 @@ body{
 ========================= */
 
 .dashboard-card{
-    background:white;
+    background:rgb(11, 11, 11);
     border-radius:16px;
     padding:25px;
     box-shadow:var(--shadow);
@@ -94,7 +94,7 @@ body{
 ========================= */
 
 .table-card{
-    background:white;
+    background:rgb(24, 24, 24);
     border-radius:16px;
     box-shadow:var(--shadow);
     padding:20px;
@@ -218,7 +218,7 @@ body{
 .stats-box,
 .vision-card,
 .facility-card{
-    background:white;
+    background:rgb(19,19,19);
     border-radius:20px;
     box-shadow:var(--shadow);
     transition:.3s;
@@ -240,7 +240,7 @@ body{
 }
 
 .stats-box h1{
-    color:var(--primary);
+    color:#e2e8f0;
     font-size:45px;
 }
 
@@ -255,26 +255,24 @@ body{
 
 .facility-card:hover{
     background:var(--primary);
-    color:white;
+    color:rgb(9, 9, 9);
 }
 
 /* =========================
    CTA
 ========================= */
-
 .cta-box{
     background:linear-gradient(
         135deg,
-        #6366f1,
-        #4338ca
+        #2563eb,
+        #4f46e5
     );
-
     color:white;
     padding:60px;
     border-radius:25px;
     text-align:center;
+    box-shadow:0 10px 30px rgba(79,70,229,.25);
 }
-
 /* =========================
    DARK MODE
 ========================= */
@@ -367,7 +365,7 @@ body.dark textarea{
 }
 
 .stat-card{
-    background:white;
+    background:rgb(10, 10, 10);
     border-radius:16px;
     padding:20px;
     text-align:center;
@@ -379,15 +377,15 @@ body.dark textarea{
 
 .page-header h2{
     font-weight:700;
-    color:#0f172a;
+    color:#f4f4f5;
 }
 
 .page-header p{
-    color:#64748b;
+    color:#f7f7f8;
 }
 
 .dashboard-card{
-    background:#fff;
+    background:#050505;
     border-radius:20px;
     padding:25px;
     margin-bottom:25px;
@@ -402,7 +400,7 @@ body.dark textarea{
 }
 
 .stat-card{
-    background:white;
+    background:rgb(15, 14, 14);
     padding:25px;
     border-radius:18px;
     text-align:center;
@@ -477,7 +475,7 @@ body.dark textarea{
 }
 
 .dashboard-card{
-    background:white;
+    background:rgb(6, 6, 6);
     border-radius:20px;
     padding:25px;
     margin-bottom:25px;
@@ -492,7 +490,7 @@ body.dark textarea{
 }
 
 .stat-card{
-    background:white;
+    background:rgb(17, 16, 16);
     padding:25px;
     border-radius:16px;
     text-align:center;
@@ -543,7 +541,7 @@ body.dark textarea{
 }
 
 .stat-card{
-    background:white;
+    background:rgb(16, 15, 15);
     padding:25px;
     border-radius:16px;
     text-align:center;
@@ -608,7 +606,7 @@ body.dark textarea{
 }
 
 .student-page{
-background:white;
+background:rgb(16, 15, 15);
 padding:25px;
 border-radius:16px;
 box-shadow:0 4px 15px rgba(0,0,0,.08);
@@ -718,7 +716,7 @@ color:#ef4444;
 }
 
 .stat-card{
-    background:#ffffff;
+    background:#191919;
     padding:25px;
     border-radius:18px;
     text-align:center;
