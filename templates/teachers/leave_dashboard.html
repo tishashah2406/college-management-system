@@ -1,0 +1,44 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>📝 Leave Dashboard</h2>
+<a href="/teachers/leave/apply/" class="btn btn-success">
+            📝 Apply Leave
+        </a>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for leave in leaves %}
+            <tr>
+                <td>{{ leave.start_date }}</td>
+                <td>{{ leave.end_date }}</td>
+                <td>{{ leave.reason }}</td>
+                <td>{{ leave.status }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">No leave records found.</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

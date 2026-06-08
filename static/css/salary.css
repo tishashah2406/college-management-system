@@ -6,7 +6,7 @@
 }
 
 .salary-card .card-body{
-    color:#ffffff;
+    color:#1e293b;
 }
 
 .salary-card .card-header{
@@ -18,6 +18,7 @@
 
 .salary-card h5,
 .salary-card h6,
+.salary-card h4,
 .salary-card p,
 .salary-card strong{
     color:#ffffff;
@@ -33,10 +34,11 @@
 }
 
 .salary-card td{
-    color:#e5e7eb;
+    color:#080808;
 }
 
 .text-success{
     font-weight:bold;
     font-size:1.3rem;
 }
+

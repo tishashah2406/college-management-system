@@ -777,38 +777,3 @@ color:#ef4444;
         grid-template-columns:1fr;
     }
 }
-
-.salary-info-card{
-    background:#111827;
-    color:white;
-    border-radius:16px;
-    padding:25px;
-}
-
-.salary-summary-card{
-    background:#111827;
-    color:white;
-    border-radius:16px;
-    padding:25px;
-}
-
-.salary-summary-card h4{
-    color:#22c55e;
-    font-weight:700;
-}
-
-.card{
-    background:#111827 !important;
-    color:white !important;
-}
-
-.card h5,
-.card p,
-.card strong{
-    color:white !important;
-}
-
-.card-header{
-    background:#1e293b !important;
-    color:white !important;
-}

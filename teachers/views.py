@@ -750,7 +750,7 @@ def apply_leave(request):
             reason=reason
         )
 
-        return redirect('teacher_dashboard')  
+        return redirect('leave_dashboard')  
 
     return render(request, 'teachers/apply_leave.html')
 
@@ -761,7 +761,6 @@ from django.utils.timezone import now
 from .models import Teacher, TeacherSalary
 from .services import calculate_teacher_salary
 from django.utils.timezone import now
-
 
 def save_teacher_salary(teacher, salary_data):
     current_month = now().date().replace(day=1)
@@ -807,5 +806,21 @@ def salary_dashboard(request):
             'teacher': teacher,
             'salary': salary,
             'salaries': salaries,
+        }
+    )
+
+@login_required
+def leave_dashboard(request):
+    teacher = Teacher.objects.get(user=request.user)
+
+    leaves = TeacherLeave.objects.filter(
+        teacher=teacher
+    ).order_by('-applied_at')
+
+    return render(
+        request,
+        'teachers/leave_dashboard.html',
+        {
+            'leaves': leaves
         }
     )
