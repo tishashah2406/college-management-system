@@ -35,11 +35,41 @@ class TeacherLeave(models.Model):
 class TeacherSalary(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
-    month = models.DateField()  # e.g. 2026-04-01
+    month = models.DateField()
 
     base_salary = models.DecimalField(max_digits=10, decimal_places=2)
-    total_leave_days = models.IntegerField()
-    deduction = models.DecimalField(max_digits=10, decimal_places=2)
+
+    total_leave_days = models.IntegerField(default=0)
+    deduction = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
     final_salary = models.DecimalField(max_digits=10, decimal_places=2)
 
+    payment_status = models.CharField(
+        max_length=10,
+        choices=[
+            ('Pending', 'Pending'),
+            ('Paid', 'Paid')
+        ],
+        default='Pending'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.teacher.name} - {self.month.strftime('%B %Y')}"
+    
+class TeacherAttendance(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    date = models.DateField()
+
+    status = models.CharField(
+        max_length=10,
+        choices=[
+            ('Present', 'Present'),
+            ('Absent', 'Absent')
+        ]
+    )
+
+class Holiday(models.Model):
+    name = models.CharField(max_length=100)
+    date = models.DateField()

@@ -140,7 +140,6 @@ class StudentViewSet(ModelViewSet):
     def progress_report(self,request):
         student = Student.objects.filter(user=request.user).first()
 
-
         if not student:
             return Response({"error":"student not student"},status=404)
         

@@ -11,10 +11,10 @@
     --danger:#ef4444;
 
     --bg:#f8fafc;
-    --card:#0f0f0f;
+    --card:#fdfcfc;
 
-    --text:#111827;
-    --text-light:#6b7280;
+    --text:#f6f6f8;
+    --text-light:#fdfeff;
 
     --border:#e5e7eb;
     --shadow:0 4px 12px rgba(0,0,0,.06);
@@ -74,17 +74,20 @@ body{
 ========================= */
 
 .dashboard-card{
-    background:rgb(11, 11, 11);
+    background:#0f0f0f;
+    color:#ffffff;
     border-radius:16px;
     padding:25px;
-    box-shadow:var(--shadow);
+    box-shadow:0 4px 15px rgba(0,0,0,.4);
 }
 
 .dashboard-card small{
-    color:var(--text-light);
+    color:#cbd5e1;
+    font-size:14px;
 }
 
 .dashboard-card h2{
+    color:#ffffff;
     font-weight:700;
     margin-top:10px;
 }
@@ -94,7 +97,7 @@ body{
 ========================= */
 
 .table-card{
-    background:rgb(24, 24, 24);
+    background:rgb(24, 23, 23);
     border-radius:16px;
     box-shadow:var(--shadow);
     padding:20px;
@@ -111,7 +114,7 @@ body{
 }
 
 .table tbody tr:hover{
-    background:#f9fafb;
+    background:#0e0e0e;
 }
 
 /* =========================
@@ -261,18 +264,20 @@ body{
 /* =========================
    CTA
 ========================= */
+
 .cta-box{
     background:linear-gradient(
         135deg,
-        #2563eb,
-        #4f46e5
+        #6366f1,
+        #4338ca
     );
+
     color:white;
     padding:60px;
     border-radius:25px;
     text-align:center;
-    box-shadow:0 10px 30px rgba(79,70,229,.25);
 }
+
 /* =========================
    DARK MODE
 ========================= */
@@ -441,7 +446,7 @@ body.dark textarea{
 }
 
 .modern-table th{
-    background:#1e293b;
+    background:#ededef;
     color:white;
     padding:15px;
 }
@@ -471,7 +476,7 @@ body.dark textarea{
 }
 
 .page-header p{
-    color:#64748b;
+    color:#f5f7fa;
 }
 
 .dashboard-card{
@@ -771,4 +776,39 @@ color:#ef4444;
     .stats-grid{
         grid-template-columns:1fr;
     }
+}
+
+.salary-info-card{
+    background:#111827;
+    color:white;
+    border-radius:16px;
+    padding:25px;
+}
+
+.salary-summary-card{
+    background:#111827;
+    color:white;
+    border-radius:16px;
+    padding:25px;
+}
+
+.salary-summary-card h4{
+    color:#22c55e;
+    font-weight:700;
+}
+
+.card{
+    background:#111827 !important;
+    color:white !important;
+}
+
+.card h5,
+.card p,
+.card strong{
+    color:white !important;
+}
+
+.card-header{
+    background:#1e293b !important;
+    color:white !important;
 }

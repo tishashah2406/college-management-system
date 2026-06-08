@@ -74,6 +74,26 @@
 
         </div>
 
+        <div class="row">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Paid Leave</h6>
+                <h4>{{ salary.paid_leave_days }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h6>Unpaid Leave</h6>
+                <h4>{{ salary.unpaid_leave_days }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
         <br>
 
         <a href="{% url 'enroll_student' teacher.id %}" class="btn btn-primary">
@@ -138,8 +158,6 @@
                 <div class="course-card">
 
                     <h5>{{ course.name }}</h5>
-
-                    
 
                 </div>
 

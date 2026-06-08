@@ -1,0 +1,157 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/salary.css' %}">
+
+<div class="container mt-4">
+
+    <h2 class="salary-title">
+        💰 Salary Dashboard
+    </h2>
+
+    <!-- Teacher Information -->
+
+    <div class="card salary-card mb-4 shadow-sm">
+
+        <div class="card-body">
+
+            <h5>{{ teacher.name }}</h5>
+
+            <p>
+                <strong>Email:</strong>
+                {{ teacher.email }}
+            </p>
+
+            <p>
+                <strong>Current Salary:</strong>
+                ₹{{ teacher.salary }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Current Salary Summary -->
+
+    <div class="card salary-card mb-4 shadow-sm">
+
+        <div class="card-header">
+            Current Salary Summary
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3">
+                    <h6>Base Salary</h6>
+                    <h4>₹{{ salary.base_salary }}</h4>
+                </div>
+
+                <div class="col-md-3">
+                    <h6>Leave Days</h6>
+                    <h4>{{ salary.total_leave_days }}</h4>
+                </div>
+
+                <div class="col-md-3">
+                    <h6>Deduction</h6>
+                    <h4>₹{{ salary.deduction }}</h4>
+                </div>
+
+                <div class="col-md-3">
+                    <h6>Final Salary</h6>
+                    <h4 class="salary-final">
+                        ₹{{ salary.final_salary }}
+                    </h4>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Salary History -->
+
+    <div class="card salary-card shadow-sm">
+
+        <div class="card-header">
+            Salary History
+        </div>
+
+        <div class="card-body">
+
+            <table class="table salary-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Month</th>
+                        <th>Base Salary</th>
+                        <th>Leave Days</th>
+                        <th>Deduction</th>
+                        <th>Final Salary</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for record in salaries %}
+
+                    <tr>
+
+                        <td>
+                            {{ record.month|date:"F Y" }}
+                        </td>
+
+                        <td>
+                            ₹{{ record.base_salary }}
+                        </td>
+
+                        <td>
+                            {{ record.total_leave_days }}
+                        </td>
+
+                        <td>
+                            ₹{{ record.deduction }}
+                        </td>
+
+                        <td>
+                            ₹{{ record.final_salary }}
+                        </td>
+
+                        <td>
+                            <span class="badge bg-success">
+                                Paid
+                            </span>
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center">
+                            No salary records found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

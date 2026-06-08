@@ -1,0 +1,42 @@
+.salary-card{
+    background:#111827;
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+}
+
+.salary-card .card-body{
+    color:#ffffff;
+}
+
+.salary-card .card-header{
+    background:#1e293b;
+    color:#ffffff;
+    font-weight:600;
+    border-bottom:1px solid #374151;
+}
+
+.salary-card h5,
+.salary-card h6,
+.salary-card p,
+.salary-card strong{
+    color:#ffffff;
+}
+
+.salary-card table{
+    color:#ffffff;
+}
+
+.salary-card th{
+    background:#1e293b;
+    color:#ffffff;
+}
+
+.salary-card td{
+    color:#e5e7eb;
+}
+
+.text-success{
+    font-weight:bold;
+    font-size:1.3rem;
+}

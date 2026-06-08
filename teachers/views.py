@@ -756,14 +756,56 @@ def apply_leave(request):
 
 from .models import TeacherSalary
 from django.utils.timezone import now
+from django.utils.timezone import now
+
+from .models import Teacher, TeacherSalary
+from .services import calculate_teacher_salary
+from django.utils.timezone import now
+
 
 def save_teacher_salary(teacher, salary_data):
-    TeacherSalary.objects.create(
-        teacher=teacher,
-        month=now().date().replace(day=1),
+    current_month = now().date().replace(day=1)
 
-        base_salary=salary_data["base_salary"],
-        total_leave_days=salary_data["total_leave_days"],
-        deduction=salary_data["deduction"],
-        final_salary=salary_data["final_salary"],
+    TeacherSalary.objects.update_or_create(
+        teacher=teacher,
+        month=current_month,
+        defaults={
+            'base_salary': salary_data["base_salary"],
+            'total_leave_days': salary_data["total_leave_days"],
+            'deduction': salary_data["deduction"],
+            'final_salary': salary_data["final_salary"],
+        }
+    )
+    
+@login_required
+def salary_dashboard(request):
+
+    teacher = Teacher.objects.get(
+        user=request.user
+    )
+
+    # Calculate current salary
+    salary = calculate_teacher_salary(
+        teacher
+    )
+
+    # Save current month salary
+    save_teacher_salary(
+        teacher,
+        salary
+    )
+
+    # Salary history
+    salaries = TeacherSalary.objects.filter(
+        teacher=teacher
+    ).order_by('-month')
+
+    return render(
+        request,
+        'teachers/salary_dashboard.html',
+        {
+            'teacher': teacher,
+            'salary': salary,
+            'salaries': salaries,
+        }
     )
