@@ -110,7 +110,7 @@ from django.contrib import messages
 def teacher_dashboard(request):
 
     # Check Teacher Group
-    if not request.user.groups.filter(
+    if not  request.user.groups.filter(
         name='Teacher'
     ).exists():
 
@@ -240,13 +240,18 @@ def edit_teacher_profile(request, teacher_id):
         if salary:
             teacher.salary = float(salary)
 
-        teacher.save()  
+        teacher.save() 
+
+        phone = request.POST.get("phone")
+        teacher.phone = phone
+        teacher.save()
 
         # update courses (ManyToMany)
         course_ids = request.POST.getlist('courses')
         teacher.courses.set(course_ids)   #  IMPORTANT
 
         return redirect('teacher_dashboard')
+    
     return render(request, 'teachers/edit_teacher_profile.html', {
         'teacher': teacher,
         'courses': courses
@@ -470,6 +475,7 @@ def get_students_by_course(request):
     ]
 
     return JsonResponse({'students': data})
+
 from datetime import datetime
 
 @login_required
@@ -549,6 +555,7 @@ def monthly_attendance(request):
             'lowest_attendance': lowest_attendance,
         }
     )
+
 @login_required
 def create_assignment(request, course_id):
     teacher = request.user.teacher
@@ -589,7 +596,6 @@ def grade_submissions(request,assignment_id):
                 'assignment':assignment,
                 'submissions':submissions
             })
-
 
 @login_required
 def grade_assignment(request, assignment_id):

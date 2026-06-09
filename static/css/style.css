@@ -11,7 +11,7 @@
     --danger:#ef4444;
 
     --bg:#f8fafc;
-    --card:#fdfcfc;
+    --card:#1a293b;
 
     --text:#f6f6f8;
     --text-light:#fdfeff;
@@ -108,7 +108,7 @@ body{
 }
 
 .table thead th{
-    color:var(--text-light);
+    color:#1a293b;
     font-weight:600;
     border-bottom:2px solid var(--border);
 }
@@ -172,7 +172,7 @@ body{
 ========================= */
 
 .search-card{
-    background:white;
+    background:#1a293b;
     padding:20px;
     border-radius:16px;
     box-shadow:var(--shadow);
@@ -446,7 +446,7 @@ body.dark textarea{
 }
 
 .modern-table th{
-    background:#ededef;
+    background:#1a293b;
     color:white;
     padding:15px;
 }
