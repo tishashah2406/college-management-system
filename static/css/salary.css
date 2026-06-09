@@ -3,42 +3,114 @@
     color:#ffffff;
     border:none;
     border-radius:16px;
-}
-
-.salary-card .card-body{
-    color:#1e293b;
+    box-shadow:0 4px 15px rgba(0,0,0,.3);
+    overflow:hidden;
 }
 
 .salary-card .card-header{
-    background:#1e293b;
+    background:#1f2937;
     color:#ffffff;
     font-weight:600;
     border-bottom:1px solid #374151;
+    padding:15px 20px;
 }
 
+.salary-card .card-body{
+    background:#111827;
+    color:#ffffff;
+    padding:20px;
+}
+
+/* All text */
+.salary-card h1,
+.salary-card h2,
+.salary-card h3,
+.salary-card h4,
 .salary-card h5,
 .salary-card h6,
-.salary-card h4,
 .salary-card p,
-.salary-card strong{
+.salary-card span,
+.salary-card strong,
+.salary-card label{
     color:#ffffff;
 }
 
+/* Table */
 .salary-card table{
+    width:100%;
     color:#ffffff;
+    border-collapse:collapse;
 }
 
-.salary-card th{
-    background:#1e293b;
+.salary-card thead th{
+    background:#1f2937;
     color:#ffffff;
+    padding:12px;
+    border-bottom:1px solid #374151;
 }
 
-.salary-card td{
-    color:#080808;
+.salary-card tbody td{
+    color:#1f2937;
+    padding:12px;
+    border-bottom:1px solid #374151;
 }
 
+.salary-card tbody tr:hover{
+    background:#1f2937;
+}
+
+/* Form Controls */
+.salary-card input,
+.salary-card select,
+.salary-card textarea{
+    background:#1f2937;
+    color:#ffffff;
+    border:1px solid #374151;
+}
+
+.salary-card input:focus,
+.salary-card select:focus,
+.salary-card textarea:focus{
+    background:#1f2937;
+    color:#ffffff;
+    border-color:#6366f1;
+    box-shadow:none;
+}
+
+/* Amount Display */
+.salary-amount{
+    color:#22c55e;
+    font-size:2rem;
+    font-weight:700;
+}
+
+/* Status Colors */
 .text-success{
-    font-weight:bold;
-    font-size:1.3rem;
+    color:#22c55e !important;
+    font-weight:700;
 }
 
+.text-danger{
+    color:#ef4444 !important;
+    font-weight:700;
+}
+
+.text-warning{
+    color:#f59e0b !important;
+    font-weight:700;
+}
+
+.text-primary{
+    color:#3b82f6 !important;
+    font-weight:700;
+}
+
+/* Buttons */
+.salary-card .btn-primary{
+    background:#6366f1;
+    border:none;
+}
+
+.salary-card .btn-primary:hover{
+    background:#4f46e5;
+}

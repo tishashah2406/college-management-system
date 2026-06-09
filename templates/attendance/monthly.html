@@ -63,6 +63,51 @@
         </div>
 
     </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <canvas id="attendanceChart"></canvas>
+    </div>
+</div>
+
+{{ labels|json_script:"student-labels" }}
+{{ percentages|json_script:"attendance-percentages" }}
+
+<script>
+const labels = JSON.parse(
+    document.getElementById('student-labels').textContent
+);
+
+const percentages = JSON.parse(
+    document.getElementById('attendance-percentages').textContent
+);
+
+new Chart(
+    document.getElementById('attendanceChart'),
+    {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Attendance %',
+                data: percentages ,
+                barThickness: 25
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            }
+        }
+    }
+);
+</script>
 
     <!-- Table -->
     <div class="dashboard-card">

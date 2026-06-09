@@ -542,19 +542,23 @@ def monthly_attendance(request):
         if percentages else 0
     )
 
-    return render(
-        request,
-        'attendance/monthly.html',
-        {
-            'data': data,
-            'month_input': month_input,
+    labels = [d['student'] for d in data]
+    percentages = [d['percentage'] for d in data]
 
-            # Statistics
-            'avg_attendance': avg_attendance,
-            'highest_attendance': highest_attendance,
-            'lowest_attendance': lowest_attendance,
-        }
-    )
+    return render(
+    request,
+    'attendance/monthly.html',
+    {
+        'data': data,
+        'month_input': month_input,
+        'avg_attendance': avg_attendance,
+        'highest_attendance': highest_attendance,
+        'lowest_attendance': lowest_attendance,
+
+        'labels': labels,
+        'percentages': percentages,
+    }
+)
 
 @login_required
 def create_assignment(request, course_id):

@@ -196,6 +196,7 @@ def student_profile(request, student_id):
         'student': student,
         'courses': student.courses.all()
     })
+
 #-----------------edit profile-----------------
 @login_required
 def edit_student_profile(request, student_id):

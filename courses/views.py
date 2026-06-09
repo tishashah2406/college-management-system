@@ -78,7 +78,6 @@ def add_course(request):
 
     return render(request, 'courses/course_form.html', {'form': form})
 
-
 @login_required
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -89,7 +88,6 @@ def edit_course(request, course_id):
         return redirect('course_list')
 
     return render(request, 'courses/course_form.html', {'form': form})
-
 
 @login_required
 def course_delete(request, course_id):
@@ -228,7 +226,8 @@ def delete_note(request, note_id):
     course_id = note.course.id
     note.delete()
 
-    return redirect('course_notes', course_id=course_id) 
+    return redirect('course_notes', course_id=course_id)
+ 
 # ---------------- ASSIGNMENTS ----------------
 @login_required
 def course_assignments(request, course_id):
@@ -340,7 +339,7 @@ class CourseListCreateAPI(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 class CourseDetailAPI(APIView):
 
     def get(self, request, pk):

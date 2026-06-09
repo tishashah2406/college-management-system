@@ -16,7 +16,7 @@
 
     /* Profile Card */
     .profile-card {
-        background: #ffffff;
+        background: #1e293b;
         padding: 25px;
         border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
@@ -67,12 +67,12 @@
 
     .info-section p {
         margin: 8px 0;
-        color: #334155;
+        color: #ffffff;
     }
 
     /* Courses Card */
     .courses-card {
-        background: #ffffff;
+        background: #1e293b;
         padding: 20px;
         border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
@@ -80,15 +80,15 @@
 
     .courses-card h3 {
         margin-bottom: 10px;
-        color: #0f172a;
+        color: #fffffff;
     }
 
     .course-item {
         padding: 8px 12px;
-        background: #f1f5f9;
+        background: #374151;
         border-radius: 6px;
         margin-bottom: 8px;
-        color: #1e293b;
+        color: #ffffff;
     }
 </style>
 
@@ -127,6 +127,7 @@
             <p><strong>Name:</strong> {{ teacher.name }}</p>
             <p><strong>Email:</strong> {{ teacher.user.email }}</p>
             <p><strong>Salary:</strong> ₹ {{ teacher.salary }}</p>
+            <p><strong>phone:</strong>{{teacher.phone}}</p>
         </div>
 
         <!-- Edit Button -->
