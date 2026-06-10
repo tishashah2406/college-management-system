@@ -17,7 +17,7 @@
     --text-light:#1a293b;
 
     --border:#e5e7eb;
-    --shadow:0 4px 12px rgba(0,0,0,.06);
+    --shadow:0 4px 12px rgba(45, 58, 175, 0.06);
 
     --radius:16px;
 }
@@ -221,7 +221,7 @@ body{
 .stats-box,
 .vision-card,
 .facility-card{
-    background:rgb(19,19,19);
+    background:#111827;
     border-radius:20px;
     box-shadow:var(--shadow);
     transition:.3s;

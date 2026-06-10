@@ -105,7 +105,7 @@ body{
 }
 
 .chart-box h5{
-    color:#f5f6f8;
+    color:#ffffff;
 }
 
 /* TABLE */
@@ -255,7 +255,7 @@ canvas{
 
 <!-- (UNCHANGED CONTENT BELOW) -->
 
-<div class="hero-section"
+<div class="hero-section">
     <div class="hero-overlay">
         <div class="hero-content">
             <h1>Welcome To College Management System</h1>
@@ -263,7 +263,30 @@ canvas{
         </div>
     </div>
 </div>
+<div class="row text-center mt-5">
 
+    <div class="col-md-3">
+        <div class="feature-box">
+            <h2>{{ students_count }}</h2>
+            <p>Students</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="feature-box">
+            <h2>{{ teachers_count }}</h2>
+            <p>Teachers</p>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="feature-box">
+            <h2>{{ courses_count }}</h2>
+            <p>Courses</p>
+        </div>
+    </div>
+
+</div>
 <div class="container mt-5">
     <h2 class="text-center mb-5">Our Features</h2>
     <div class="row">
@@ -306,6 +329,8 @@ canvas{
     <div class="col-md-3"><div class="dashboard-card">Total Courses <h2>{{ courses_count }}</h2></div></div>
 
 </div>
+
+
 
 <div class="row mt-4">
 

@@ -1,253 +1,347 @@
 # Add Download Option in Student Notes\n\n## Steps:\n1. [ ] Edit course_notes.html to add download button next to view file.\n2. [ ] Test the download functionality.\n
 
 from django.db.models import Avg
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-from .models import Student, Submission
+from django.shortcuts import get_object_or_404
+
+from .models import Teacher, TeacherLeave
+from .serializers import TeacherSerializer
+
 from courses.models import Assignment
+from students.models import Submission, Student
 
-
-# ================= STUDENT ANALYTICS =================
-@action(
-    detail=False,
-    methods=['get'],
-    permission_classes=[IsAuthenticated]
+from courses.serializers import (
+    CourseSerializer,
+    AssignmentSerializer,
+    SubmissionSerializer
 )
-def student_analytics(self, request):
 
-    student = Student.objects.filter(
-        user=request.user
-    ).first()
 
-    if not student:
-        return Response(
-            {"error": "Student not found"},
-            status=404
+class TeacherViewSet(ModelViewSet):
+
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
+
+    # ================= TEACHER DASHBOARD =================
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated]
+    )
+    def dashboard(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
         )
 
-    courses_data = []
+        courses = teacher.courses.all()
 
-    total_assignments_all = 0
-    total_completed_all = 0
-    total_pending_all = 0
-    total_late_submissions = 0
+        assignments_qs = Assignment.objects.filter(
+            course__in=courses
+        )
 
-    # ================= COURSE LOOP =================
-    for course in student.courses.all():
+        submissions_qs = Submission.objects.filter(
+            assignment__course__in=courses
+        )
 
-        # total assignments
-        total_assignments = Assignment.objects.filter(
-            course=course
+        leaves = TeacherLeave.objects.filter(
+            teacher=teacher
+        )
+
+        # ================= COUNTS =================
+
+        total_courses = courses.count()
+
+        total_assignments = assignments_qs.count()
+
+        total_submissions = submissions_qs.count()
+
+        # ================= STUDENTS =================
+
+        total_students = Student.objects.filter(
+            courses__in=courses
+        ).distinct().count()
+
+        # ================= PENDING SUBMISSIONS =================
+
+        checked_submissions = submissions_qs.exclude(
+            grade__isnull=True
         ).count()
 
-        # completed assignments
-        completed_assignments = Submission.objects.filter(
-            student=student,
-            assignment__course=course
+        pending_submissions = submissions_qs.filter(
+            grade__isnull=True
         ).count()
 
-        # pending assignments
-        pending_assignments = (
-            total_assignments - completed_assignments
-        )
+        # ================= AVERAGE GRADE =================
 
-        # progress percentage
-        progress = 0
-
-        if total_assignments > 0:
-            progress = (
-                completed_assignments / total_assignments
-            ) * 100
-
-        # course completed status
-        is_completed = progress == 100
-
-        # late submissions
-        late_submissions = 0
-
-        submissions = Submission.objects.filter(
-            student=student,
-            assignment__course=course
-        )
-
-        for submission in submissions:
-
-            if (
-                submission.assignment.due_date and
-                submission.submitted_at.date() >
-                submission.assignment.due_date
-            ):
-                late_submissions += 1
-
-        total_late_submissions += late_submissions
-
-        # pending assignment list
-        submitted_assignment_ids = submissions.values_list(
-            "assignment_id",
-            flat=True
-        )
-
-        pending_assignment_list = Assignment.objects.filter(
-            course=course
-        ).exclude(
-            id__in=submitted_assignment_ids
-        )
-
-        pending_assignment_names = [
-            assignment.title
-            for assignment in pending_assignment_list
-        ]
-
-        # add totals
-        total_assignments_all += total_assignments
-        total_completed_all += completed_assignments
-        total_pending_all += pending_assignments
-
-        # add course data
-        courses_data.append({
-
-            "course_id": course.id,
-
-            "course_name": course.name,
-
-            "total_assignments":
-                total_assignments,
-
-            "completed_assignments":
-                completed_assignments,
-
-            "pending_assignments":
-                pending_assignments,
-
-            "pending_assignment_list":
-                pending_assignment_names,
-
-            "late_submission_count":
-                late_submissions,
-
-            "progress_percentage":
-                round(progress, 2),
-
-            "is_completed":
-                is_completed
-        })
-
-    # ================= OVERALL PROGRESS =================
-    overall_progress = 0
-
-    if total_assignments_all > 0:
-        overall_progress = (
-            total_completed_all / total_assignments_all
-        ) * 100
-
-    # ================= LEADERBOARD =================
-    leaderboard = []
-
-    students = Student.objects.all()
-
-    for s in students:
-
-        total_assignments = Assignment.objects.filter(
-            course__in=s.courses.all()
-        ).count()
-
-        completed_assignments = Submission.objects.filter(
-            student=s
-        ).count()
-
-        progress = 0
-
-        if total_assignments > 0:
-            progress = (
-                completed_assignments / total_assignments
-            ) * 100
-
-        # average grade
-        avg_grade = Submission.objects.filter(
-            student=s
-        ).aggregate(
+        average_grade = submissions_qs.aggregate(
             Avg("grade")
         )["grade__avg"] or 0
 
-        # final score
-        final_score = (
-            progress * 0.7
-        ) + (
-            avg_grade * 0.3
+        # ================= COURSE ANALYTICS =================
+
+        course_analytics = []
+
+        for course in courses:
+
+            assignments_count = Assignment.objects.filter(
+                course=course
+            ).count()
+
+            submissions_count = Submission.objects.filter(
+                assignment__course=course
+            ).count()
+
+            students_count = Student.objects.filter(
+                courses=course
+            ).distinct().count()
+
+            progress = 0
+
+            if assignments_count > 0:
+                progress = (
+                    submissions_count / assignments_count
+                ) * 100
+
+            course_analytics.append({
+
+                "course_id":
+                    course.id,
+
+                "course_name":
+                    course.name,
+
+                "students":
+                    students_count,
+
+                "assignments":
+                    assignments_count,
+
+                "submissions":
+                    submissions_count,
+
+                "completion_percentage":
+                    round(progress, 2)
+            })
+
+        # ================= TOP STUDENTS =================
+
+        top_students = []
+
+        students = Student.objects.filter(
+            courses__in=courses
+        ).distinct()
+
+        for student in students:
+
+            student_submissions = Submission.objects.filter(
+                student=student,
+                assignment__course__in=courses
+            )
+
+            avg_grade = student_submissions.aggregate(
+                Avg("grade")
+            )["grade__avg"] or 0
+
+            completed = student_submissions.count()
+
+            top_students.append({
+
+                "student_id":
+                    student.id,
+
+                "student_name":
+                    student.user.username,
+
+                "completed_assignments":
+                    completed,
+
+                "average_grade":
+                    round(avg_grade, 2)
+            })
+
+        top_students = sorted(
+            top_students,
+            key=lambda x: x["average_grade"],
+            reverse=True
         )
 
-        leaderboard.append({
+        # ================= RECENT SUBMISSIONS =================
 
-            "student_id": s.id,
+        recent_submissions = submissions_qs.order_by(
+            "-submitted_at"
+        )[:5]
 
-            "student_name":
-                s.user.username,
+        # ================= CHART DATA =================
 
-            "progress":
-                round(progress, 2),
+        chart_data = {
 
-            "average_grade":
-                round(avg_grade, 2),
+            "dashboard_cards": {
 
-            "score":
-                round(final_score, 2)
+                "total_courses":
+                    total_courses,
+
+                "total_students":
+                    total_students,
+
+                "total_assignments":
+                    total_assignments,
+
+                "total_submissions":
+                    total_submissions,
+
+                "pending_submissions":
+                    pending_submissions,
+
+                "checked_submissions":
+                    checked_submissions,
+
+                "average_grade":
+                    round(average_grade, 2)
+            },
+
+            "submission_chart": {
+
+                "submitted":
+                    checked_submissions,
+
+                "pending":
+                    pending_submissions
+            }
+        }
+
+        # ================= FINAL RESPONSE =================
+
+        return Response({
+
+            "teacher":
+                TeacherSerializer(teacher).data,
+
+            "courses":
+                CourseSerializer(courses, many=True).data,
+
+            "assignments":
+                AssignmentSerializer(
+                    assignments_qs,
+                    many=True
+                ).data,
+
+            "recent_submissions":
+                SubmissionSerializer(
+                    recent_submissions,
+                    many=True
+                ).data,
+
+            "leaves":
+                list(leaves.values()),
+
+            "analytics": {
+
+                "total_courses":
+                    total_courses,
+
+                "total_students":
+                    total_students,
+
+                "total_assignments":
+                    total_assignments,
+
+                "total_submissions":
+                    total_submissions,
+
+                "pending_submissions":
+                    pending_submissions,
+
+                "checked_submissions":
+                    checked_submissions,
+
+                "average_grade":
+                    round(average_grade, 2)
+            },
+
+            "course_analytics":
+                course_analytics,
+
+            "top_students":
+                top_students[:5],
+
+            "charts":
+                chart_data
         })
 
-    # sort leaderboard
-    leaderboard = sorted(
-        leaderboard,
-        key=lambda x: x["score"],
-        reverse=True
-    )
 
-    # rank
-    student_rank = None
 
-    for index, item in enumerate(leaderboard, start=1):
 
-        if item["student_id"] == student.id:
-            student_rank = index
-            break
 
-    # ================= DASHBOARD CARDS =================
-    dashboard_cards = {
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-        "total_courses":
-            student.courses.count(),
+from django.shortcuts import get_object_or_404
 
-        "total_assignments":
-            total_assignments_all,
+from .models import Teacher, TeacherLeave
+from .serializers import TeacherSerializer
 
-        "completed_assignments":
-            total_completed_all,
+from courses.models import Assignment
+from students.models import Submission
+from courses.serializers import CourseSerializer, AssignmentSerializer, SubmissionSerializer
 
-        "pending_assignments":
-            total_pending_all,
 
-        "late_submissions":
-            total_late_submissions,
+class TeacherViewSet(ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer
 
-        "overall_progress":
-            round(overall_progress, 2)
-    }
+    # ================= LOGGED-IN DASHBOARD =================
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def dashboard(self, request):
 
-    # ================= FINAL RESPONSE =================
-    return Response({
+        teacher = get_object_or_404(Teacher, user=request.user)
 
-        "student_name":
-            student.user.username,
+        courses = teacher.courses.all()
 
-        "student_rank":
-            student_rank,
+        assignments_qs = Assignment.objects.filter(course__in=courses)
 
-        "dashboard_cards":
-            dashboard_cards,
+        submissions_qs = Submission.objects.filter(
+    assignment__course__in=courses
+)
 
-        "courses":
-            courses_data,
+        leaves = TeacherLeave.objects.filter(teacher=teacher)
 
-        "leaderboard":
-            leaderboard[:10]
-    })
+        return Response({
+            "teacher": TeacherSerializer(teacher).data,
+            "courses": CourseSerializer(courses, many=True).data,
+            "assignments": AssignmentSerializer(assignments_qs, many=True).data,
+            "submissions": SubmissionSerializer(submissions_qs, many=True).data,
+            "leaves": list(leaves.values()),
+        })
+
+    # ================= DASHBOARD BY ID =================
+    @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def dashboard_by_id(self, request, pk=None):
+
+        teacher = get_object_or_404(Teacher, id=pk)
+
+        courses = teacher.courses.all()
+
+        assignments_qs = Assignment.objects.filter(course__in=courses)
+
+        submissions_qs = Submission.objects.filter(
+    assignment__course__in=courses
+)
+
+        leaves = TeacherLeave.objects.filter(teacher=teacher)
+
+        return Response({
+            "teacher": TeacherSerializer(teacher).data,
+            "courses": CourseSerializer(courses, many=True).data,
+            "assignments": AssignmentSerializer(assignments_qs, many=True).data,
+            "submissions": SubmissionSerializer(submissions_qs, many=True).data,
+            "leaves": list(leaves.values()),
+            
+        })

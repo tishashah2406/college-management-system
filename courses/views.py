@@ -67,7 +67,6 @@ def remove_student_from_course(request, course_id, student_id):
     student.courses.remove(course)
     return redirect('course_dashboard', course_id=course.id)
 
-
 # ---------------- COURSE CRUD ----------------
 @login_required
 def add_course(request):
@@ -339,6 +338,7 @@ class CourseListCreateAPI(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     
 class CourseDetailAPI(APIView):
 
