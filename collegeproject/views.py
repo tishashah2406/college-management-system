@@ -16,7 +16,6 @@ def home(request):
             student = Student.objects.filter(user=request.user).first()
             is_student = True
 
-           
             recent_students = [student] if student else []
             recent_teachers = Teacher.objects.none()
 

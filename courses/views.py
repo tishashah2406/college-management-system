@@ -9,7 +9,6 @@ from .forms import CourseForm
 from teachers.models import Teacher
 from students.models import Student, CourseProgress
 
-
 # ---------------- HOME ----------------
 def home(request):
     if request.user.groups.filter(name='Teacher').exists():

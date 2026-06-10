@@ -355,8 +355,6 @@ def student_attendance_dashboard(request):
         'chart_absent': chart_absent,
    })
 
-    
-
 from django.utils import timezone
 from django.contrib import messages
 
@@ -416,14 +414,40 @@ def view_assignments(request, course_id):
         'submissions': submissions
     })
 
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from students.models import Student
+
 @login_required
 def student_assignments_dashboard(request):
+
     student = get_object_or_404(Student, user=request.user)
+
     courses = student.courses.all()
+
+    #  Get all assignments for student's courses
+    assignments = Assignment.objects.filter(course__in=courses)
+
+    # Total assignments
+    total_assignments = assignments.count()
+
+    #  Submitted assignments by this student
+    submitted_count = Submission.objects.filter(
+        student=student,
+        assignment__in=assignments
+    ).count()
+
+    #  Pending
+    pending_count = total_assignments - submitted_count
 
     return render(request, 'students/student_assignments_dashboard.html', {
         'student': student,
-        'courses': courses
+        'courses': courses,
+
+        # chart data
+        'chart_total': total_assignments,
+        'chart_submitted': submitted_count,
+        'chart_pending': pending_count,
     })
 
 def student_assignment_detail(request,course_id,assignment_id):

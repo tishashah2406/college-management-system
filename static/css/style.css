@@ -845,7 +845,7 @@ textarea::placeholder{
 .table,
 .student-table,
 .modern-table{
-    color:#ffffff !important;
+    color:#1a293b !important;
 }
 
 .table th,
@@ -858,7 +858,7 @@ textarea::placeholder{
 .table td,
 .student-table td,
 .modern-table td{
-    color:#1a293b !important;
+    color:#ffffff !important;
     border-color:#475569 !important;
 }
 
@@ -883,4 +883,17 @@ a{
 
 a:hover{
     color:#93c5fd;
+}
+table {
+    background-color: #111827;
+    color: white;
+}
+
+table td, table th {
+    background-color: #111827 !important;
+    color: #e5e7eb;
+}
+
+table tbody tr:hover td {
+    background-color: #1e293b !important;
 }

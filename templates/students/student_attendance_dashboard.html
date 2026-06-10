@@ -168,47 +168,48 @@
     {% endfor %}
 
 </div>
-
 <script>
 
-const ctx = document.getElementById('attendanceChart');
+const canvas = document.getElementById('attendanceChart');
 
-if(ctx){
+if (canvas) {
 
-new Chart(ctx, {
-    type: 'doughnut',
+    const ctx = canvas.getContext('2d');
 
-    data: {
-        labels: ['Present', 'Absent'],
+    new Chart(ctx, {
+        type: 'doughnut',
 
-        datasets: [{
-            data: [
-                {{ chart_present }},
-                {{ chart_absent }}
-            ],
+        data: {
+            labels: ['Present', 'Absent'],
 
-            backgroundColor: [
-                '#16cbe3',
-                '#5844ef'
-            ],
+            datasets: [{
+                data: [
+                    {{ chart_present }},
+                    {{ chart_absent }}
+                ],
 
-            borderWidth: 2
-        }]
-    },
+                backgroundColor: [
+                    '#16cbe3',
+                    '#5844ef'
+                ],
 
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
+                borderWidth: 2
+            }]
+        },
 
-        plugins:{
-            legend:{
-                labels:{
-                    color:'#ffffff'
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff'
+                    }
                 }
             }
         }
-    }
-});
+    });
 
 }
 
