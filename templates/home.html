@@ -399,45 +399,5 @@ canvas{
 
 </div>
 
-<script>
-const ctx = document.getElementById('attendanceChart');
-
-if(ctx){
-new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: ['Present', 'Absent'],
-        datasets: [{
-            data: [80,20],
-
-            backgroundColor: [
-                '#16cbe3', // Present - Green
-                '#5844ef'  // Absent - Red
-            ],
-
-            borderColor: [
-                '#16cbe3',
-                '#5844ef'
-            ],
-
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-
-        plugins:{
-            legend:{
-                labels:{
-                    color:'#ffffff'   // Legend text white
-                }
-            }
-        }
-    }
-});
-}
-</script>
-
 </body>
 </html>

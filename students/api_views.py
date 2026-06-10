@@ -11,7 +11,6 @@ from django.views.decorators.cache import cache_page
 
 from django.views.decorators.vary import vary_on_headers
 
-
 from .models import Student, CourseProgress, Submission
 from courses.models import Assignment
 from .models import Student

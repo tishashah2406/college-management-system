@@ -51,6 +51,19 @@
         </div>
     </div>
 
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+
+        <h4 class="fw-bold mb-3">
+            Attendance Overview
+        </h4>
+
+        <div style="height:300px;">
+            <canvas id="attendanceChart"></canvas>
+        </div>
+
+    </div>
+</div>
     <!-- Attendance Cards -->
     {% for course_data in attendance_data %}
 
@@ -62,7 +75,6 @@
                 <h4 class="fw-bold mb-0">{{ course_data.course.name }}</h4>
             </div>
 
-             
             <!-- Stats -->
             <div class="row g-3 mb-4">
 
@@ -156,5 +168,50 @@
     {% endfor %}
 
 </div>
+
+<script>
+
+const ctx = document.getElementById('attendanceChart');
+
+if(ctx){
+
+new Chart(ctx, {
+    type: 'doughnut',
+
+    data: {
+        labels: ['Present', 'Absent'],
+
+        datasets: [{
+            data: [
+                {{ chart_present }},
+                {{ chart_absent }}
+            ],
+
+            backgroundColor: [
+                '#16cbe3',
+                '#5844ef'
+            ],
+
+            borderWidth: 2
+        }]
+    },
+
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins:{
+            legend:{
+                labels:{
+                    color:'#ffffff'
+                }
+            }
+        }
+    }
+});
+
+}
+
+</script>
 
 {% endblock %}

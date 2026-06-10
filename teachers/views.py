@@ -221,7 +221,7 @@ def teacher_profile(request, teacher_id):
         'teacher': teacher,
         'courses': teacher.courses.all()
     })
-
+  
 #-----------------edit teacher profile-------------------------
 @login_required
 def edit_teacher_profile(request, teacher_id):
@@ -619,7 +619,7 @@ def grade_assignment(request, assignment_id):
         'assignment': assignment,
         'submissions': submissions
     })
-   
+
 def view_assignments(request,course_id):
     course = get_object_or_404(Course,id=course_id)
     assignments = Assignment.objects.filter(course=course)

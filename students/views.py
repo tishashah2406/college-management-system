@@ -261,6 +261,14 @@ def add_note(request, student_id, course_id):
         'course': course
     })
 
+def add_note(request,student_id,course_id):
+    student = get_object_or_404(Student,id=student_id,user=request.user)
+    course = get_object_or_404(Course,id=course_id)
+
+    if request.method =="POST":
+        content = request.POST.get("content")
+        Note.objects.create(course=course,content=content)
+        return redirect('student_notes')
 #-------------delete note--------------------------
 @login_required
 def delete_note(request,student_id,course_id,note_id):
@@ -330,13 +338,24 @@ def student_attendance_dashboard(request):
             'absent': absent
         })
 
+        chart_present = 0
+        chart_absent = 0
+
+        for item in attendance_data:
+            chart_present += item['present']
+            chart_absent += item['absent']
+
     return render(request, 'students/student_attendance_dashboard.html', {
         'student': student,
         'courses': courses,
         'attendance_data': attendance_data,
         'selected_course_id': selected_course_id,
-        'month_input': month_input
-    })
+        'month_input': month_input,
+        'chart_present': chart_present,
+        'chart_absent': chart_absent,
+   })
+
+    
 
 from django.utils import timezone
 from django.contrib import messages
