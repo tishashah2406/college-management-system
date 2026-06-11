@@ -115,11 +115,7 @@ def teacher_dashboard(request):
         name='Teacher'
     ).exists():
 
-        messages.error(
-            request,
-            "Access denied"
-        )
-
+    
         return redirect('login')
 
     # Safe Teacher Fetch
@@ -392,7 +388,7 @@ def mark_attendance(request):
             )
 
             Notification.objects.create(
-                message=f"✅ Attendance marked for {student.name}"
+                message=f" Attendance marked for {student.name}"
             )
 
         return redirect('attendance_dashboard')

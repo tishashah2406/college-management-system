@@ -155,6 +155,7 @@ def student_dashboard(request, student_id=None):
         student=student,
         grade__isnull=True
     ).count()
+    
     return render(request, 'students/student_dashboard.html', {
 
         'student': student,
