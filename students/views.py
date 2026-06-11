@@ -106,7 +106,7 @@ from .models import Attendance
 
 @login_required
 def student_dashboard(request, student_id=None):
-
+     
     if student_id:
         student = get_object_or_404(Student, id=student_id)
     else:
@@ -155,7 +155,7 @@ def student_dashboard(request, student_id=None):
         student=student,
         grade__isnull=True
     ).count()
-    
+
     return render(request, 'students/student_dashboard.html', {
 
         'student': student,
@@ -499,16 +499,25 @@ def view_grades(request,course_id,assignments_id):
         'submission':submission
     })
 
+from collections import defaultdict
+
 @login_required
 def student_submission_dashboard(request):
-    student= get_object_or_404(Student,user=request.user)
-    submissions =Submission.objects.filter(student=student).select_related('assignment__course')
 
-    return render(request,'students/student_submission_dashboard.html',{
-        'student':student,
-        'submissions':submissions
+    student = get_object_or_404(Student, user=request.user)
+
+    submissions = Submission.objects.filter(student=student).select_related(
+        'assignment', 'assignment__course'
+    )
+
+    grouped = defaultdict(list)
+
+    for sub in submissions:
+        grouped[sub.assignment.course.name].append(sub)
+
+    return render(request, 'students/student_submission_dashboard.html',{
+        'grouped_submissions': dict(grouped)
     })
-
 @login_required
 def delete_submission(request, submission_id):
     student = get_object_or_404(Student, user=request.user)

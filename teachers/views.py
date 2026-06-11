@@ -111,11 +111,22 @@ from django.contrib import messages
 def teacher_dashboard(request):
 
     # Check Teacher Group
-    if not  request.user.groups.filter(
+    if request.user.is_superuser:
+        return redirect('admin:index')
+
+    if request.user.groups.filter(
+        name='Student'
+    ).exists():
+        return redirect('student_dashboard')
+
+    if not request.user.groups.filter(
         name='Teacher'
     ).exists():
 
-    
+        messages.error(
+            request,
+            "Access denied"
+        )
         return redirect('login')
 
     # Safe Teacher Fetch
