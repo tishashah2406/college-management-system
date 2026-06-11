@@ -34,74 +34,78 @@
     </div>
 
     <!-- Current Salary Summary -->
+<div class="card salary-card mb-4 shadow-sm">
 
-    <div class="card salary-card mb-4 shadow-sm">
+  <div class="card-header">
+    Current Salary Summary
+  </div>
 
-        <div class="card-header">
-            Current Salary Summary
-        </div>
+  <div class="card-body">
 
-        <div class="card-body">
+    <!-- TOP IMPORTANT SUMMARY -->
+    <div class="row text-center mb-4">
 
-            <div class="row text-center">
+      <div class="col-md-4 mb-3">
+        <h6>Base Salary</h6>
+        <h4>₹{{ salary.base_salary }}</h4>
+      </div>
 
-                <div class="col-md-3">
-                    <h6>Base Salary</h6>
-                    <h4>₹{{ salary.base_salary }}</h4>
-                </div>
+      <div class="col-md-4 mb-3">
+        <h6>Deduction</h6>
+        <h4>₹{{ salary.deduction }}</h4>
+      </div>
 
-                <div class="col-md-3">
-                    <h6>Leave Days</h6>
-                    <h4>{{ salary.total_leave_days }}</h4>
-                </div>
-
-                <div class="col-md-3">
-                    <h6>Deduction</h6>
-                    <h4>₹{{ salary.deduction }}</h4>
-                </div>
-
-                <div class="col-md-3">
-                    <h6>Final Salary</h6>
-                    <h4 class="salary-final">
-                        ₹{{ salary.final_salary }}
-                    </h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Total Days</h6>
-                    <h4>{{ salary.total_days }}</h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Working Days</h6>
-                    <h4>{{ salary.working_days }}</h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Sundays</h6>
-                    <h4>{{ salary.sundays }}</h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Public Holidays</h6>
-                    <h4>{{ salary.public_holidays }}</h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Paid Leave</h6>
-                    <h4>{{ salary.paid_leave_days }}</h4>
-                </div>
-
-                <div class="col-md-2">
-                    <h6>Unpaid Leave</h6>
-                    <h4>{{ salary.unpaid_leave_days }}</h4>
-                </div>
-
-            </div>
-
-        </div>
+      <div class="col-md-4 mb-3">
+        <h6>Final Salary</h6>
+        <h4 class="salary-final">₹{{ salary.final_salary }}</h4>
+      </div>
 
     </div>
+
+    <hr>
+
+    <!-- MIDDLE INFO -->
+    <div class="row text-center mb-3">
+
+      <div class="col-md-3 mb-3">
+        <h6>Total Days</h6>
+        <h4>{{ salary.total_days }}</h4>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <h6>Working Days</h6>
+        <h4>{{ salary.working_days }}</h4>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <h6>Leave Days</h6>
+        <h4>{{ salary.total_leave_days }}</h4>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <h6>Sundays</h6>
+        <h4>{{ salary.sundays }}</h4>
+      </div>
+
+    </div>
+
+    <!-- LAST SECTION -->
+    <div class="row text-center">
+
+      <div class="col-md-6 mb-3">
+        <h6>Paid Leave</h6>
+        <h4>{{ salary.paid_leave_days }}</h4>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <h6>Unpaid Leave</h6>
+        <h4>{{ salary.unpaid_leave_days }}</h4>
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
     <!-- Salary History -->
 

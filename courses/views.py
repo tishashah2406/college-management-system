@@ -8,6 +8,7 @@ from .forms import CourseForm
 
 from teachers.models import Teacher
 from students.models import Student, CourseProgress
+from notifications.models import Notification
 
 # ---------------- HOME ----------------
 def home(request):
@@ -295,6 +296,10 @@ def assignment_create(request):
             due_date=due_date if due_date else None,
             description=description
         )
+        
+        Notification.objects.create(
+            message=f"📝 Assignment uploaded: {assignment.title}"
+        )
 
         messages.success(request, "Assignment created successfully")
 
@@ -338,7 +343,6 @@ class CourseListCreateAPI(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
 class CourseDetailAPI(APIView):
 
     def get(self, request, pk):
@@ -360,3 +364,4 @@ class CourseDetailAPI(APIView):
         course = get_object_or_404(Course, id=pk)
         course.delete()
         return Response({"message": "Deleted successfully"})
+    

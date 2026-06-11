@@ -1,4 +1,4 @@
-from pyexpat.errors import messages
+from django.contrib import messages
 from urllib import request
 from xml.dom import ValidationErr
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,6 +16,7 @@ from django.db.models import Count
 from datetime import datetime
 from django.http import JsonResponse
 from .services import calculate_teacher_salary
+from notifications.models import Notification
 
 # ---------------- Teacher List ----------------
 
@@ -198,6 +199,7 @@ def teacher_dashboard(request):
             'salary': salary_data,
         }
     )
+
 # ---------------- Remove Student from Course ----------------
 def remove_student_from_course(request, teacher_id, student_id, course_id):
     student = get_object_or_404(Student, id=student_id)
@@ -389,6 +391,10 @@ def mark_attendance(request):
                 defaults={'status': status}
             )
 
+            Notification.objects.create(
+                message=f"✅ Attendance marked for {student.name}"
+            )
+
         return redirect('attendance_dashboard')
 
     return render(request, 'attendance/mark_attendance.html', {
@@ -573,12 +579,22 @@ def create_assignment(request, course_id):
         description = request.POST.get('description')
         due_date = request.POST.get('due_date')
 
-        Assignment.objects.create(
+        assignment = Assignment.objects.create(
             title=title,
             description=description,
             due_date=due_date,
             course=course
         )
+
+        students = Student.objects.filter(
+            courses=course
+        )
+        
+        for student in students:
+            Notification.objects.create(
+                user=student.user,
+                message=f" New Assignment: {assignment.title}"
+            )
 
         return redirect('teacher_dashboard')
 
@@ -760,6 +776,10 @@ def apply_leave(request):
             reason=reason
         )
 
+        Notification.objects.create(
+            message=f"📝 {teacher.name} applied for leave"
+        )
+
         return redirect('leave_dashboard')  
 
     return render(request, 'teachers/apply_leave.html')
@@ -834,3 +854,4 @@ def leave_dashboard(request):
             'leaves': leaves
         }
     )
+

@@ -889,8 +889,12 @@ table {
     color: white;
 }
 
-table td, table th {
+table td {
     background-color: #111827 !important;
+    color: #e5e7eb;
+}
+ table th {
+    background-color: #334155 !important;
     color: #e5e7eb;
 }
 

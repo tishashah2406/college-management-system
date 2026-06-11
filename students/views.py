@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, Group
 from students.models import CourseProgress
 from .serializers import StudentSerializer
+from notifications.models import Notification
 
 def student_list(request):
     query = request.GET.get('q')
@@ -388,6 +389,16 @@ def submit_assignment(request, course_id, assignment_id):
             content=content,
             file=file
         )
+       
+        teachers = Teacher.objects.filter(
+    courses=assignment.course
+)
+
+        for teacher in teachers:
+            Notification.objects.create(
+                user=teacher.user,
+                message=f" {student.name} submitted {assignment.title}"
+            )
 
         messages.success(request, "Assignment submitted successfully!")
 
@@ -529,4 +540,4 @@ def edit_submission(request, submission_id):
 
     return render(request, 'students/edit_submission.html', {
         'submission': submission
-    })     
+    })    

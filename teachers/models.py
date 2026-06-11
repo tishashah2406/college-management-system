@@ -1,6 +1,8 @@
 from django.db import models
 from courses.models import Course, Student
 from django.contrib.auth.models import User
+from notifications.models import Notification
+
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -14,20 +16,63 @@ class Teacher(models.Model):
     def __str__(self):
         return self.name
     
+from django.db import models
+from notifications.models import Notification
+
 class TeacherLeave(models.Model):
+
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
     ]
 
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(
+        Teacher,
+        on_delete=models.CASCADE
+    )
+
     start_date = models.DateField()
     end_date = models.DateField()
     reason = models.TextField()
 
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
-    applied_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default='Pending'
+    )
+
+    applied_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    def save(self, *args, **kwargs):
+
+        old_status = None
+
+        if self.pk:
+            old_status = TeacherLeave.objects.get(
+                pk=self.pk
+            ).status
+
+        super().save(*args, **kwargs)
+
+        # Status changed
+        if old_status != self.status:
+
+            if self.status == "Approved":
+
+                Notification.objects.create(
+                    user=self.teacher.user,
+                    message=f" Leave approved from ({self.start_date} to {self.end_date})"
+                )
+
+            elif self.status == "Rejected":
+
+                Notification.objects.create(
+                    user=self.teacher.user,
+                    message=f" Leave rejected from ({self.start_date} to {self.end_date})"
+                )
 
     def __str__(self):
         return f"{self.teacher.name} - {self.status}"

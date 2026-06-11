@@ -7,11 +7,14 @@ from django.db import transaction
 
 from students.models import Student
 from teachers.models import Teacher
+from notifications.models import Notification
 
 
 # ================= BASE AUTH MIXIN =================
 class AuthMixin:
+
     def redirect_user(self, request, user):
+
         if user.is_superuser:
             return redirect('admin:index')
 
@@ -23,64 +26,88 @@ class AuthMixin:
 
         return redirect('home')
 
+
 # ================= LOGIN VIEW =================
 class LoginView(AuthMixin, View):
+
     template_name = 'registration/login.html'
 
     def get(self, request):
-        
+
         if request.user.is_authenticated:
-            return self.redirect_user(request, request.user)
-        return render(request, self.template_name)
+            return self.redirect_user(
+                request,
+                request.user
+            )
+
+        return render(
+            request,
+            self.template_name
+        )
 
     def post(self, request):
+
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-    
         if not username or not password:
-            messages.error(request, "All fields are required")
-            return render(request, self.template_name)
 
-        user = authenticate(request, username=username, password=password)
+            messages.error(
+                request,
+                "All fields are required"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
+
+        user = authenticate(
+            request,
+            username=username,
+            password=password
+        )
 
         if user is None:
-            messages.error(request, "Invalid username or password")
-            return render(request, self.template_name)
+
+            messages.error(
+                request,
+                "Invalid username or password"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
 
         login(request, user)
-        return self.redirect_user(request, user)
 
-def redirect_user(self, request, user):
-    print("Username:", user.username)
-    print("Superuser:", user.is_superuser)
+        return self.redirect_user(
+            request,
+            user
+        )
 
-    if user.is_superuser:
-        print("Redirecting to admin")
-        return redirect('admin:index')
-
-    if user.groups.filter(name='Teacher').exists():
-        print("Redirecting to teacher")
-        return redirect('teacher_dashboard')
-
-    if user.groups.filter(name='Student').exists():
-        print("Redirecting to student")
-        return redirect('student_dashboard')
-
-    print("Redirecting to home")
-    return redirect('home')
 
 # ================= REGISTER VIEW =================
 class RegisterView(AuthMixin, View):
+
     template_name = 'registration/register.html'
 
     def get(self, request):
-        # Prevent logged-in users from accessing register page
+
         if request.user.is_authenticated:
-            return self.redirect_user(request, request.user)
-        return render(request, self.template_name)
+            return self.redirect_user(
+                request,
+                request.user
+            )
+
+        return render(
+            request,
+            self.template_name
+        )
 
     def post(self, request):
+
         username = request.POST.get("username")
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -88,38 +115,85 @@ class RegisterView(AuthMixin, View):
         user_type = request.POST.get("user_type")
         salary = request.POST.get("salary")
 
-        # -------- BASIC VALIDATION --------
+        # Validation
         if not username or not email or not password or not user_type:
-            messages.error(request, "Please fill all required fields")
-            return render(request, self.template_name)
+
+            messages.error(
+                request,
+                "Please fill all required fields"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
 
         if len(password) < 6:
-            messages.error(request, "Password must be at least 6 characters")
-            return render(request, self.template_name)
+
+            messages.error(
+                request,
+                "Password must be at least 6 characters"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
-            return render(request, self.template_name)
+
+            messages.error(
+                request,
+                "Username already exists"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
 
         if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists")
-            return render(request, self.template_name)
 
-        # -------- SAFE TYPE CONVERSION --------
+            messages.error(
+                request,
+                "Email already exists"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
+
         try:
             age = int(age) if age else 0
         except ValueError:
-            messages.error(request, "Age must be a number")
-            return render(request, self.template_name)
+
+            messages.error(
+                request,
+                "Age must be a number"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
 
         try:
             salary = float(salary) if salary else 0
         except ValueError:
-            messages.error(request, "Salary must be a number")
-            return render(request, self.template_name)
 
-        # -------- DATABASE TRANSACTION --------
+            messages.error(
+                request,
+                "Salary must be a number"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
+
         try:
+
             with transaction.atomic():
 
                 # Create User
@@ -129,9 +203,13 @@ class RegisterView(AuthMixin, View):
                     password=password
                 )
 
-                # Assign Role
+                # STUDENT
                 if user_type == "student":
-                    group, _ = Group.objects.get_or_create(name='Student')
+
+                    group, created = Group.objects.get_or_create(
+                        name='Student'
+                    )
+
                     user.groups.add(group)
 
                     Student.objects.create(
@@ -141,8 +219,23 @@ class RegisterView(AuthMixin, View):
                         age=age
                     )
 
+                    # Student Notification
+                    Notification.objects.create(
+                        user=user,
+                        message=" Welcome to College Management System"
+                    )
+
+                    Notification.objects.create(
+                        message=f"🎓 {username} joined as a student"
+                    )
+
+                # TEACHER
                 elif user_type == "teacher":
-                    group, _ = Group.objects.get_or_create(name='Teacher')
+
+                    group, created = Group.objects.get_or_create(
+                        name='Teacher'
+                    )
+
                     user.groups.add(group)
 
                     Teacher.objects.create(
@@ -152,16 +245,66 @@ class RegisterView(AuthMixin, View):
                         salary=salary
                     )
 
+                    Notification.objects.create(
+                        message=f"👨‍🏫 {username} joined as a teacher"
+                    )
+
+                    # Teacher Notification
+                    Notification.objects.create(
+                        user=user,
+                        message="🎉 Welcome to Teacher Portal"
+                    )
+
                 else:
-                    messages.error(request, "Invalid user type")
-                    return render(request, self.template_name)
+
+                    messages.error(
+                        request,
+                        "Invalid user type"
+                    )
+
+
+                    return render(
+                        request,
+                        self.template_name
+                    )
+
+                # Admin Notifications
+                admins = User.objects.filter(
+                    is_superuser=True
+                )
+
+                for admin in admins:
+
+                 Notification.objects.create(
+                    user=admin,
+                    message=f"🔔 New {user_type}: {username}"
+                )
 
         except Exception as e:
-            messages.error(request, "Something went wrong")
-            return render(request, self.template_name)
 
-        # -------- AUTO LOGIN --------
-        login(request, user)
-        messages.success(request, "Account created successfully")
+            print(e)
 
-        return self.redirect_user(request, user)
+            messages.error(
+                request,
+                "Something went wrong"
+            )
+
+            return render(
+                request,
+                self.template_name
+            )
+
+        login(
+            request,
+            user
+        )
+
+        messages.success(
+            request,
+            "Account created successfully"
+        )
+
+        return self.redirect_user(
+            request,
+            user
+        )

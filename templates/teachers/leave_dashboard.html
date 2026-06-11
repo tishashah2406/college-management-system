@@ -4,12 +4,13 @@
 {% block content %}
 <div class="container mt-4">
 
-    <h2>📝 Leave Dashboard</h2>
-<a href="/teachers/leave/apply/" class="btn btn-success">
-            📝 Apply Leave
-        </a>
+    <h2 class="mb-3">📝 Leave Dashboard</h2>
 
-    <table class="table table-bordered">
+    <a href="/teachers/leave/apply/" class="btn btn-success mb-4">
+        📝 Apply Leave
+    </a>
+
+    <table class="table table-bordered table-hover">
 
         <thead>
             <tr>
@@ -27,11 +28,37 @@
                 <td>{{ leave.start_date }}</td>
                 <td>{{ leave.end_date }}</td>
                 <td>{{ leave.reason }}</td>
-                <td>{{ leave.status }}</td>
+
+                <td>
+                    {% if leave.status == "Approved" %}
+                        <span class="badge bg-success px-3 py-2">
+                            Approved
+                        </span>
+
+                    {% elif leave.status == "Rejected" %}
+                        <span class="badge bg-danger px-3 py-2">
+                            Rejected
+                        </span>
+
+                    {% elif leave.status == "Pending" %}
+                        <span class="badge bg-warning text-dark px-3 py-2">
+                            Pending
+                        </span>
+
+                    {% else %}
+                        <span class="badge bg-primary px-3 py-2">
+                            {{ leave.status }}
+                        </span>
+                    {% endif %}
+                </td>
+
             </tr>
+
         {% empty %}
             <tr>
-                <td colspan="4">No leave records found.</td>
+                <td colspan="4" class="text-center">
+                    No leave records found.
+                </td>
             </tr>
         {% endfor %}
 
@@ -40,5 +67,4 @@
     </table>
 
 </div>
-
 {% endblock %}

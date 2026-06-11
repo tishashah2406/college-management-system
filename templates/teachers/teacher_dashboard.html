@@ -5,115 +5,107 @@
 
 <div class="dashboard-page">
 
-    <!-- Header -->
-    <div class="page-header">
+    <!-- HEADER -->
+    <div class="page-header mb-4">
         <h2>👨‍🏫 Teacher Dashboard</h2>
         <p>Manage courses, students, leaves and salary details.</p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats-grid">
+    <!--  KPI CARDS (HIGHEST PRIORITY) -->
+    <div class="stats-grid mb-4">
 
-        <div class="stat-card">
-            <h3>{{ courses|length }}</h3>
+        <div class="stat-card shadow-sm">
+            <h3>📚 {{ courses|length }}</h3>
             <span>Total Courses</span>
         </div>
 
-        <div class="stat-card success">
-            <h3>{{ students|length }}</h3>
+        <div class="stat-card success shadow-sm">
+            <h3>👨‍🎓 {{ students|length }}</h3>
             <span>Total Students</span>
         </div>
 
-        <div class="stat-card primary">
-            <h3>{{ leaves|length }}</h3>
+        <div class="stat-card primary shadow-sm">
+            <h3>📝 {{ leaves|length }}</h3>
             <span>Leave Requests</span>
         </div>
 
-        <div class="stat-card danger">
-            <h3>₹{{ salary.final_salary }}</h3>
+        <div class="stat-card danger shadow-sm">
+            <h3>💰 ₹{{ salary.final_salary }}</h3>
             <span>Final Salary</span>
         </div>
 
     </div>
 
-    <!-- Teacher Profile -->
-    <div class="dashboard-card">
 
-        <h3 class="section-title">👤 Teacher Information</h3>
+    <!-- 👤 TEACHER INFO (MEDIUM PRIORITY) -->
+    <div class="dashboard-card shadow-sm mb-4">
 
-        <div class="row">
+        <h3 class="section-title mb-3">👤 Teacher Information</h3>
+
+        <div class="row g-3">
 
             <div class="col-md-4">
-                <div class="info-box">
-                    <strong>Name</strong><br>
+                <div class="info-box p-3">
+                    <strong>👤 Name</strong><br>
                     {{ teacher.name }}
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="info-box">
-                    <strong>Email</strong><br>
+                <div class="info-box p-3">
+                    <strong>📧 Email</strong><br>
                     {{ teacher.user.email }}
                 </div>
             </div>
 
-            <div class="col-md-3">
-        <div class="info-box">
-            <strong>Phone</strong><br>
-            {{ teacher.phone|default:"Not Added" }}
-        </div>
-    </div>
-
-
             <div class="col-md-4">
-                <div class="info-box">
-                    <strong>Salary</strong><br>
-                    ₹{{ teacher.salary }}
+                <div class="info-box p-3">
+                    <strong>📱 Phone</strong><br>
+                    {{ teacher.phone|default:"Not Added" }}
                 </div>
             </div>
 
         </div>
 
-        <br>
-
-        <a href="{% url 'enroll_student' teacher.id %}" class="btn btn-primary">
-            ➕ Enroll Student
-        </a>
-
-        
+        <div class="mt-3">
+            <a href="{% url 'enroll_student' teacher.id %}" class="btn btn-primary shadow-sm">
+                ➕ Enroll Student
+            </a>
+        </div>
 
     </div>
 
-    <!-- Salary Details -->
-    <div class="dashboard-card">
 
-        <h3 class="section-title">💰 Salary Details</h3>
+    <!-- 💰 SALARY (MEDIUM PRIORITY) -->
+    <div class="dashboard-card shadow-sm mb-4">
 
-        <div class="row">
+        <h3 class="section-title mb-3">💰 Salary Details</h3>
+
+        <div class="row g-3">
 
             <div class="col-md-3">
-                <div class="info-box">
+                <div class="info-box p-3">
                     <strong>Base Salary</strong><br>
                     ₹{{ salary.base_salary }}
                 </div>
             </div>
 
             <div class="col-md-3">
-                <div class="info-box">
+                <div class="info-box p-3">
                     <strong>Leave Days</strong><br>
                     {{ salary.total_leave_days }}
                 </div>
             </div>
 
             <div class="col-md-3">
-                <div class="info-box">
+                <div class="info-box p-3">
                     <strong>Deduction</strong><br>
                     ₹{{ salary.deduction }}
                 </div>
             </div>
 
             <div class="col-md-3">
-                <div class="info-box">
+                <div class="info-box p-3">
                     <strong>Final Salary</strong><br>
                     ₹{{ salary.final_salary }}
                 </div>
@@ -123,20 +115,19 @@
 
     </div>
 
-    <!-- Courses -->
-    <div class="dashboard-card">
 
-        <h3 class="section-title">📚 Assigned Courses</h3>
+    <!-- 📚 COURSES (SECONDARY) -->
+    <div class="dashboard-card shadow-sm mb-4">
 
-        <div class="row">
+        <h3 class="section-title mb-3">📚 Assigned Courses</h3>
+
+        <div class="row g-3">
 
             {% for course in courses %}
-            <div class="col-md-4 mb-3">
+            <div class="col-md-4">
 
-                <div class="course-card">
-
-                    <h5>{{ course.name }}</h5>
-
+                <div class="course-card p-3 shadow-sm hover-card">
+                    <h5 class="mb-0">📘 {{ course.name }}</h5>
                 </div>
 
             </div>
@@ -148,12 +139,13 @@
 
     </div>
 
-    <!-- Students Table -->
-    <div class="dashboard-card">
 
-        <h3 class="section-title">👨‍🎓 Students</h3>
+    <!-- 👨‍🎓 STUDENTS (SECONDARY TABLE) -->
+    <div class="dashboard-card shadow-sm mb-4">
 
-        <table class="modern-table">
+        <h3 class="section-title mb-3">👨‍🎓 Students</h3>
+
+        <table class="modern-table table-hover">
 
             <thead>
                 <tr>
@@ -167,7 +159,7 @@
             <tbody>
 
             {% for student in students %}
-            <tr>
+            <tr class="table-row">
 
                 <td>{{ student.name }}</td>
 
@@ -175,26 +167,21 @@
 
                 <td>
                     {% for course in student.courses.all %}
-                        <span class="course-badge">
+                        <span class="course-badge me-1">
                             {{ course.name }}
                         </span>
                     {% endfor %}
                 </td>
 
                 <td>
-
                     {% for course in student.courses.all %}
                         {% if course in courses %}
-
                         <a href="{% url 'remove_student_from_course' teacher.id student.id course.id %}"
                            class="btn btn-danger btn-sm">
-
                            Remove
                         </a>
-
                         {% endif %}
                     {% endfor %}
-
                 </td>
 
             </tr>
@@ -210,12 +197,13 @@
 
     </div>
 
-    <!-- Leaves -->
-    <div class="dashboard-card">
 
-        <h3 class="section-title">📝 Leave History</h3>
+    <!-- 📝 LEAVES (SECONDARY TABLE) -->
+    <div class="dashboard-card shadow-sm mb-4">
 
-        <table class="modern-table">
+        <h3 class="section-title mb-3">📝 Leave History</h3>
+
+        <table class="modern-table table-hover">
 
             <thead>
                 <tr>
@@ -228,28 +216,23 @@
             <tbody>
 
             {% for leave in leaves %}
-            <tr>
+            <tr class="table-row">
+
                 <td>{{ leave.start_date }}</td>
                 <td>{{ leave.end_date }}</td>
 
                 <td>
                     {% if leave.status == "Approved" %}
-                        <span class="badge bg-success">
-                            Approved
-                        </span>
+                        <span class="badge bg-success px-3 py-2">✔ Approved</span>
 
                     {% elif leave.status == "Rejected" %}
-                        <span class="badge bg-danger">
-                            Rejected
-                        </span>
+                        <span class="badge bg-danger px-3 py-2">✖ Rejected</span>
 
                     {% else %}
-                        <span class="badge bg-warning">
-                            Pending
-                        </span>
-
+                        <span class="badge bg-warning text-dark px-3 py-2">⏳ Pending</span>
                     {% endif %}
                 </td>
+
             </tr>
             {% endfor %}
 
@@ -259,7 +242,8 @@
 
     </div>
 
-    <a href="{% url 'teacher_list' %}" class="btn btn-primary">
+    <!-- BACK BUTTON -->
+    <a href="{% url 'teacher_list' %}" class="btn btn-primary shadow-sm mb-4">
         ← Back
     </a>
 

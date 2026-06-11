@@ -1,0 +1,47 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        🔔 Notifications
+    </h2>
+
+    <div class="card bg-dark border-secondary">
+
+        <div class="card-body">
+
+            {% for notification in notifications %}
+
+            <div class="border-bottom border-secondary py-3">
+
+                <div class="d-flex justify-content-between">
+
+                    <span>
+                        {{ notification.message }}
+                    </span>
+
+                    <small class="text-muted">
+                        {{ notification.created_at }}
+                    </small>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p class="text-center">
+                No notifications found.
+            </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -36,7 +36,6 @@ def home(request):
         recent_students = []
         recent_teachers = []
 
-   
     students_count = Student.objects.count()
     teachers_count = Teacher.objects.count()
     courses_count = Course.objects.count()

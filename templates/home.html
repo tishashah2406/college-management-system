@@ -218,6 +218,7 @@ canvas{
 {% endif %}
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- MAIN -->
 <div class="main">
@@ -235,7 +236,54 @@ canvas{
     <a href="/" class="btn btn-outline-dark">Home</a>
     <a href="/about/" class="btn btn-outline-dark">About</a>
     <a href="/contact/" class="btn btn-outline-dark">Contact</a>
+   <div class="dropdown">
 
+<button
+class="btn btn-outline-dark position-relative"
+data-bs-toggle="dropdown">
+
+<i class="bi bi-bell-fill"></i>
+
+{% if unread_count > 0 %}
+<span class="position-absolute top-0 start-100 translate-middle badge bg-danger">
+    {{ unread_count }}
+</span>
+{% endif %}
+
+</button>
+
+<ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
+
+{% for notification in recent_notifications %}
+
+<li>
+    <a class="dropdown-item text-light">
+        {{ notification.message }}
+    </a>
+</li>
+
+{% empty %}
+
+<li>
+    <span class="dropdown-item text-light">
+        No Notifications
+    </span>
+</li>
+
+{% endfor %}
+
+<li><hr class="dropdown-divider"></li>
+
+<li>
+    <a class="dropdown-item text-info"
+       href="{% url 'notifications' %}">
+       View All
+    </a>
+</li>
+
+</ul>
+
+</div>
     {% if user.is_authenticated %}
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
@@ -248,7 +296,28 @@ canvas{
 </div>
 
 </div>
+<!-- Django Messages -->
 
+{% if messages %}
+<div class="mt-3">
+
+    {% for message in messages %}
+
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+
+            {{ message }}
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+{% endif %}
 {% block content %}
 
 {% if not user.is_authenticated %}
@@ -329,8 +398,6 @@ canvas{
     <div class="col-md-3"><div class="dashboard-card">Total Courses <h2>{{ courses_count }}</h2></div></div>
 
 </div>
-
-
 
 <div class="row mt-4">
 
