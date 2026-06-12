@@ -1,16 +1,31 @@
 {% extends 'home.html' %}
 {% block content %}
 
-<div class="container py-4">
+<div class="p-4 mb-4 text-white rounded-4"
+     style="background: linear-gradient(135deg,#4e73df,#224abe);">
 
-    <!-- Header -->
-    <div class="p-4 mb-4 text-white rounded-4"
-         style="background: linear-gradient(135deg,#4e73df,#224abe);">
+    <div class="d-flex justify-content-between align-items-center">
 
-        <h2 class="fw-bold mb-1">Attendance Dashboard</h2>
-        <p class="mb-0 opacity-75">Track your attendance performance</p>
+        <div>
+            <h2 class="fw-bold mb-1">
+                Attendance Dashboard
+            </h2>
+
+            <p class="mb-0 opacity-75">
+                Track your attendance performance
+            </p>
+        </div>
+
+        <a href="{% url 'student_dashboard' %}"
+           class="btn btn-light">
+            <i class="bi bi-arrow-left"></i>
+            Back
+        </a>
 
     </div>
+
+</div>
+
 
     <!-- Filter Card -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -53,58 +68,44 @@
 
     <div class="row g-3 mb-4">
 
+   <div class="row g-4 mb-4">
+
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body text-center">
-                <small class="text-muted">Overall Attendance</small>
-                <h3 class="fw-bold text-primary">
-                    {{ overall_percentage }}%
-                </h3>
-            </div>
+        <div class="stat-card attendance-card">
+            <small>Overall Attendance</small>
+            <h2>{{ overall_percentage }}%</h2>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body text-center">
-                <small class="text-muted">Total Classes</small>
-                <h3 class="fw-bold">
-                    {{ total_classes }}
-                </h3>
-            </div>
+        <div class="stat-card classes-card">
+            <small>Total Classes</small>
+            <h2>{{ total_classes }}</h2>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body text-center">
-                <small class="text-success">Present</small>
-                <h3 class="fw-bold text-success">
-                    {{ present_classes }}
-                </h3>
-            </div>
+        <div class="stat-card present-card">
+            <small>Present</small>
+            <h2>{{ present_classes }}</h2>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body text-center">
-                <small class="text-danger">Absent</small>
-                <h3 class="fw-bold text-danger">
-                    {{ absent_classes }}
-                </h3>
-            </div>
+        <div class="stat-card absent-card">
+            <small>Absent</small>
+            <h2>{{ absent_classes }}</h2>
         </div>
     </div>
 
 </div>
-
     <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
 
         <h4 class="fw-bold mb-3">
             Attendance Overview
         </h4>
+        
 
         <div style="height:300px;">
             <canvas id="attendanceChart"></canvas>
@@ -140,30 +141,30 @@
             </div>
 
             <!-- Stats -->
-            <div class="row g-3 mb-4">
+           <div class="row g-3 mb-4">
 
-                <div class="col-md-4">
-                    <div class="p-3 rounded-4 bg-light text-center">
-                        <small class="text-muted">Total Classes</small>
-                        <h3 class="fw-bold">{{ course_data.total }}</h3>
-                    </div>
-                </div>
+    <div class="col-md-4">
+        <div class="stat-card border-success">
+            <small>Total Classes</small>
+            <h3>{{ course_data.total }}</h3>
+        </div>
+    </div>
 
-                <div class="col-md-4">
-                    <div class="p-3 rounded-4 bg-success bg-opacity-10 text-center">
-                        <small class="text-success">Present</small>
-                        <h3 class="fw-bold text-success">{{ course_data.present }}</h3>
-                    </div>
-                </div>
+    <div class="col-md-4">
+        <div class="stat-card border-primary">
+            <small>Present</small>
+            <h3>{{ course_data.present }}</h3>
+        </div>
+    </div>
 
-                <div class="col-md-4">
-                    <div class="p-3 rounded-4 bg-danger bg-opacity-10 text-center">
-                        <small class="text-danger">Absent</small>
-                        <h3 class="fw-bold text-danger">{{ course_data.absent }}</h3>
-                    </div>
-                </div>
+    <div class="col-md-4">
+        <div class="stat-card border-danger">
+            <small>Absent</small>
+            <h3>{{ course_data.absent }}</h3>
+        </div>
+    </div>
 
-            </div>
+</div>
 
             <!-- Progress -->
             {% if course_data.total > 0 %}

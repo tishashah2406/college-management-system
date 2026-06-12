@@ -230,7 +230,6 @@ def teacher_profile(request, teacher_id):
         'teacher': teacher,
         'courses': teacher.courses.all()
     })
-  
 #-----------------edit teacher profile-------------------------
 @login_required
 def edit_teacher_profile(request, teacher_id):
@@ -762,7 +761,6 @@ def teacher_progress(request):
         'progress_list': progress_list,
         'teacher': teacher
     })
-
 
 from django.shortcuts import render, redirect
 from .models import Teacher, TeacherLeave

@@ -487,7 +487,6 @@ def view_assignments(request, course_id):
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from students.models import Student
-
 @login_required
 def student_assignments_dashboard(request):
 
@@ -495,42 +494,59 @@ def student_assignments_dashboard(request):
 
     courses = student.courses.all()
 
-    #  Get all assignments for student's courses
-    assignments = Assignment.objects.filter(course__in=courses)
+    assignments = Assignment.objects.filter(
+        course__in=courses
+    )
 
-    # Total assignments
     total_assignments = assignments.count()
 
-    #  Submitted assignments by this student
     submitted_count = Submission.objects.filter(
         student=student,
         assignment__in=assignments
     ).count()
 
-    #  Pending
     pending_count = total_assignments - submitted_count
 
-    return render(request, 'students/student_assignments_dashboard.html', {
-        'student': student,
-        'courses': courses,
+    course_data = []
 
-        # chart data
-        'chart_total': total_assignments,
-        'chart_submitted': submitted_count,
-        'chart_pending': pending_count,
-    })
+    for course in courses:
 
-def student_assignment_detail(request,course_id,assignment_id):
-    student = get_object_or_404(Student,user=request.user)
-    course = get_object_or_404(Course,id=course_id)
-    assignment = get_object_or_404(Assignment,id=assignment_id,course=course)
-    submission = Submission.objects.filter(student=student,assignment=assignment).first()
+        assignments_count = Assignment.objects.filter(
+            course=course
+        ).count()
 
-    return render(request,'students/student_assignment_detail.html',{
-        'course':course,
-        'assignment':assignment,
-        'submission':submission
-    })
+        submitted_course_count = Submission.objects.filter(
+            student=student,
+            assignment__course=course
+        ).count()
+
+        pending_course_count = (
+            assignments_count - submitted_course_count
+        )
+
+        course_data.append({
+            'course': course,
+            'assignments_count': assignments_count,
+            'submitted_count': submitted_course_count,
+            'pending_count': pending_course_count,
+        })
+
+    return render(
+        request,
+        'students/student_assignments_dashboard.html',
+        {
+            'student': student,
+
+            'courses': courses,
+
+            'course_data': course_data,
+
+            # Overall statistics
+            'chart_total': total_assignments,
+            'chart_submitted': submitted_count,
+            'chart_pending': pending_count,
+        }
+    )
 
 @login_required
 def view_submissions(request,course_id,assignment_id):
@@ -544,6 +560,8 @@ def view_submissions(request,course_id,assignment_id):
         'assignment':assignment,
         'submission':submission
     })
+
+
 
 def view_grades(request,course_id,assignments_id):
     student = get_object_or_404(Student,user=request.user)
