@@ -51,6 +51,54 @@
         </div>
     </div>
 
+    <div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center">
+                <small class="text-muted">Overall Attendance</small>
+                <h3 class="fw-bold text-primary">
+                    {{ overall_percentage }}%
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center">
+                <small class="text-muted">Total Classes</small>
+                <h3 class="fw-bold">
+                    {{ total_classes }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center">
+                <small class="text-success">Present</small>
+                <h3 class="fw-bold text-success">
+                    {{ present_classes }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body text-center">
+                <small class="text-danger">Absent</small>
+                <h3 class="fw-bold text-danger">
+                    {{ absent_classes }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
     <div class="card border-0 shadow-sm rounded-4 mb-4">
     <div class="card-body">
 
@@ -64,7 +112,23 @@
 
     </div>
 </div>
+
     <!-- Attendance Cards -->
+     {% if overall_percentage < 75 %}
+
+<div class="alert alert-danger rounded-4 mb-4">
+    <i class="bi bi-exclamation-triangle"></i>
+    Warning! Your attendance is below 75%.
+</div>
+
+{% elif overall_percentage >= 90 %}
+
+<div class="alert alert-success rounded-4 mb-4">
+    <i class="bi bi-check-circle"></i>
+    Excellent! Your attendance is above 90%.
+</div>
+
+{% endif %}
     {% for course_data in attendance_data %}
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -214,5 +278,63 @@ if (canvas) {
 }
 
 </script>
+<div class="card border-0 shadow-sm rounded-4 mb-4">
 
+    <div class="card-body">
+
+        <h4 class="fw-bold mb-3">
+            Course Summary
+        </h4>
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Classes</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Attendance</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for course_data in attendance_data %}
+
+                <tr>
+
+                    <td>{{ course_data.course.name }}</td>
+
+                    <td>{{ course_data.total }}</td>
+
+                    <td class="text-success">
+                        {{ course_data.present }}
+                    </td>
+
+                    <td class="text-danger">
+                        {{ course_data.absent }}
+                    </td>
+
+                    <td>
+
+                        {% if course_data.total > 0 %}
+                            {% widthratio course_data.present course_data.total 100 %}%
+                        {% else %}
+                            0%
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
 {% endblock %}

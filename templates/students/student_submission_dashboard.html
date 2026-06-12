@@ -26,7 +26,7 @@
         <!-- SUBJECT CARD -->
         <div class="card mb-4 shadow-sm">
 
-            <div class="card-header">
+            <div class="card-header bg-dark">
                 <h5 class="mb-0">
                     📘 {{ course_name }}
                 </h5>
@@ -47,7 +47,7 @@
                             </h6>
 
                             <small class="text-muted">
-                                Submitted: {{ sub.submitted_at|date:"d M Y, h:i A" }}
+                                Submitted:{{ sub.submitted_at|timesince }} ago
                             </small>
                         </div>
 

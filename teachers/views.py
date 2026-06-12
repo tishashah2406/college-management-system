@@ -763,6 +763,7 @@ def teacher_progress(request):
         'teacher': teacher
     })
 
+
 from django.shortcuts import render, redirect
 from .models import Teacher, TeacherLeave
 from django.contrib.auth.decorators import login_required
@@ -784,7 +785,7 @@ def apply_leave(request):
         )
 
         Notification.objects.create(
-            message=f"📝 {teacher.name} applied for leave"
+            message=f" {teacher.name} applied for leave"
         )
 
         return redirect('leave_dashboard')  

@@ -263,14 +263,6 @@ def add_note(request, student_id, course_id):
         'course': course
     })
 
-def add_note(request,student_id,course_id):
-    student = get_object_or_404(Student,id=student_id,user=request.user)
-    course = get_object_or_404(Course,id=course_id)
-
-    if request.method =="POST":
-        content = request.POST.get("content")
-        Note.objects.create(course=course,content=content)
-        return redirect('student_notes')
 #-------------delete note--------------------------
 @login_required
 def delete_note(request,student_id,course_id,note_id):
@@ -298,28 +290,44 @@ def course_progress(request, course_id):
     })
 
 @login_required
+@login_required
 def student_attendance_dashboard(request):
-    student = Student.objects.filter(user=request.user).first()
+
+    student = Student.objects.filter(
+        user=request.user
+    ).first()
+
     if not student:
-        return render(request, 'students/error.html', {
-            'message': 'Student profile not found.'
-        })
+        return render(
+            request,
+            'students/error.html',
+            {
+                'message': 'Student profile not found.'
+            }
+        )
 
     courses = student.courses.all()
 
-    # Get filter values from GET params
+    # Filters
     selected_course_id = request.GET.get('course')
-    month_input = request.GET.get('month')  
+
+    month_input = request.GET.get('month')
+
     if not month_input:
         month_input = datetime.now().strftime('%Y-%m')
 
     year, month = month_input.split('-')
 
-    # Filter attendance per course
     attendance_data = []
+
+    # Monthly Attendance Data
     for course in courses:
-        if selected_course_id and int(selected_course_id) != course.id:
-            continue  
+
+        if (
+            selected_course_id and
+            int(selected_course_id) != course.id
+        ):
+            continue
 
         records = Attendance.objects.filter(
             student=student,
@@ -329,34 +337,84 @@ def student_attendance_dashboard(request):
         ).order_by('-date')
 
         total = records.count()
-        present = records.filter(status="Present").count()
-        absent = records.filter(status="Absent").count()
+
+        present = records.filter(
+            status='Present'
+        ).count()
+
+        absent = records.filter(
+            status='Absent'
+        ).count()
 
         attendance_data.append({
             'course': course,
             'records': records,
             'total': total,
             'present': present,
-            'absent': absent
+            'absent': absent,
         })
 
-        chart_present = 0
-        chart_absent = 0
+    # Chart Data (Selected Month)
+    chart_present = 0
+    chart_absent = 0
 
-        for item in attendance_data:
-            chart_present += item['present']
-            chart_absent += item['absent']
+    for item in attendance_data:
 
-    return render(request, 'students/student_attendance_dashboard.html', {
-        'student': student,
-        'courses': courses,
-        'attendance_data': attendance_data,
-        'selected_course_id': selected_course_id,
-        'month_input': month_input,
-        'chart_present': chart_present,
-        'chart_absent': chart_absent,
-   })
+        chart_present += item['present']
 
+        chart_absent += item['absent']
+
+    # Overall Attendance (All Time)
+    all_records = Attendance.objects.filter(
+        student=student
+    )
+
+    if selected_course_id:
+
+        all_records = all_records.filter(
+            course_id=selected_course_id
+        )
+
+    total_classes = all_records.count()
+
+    present_classes = all_records.filter(
+        status='Present'
+    ).count()
+
+    absent_classes = all_records.filter(
+        status='Absent'
+    ).count()
+
+    overall_percentage = round(
+        (present_classes / total_classes) * 100,
+        2
+    ) if total_classes > 0 else 0
+
+    return render(
+        request,
+        'students/student_attendance_dashboard.html',
+        {
+            'student': student,
+
+            'courses': courses,
+
+            'attendance_data': attendance_data,
+
+            'selected_course_id': selected_course_id,
+
+            'month_input': month_input,
+
+            # Monthly Chart
+            'chart_present': chart_present,
+            'chart_absent': chart_absent,
+
+            # Overall Stats
+            'total_classes': total_classes,
+            'present_classes': present_classes,
+            'absent_classes': absent_classes,
+            'overall_percentage': overall_percentage,
+        }
+    )
 from django.utils import timezone
 from django.contrib import messages
 
@@ -392,8 +450,8 @@ def submit_assignment(request, course_id, assignment_id):
         )
        
         teachers = Teacher.objects.filter(
-    courses=assignment.course
-)
+            courses=assignment.course
+        )
 
         for teacher in teachers:
             Notification.objects.create(
@@ -518,6 +576,7 @@ def student_submission_dashboard(request):
     return render(request, 'students/student_submission_dashboard.html',{
         'grouped_submissions': dict(grouped)
     })
+
 @login_required
 def delete_submission(request, submission_id):
     student = get_object_or_404(Student, user=request.user)

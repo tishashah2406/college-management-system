@@ -26,7 +26,6 @@ class AuthMixin:
 
         return redirect('home')
 
-
 # ================= LOGIN VIEW =================
 class LoginView(AuthMixin, View):
 
@@ -86,7 +85,6 @@ class LoginView(AuthMixin, View):
             request,
             user
         )
-
 
 # ================= REGISTER VIEW =================
 class RegisterView(AuthMixin, View):
@@ -226,7 +224,7 @@ class RegisterView(AuthMixin, View):
                     )
 
                     Notification.objects.create(
-                        message=f"🎓 {username} joined as a student"
+                        message=f" {username} joined as a student"
                     )
 
                 # TEACHER
@@ -246,13 +244,13 @@ class RegisterView(AuthMixin, View):
                     )
 
                     Notification.objects.create(
-                        message=f"👨‍🏫 {username} joined as a teacher"
+                        message=f"{username} joined as a teacher"
                     )
 
                     # Teacher Notification
                     Notification.objects.create(
                         user=user,
-                        message="🎉 Welcome to Teacher Portal"
+                        message=" Welcome to Teacher Portal"
                     )
 
                 else:
@@ -261,7 +259,6 @@ class RegisterView(AuthMixin, View):
                         request,
                         "Invalid user type"
                     )
-
 
                     return render(
                         request,
@@ -277,7 +274,7 @@ class RegisterView(AuthMixin, View):
 
                  Notification.objects.create(
                     user=admin,
-                    message=f"🔔 New {user_type}: {username}"
+                    message=f" New {user_type}: {username}"
                 )
 
         except Exception as e:

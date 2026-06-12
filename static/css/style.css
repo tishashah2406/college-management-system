@@ -81,7 +81,8 @@ body{
     color:#ffffff;
     border-radius:16px;
     padding:25px;
-    box-shadow:0 4px 15px rgba(0,0,0,.4);
+    box-shadow:0 4px 15px rgba(190, 51, 51, 0.4);
+    border-left:5px solid #682beb;
 }
 
 .dashboard-card small{
@@ -379,6 +380,7 @@ body.dark textarea{
     padding:20px;
     text-align:center;
     box-shadow:0 4px 12px rgba(0,0,0,.08);
+     border-left:5px solid #7c11e0;
 }
 .dashboard-page{
     padding:30px;
@@ -397,6 +399,7 @@ body.dark textarea{
     padding:25px;
     margin-bottom:25px;
     box-shadow:0 5px 20px rgba(0,0,0,.08);
+    border-left:5px solid #682beb;
 }
 
 .stats-grid{
@@ -412,6 +415,7 @@ body.dark textarea{
     border-radius:18px;
     text-align:center;
     box-shadow:0 4px 15px rgba(0,0,0,.08);
+    border-left:5px solid #682beb;
 }
 
 .stat-card h3{
@@ -487,6 +491,7 @@ body.dark textarea{
     padding:25px;
     margin-bottom:25px;
     box-shadow:0 5px 20px rgba(0,0,0,.08);
+    border-left:5px solid #682beb;
 }
 
 .stats-grid{
@@ -502,6 +507,7 @@ body.dark textarea{
     border-radius:16px;
     text-align:center;
     box-shadow:0 4px 15px rgba(0,0,0,.08);
+    border-left:5px solid #682beb;
 }
 
 .stat-card h3{
@@ -729,6 +735,7 @@ color:#ef4444;
     text-align:center;
     box-shadow:0 4px 15px rgba(0,0,0,.08);
     transition:.3s;
+     border-left:5px solid #682beb;
 }
 
 .stat-card:hover{
