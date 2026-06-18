@@ -10,6 +10,7 @@ from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 
 from django.views.decorators.vary import vary_on_headers
+from teachers.models import Teacher
 
 from .models import Student, CourseProgress, Submission
 from courses.models import Assignment
@@ -23,20 +24,38 @@ from courses.serializers import (
 )
 
 class StudentViewSet(ModelViewSet):
+
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+
+        if self.request.user.is_superuser:
+            return Student.objects.all()
+
+        if Teacher.objects.filter(
+            user=self.request.user
+        ).exists():
+            return Student.objects.all()
+
+        return Student.objects.filter(
+            user=self.request.user
+        )
     # ================ LOGGED-IN DASHBOARD =================
     @method_decorator(cache_page(60 * 5))
     @method_decorator(vary_on_headers("Authorization"))
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def dashboard(self, request):
 
-        student = Student.objects.filter(user=request.user).first()
-        if not student:
-            return Response({"error": "Student profile not found"}, status=404)
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
 
-        courses = student.courses.all()
+        courses = student.courses.prefetch_related(
+            "assignments"
+        )
 
         return Response({
             "student": StudentSerializer(student).data,
@@ -59,6 +78,15 @@ class StudentViewSet(ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[IsAuthenticated], url_path="dashboard-by-id")
     def dashboard_by_id(self, request, pk=None):
 
+        if not request.user.is_superuser and not Teacher.objects.filter(
+            user=request.user
+        ).exists():
+
+            return Response(
+                {"error": "Permission denied"},
+                status=403
+            )
+
         student = get_object_or_404(Student, id=pk)
         courses = student.courses.all()
 
@@ -80,68 +108,88 @@ class StudentViewSet(ModelViewSet):
         })
 
     # ================= SUBMIT ASSIGNMENT =================
-    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    @action(
+        detail=False,
+        methods=['post'],
+        permission_classes=[IsAuthenticated]
+    )
     def submit_assignment(self, request):
 
         assignment_id = request.data.get("assignment_id")
 
-        student = Student.objects.filter(user=request.user).first()
-        if not student:
-            return Response({"error": "Student not found"}, status=404)
+        # Only students can submit
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
 
-        assignment = get_object_or_404(Assignment, id=assignment_id)
+        assignment = get_object_or_404(
+            Assignment,
+            id=assignment_id
+        )
 
-        file = request.FILES.get('file')
+        file = request.FILES.get("file")
+
         if not file:
-            return Response({"error": "File is required"}, status=400)
-
-        # check enrollment
-        if assignment.course not in student.courses.all():
-            return Response({"error": "Not enrolled"}, status=403)
-
-        # get existing submission safely
-        submission = Submission.objects.filter(
-            student=student,
-            assignment=assignment
-        ).first()
-
-        if submission:
-            submission.file = file
-            submission.submitted_at = now()
-            submission.save()
-            created = False
-        else:
-            submission = Submission.objects.create(
-                student=student,
-                assignment=assignment,
-                file=file,
-                submitted_at=now()
+            return Response(
+                {"error": "File is required"},
+                status=400
             )
-            created = True
 
-        # late submission check
-        
-        is_late = False
-        if assignment.due_date:
-            is_late = submission.submitted_at.date() > assignment.due_date
+        # Check enrollment
+        if not student.courses.filter(
+            id=assignment.course.id
+        ).exists():
 
-        cache.clear()
+            return Response(
+                {"error": "Not enrolled in this course"},
+                status=403
+            )
+
+        # Create or update submission
+        submission, created = Submission.objects.update_or_create(
+            student=student,
+            assignment=assignment,
+            defaults={
+                "file": file,
+                "submitted_at": now()
+            }
+        )
+
+        # Late submission check
+        is_late = (
+            assignment.due_date and
+            submission.submitted_at.date() > assignment.due_date
+        )
+
+        # Clear cache
+        cache.delete(f"student_dashboard_{student.id}")
+        cache.delete(f"student_analytics_{student.id}")
 
         return Response({
-            "message": "Submitted successfully",
+
+            "message": (
+                "Assignment submitted successfully"
+                if created
+                else "Assignment updated successfully"
+            ),
+
             "created": created,
+
             "is_late": is_late,
-            "submission": SubmissionSerializer(submission).data
+
+            "submission": SubmissionSerializer(
+                submission
+            ).data
         })
-    
+        
     #assignment_progress
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def progress_report(self,request):
-        student = Student.objects.filter(user=request.user).first()
-
-        if not student:
-            return Response({"error":"student not student"},status=404)
-        
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
         data=[]
 
         for course in student.courses.all():
@@ -170,16 +218,10 @@ class StudentViewSet(ModelViewSet):
     @action(detail=False,methods=['get'],permission_classes=[IsAuthenticated])
     def student_analytics(self, request):
 
-        student = Student.objects.filter(
+        student = get_object_or_404(
+            Student,
             user=request.user
-        ).first()
-
-        if not student:
-            return Response(
-                {"error": "Student not found"},
-                status=404
-            )
-
+        )
         courses_data = []
 
         total_assignments_all = 0

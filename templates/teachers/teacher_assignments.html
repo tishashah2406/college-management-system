@@ -32,12 +32,60 @@
                 {% if a.course.id == course.id %}
 
                 <li class="list-item">
-                    <div>
-                        <strong>{{ a.title }}</strong>
-                        <br>
-                        <small>📅 Due: {{ a.due_date }}</small>
-                    </div>
-                </li>
+
+    <div>
+
+        <strong>{{ a.title }}</strong>
+
+        <br>
+
+        <small>
+            📅 Due: {{ a.due_date }}
+        </small>
+
+
+        {% if a.attachment %}
+
+        <br>
+
+        <a href="{{ a.attachment.url }}"
+           class="btn btn-info btn-sm mt-2">
+
+            📎 Download Attachment
+
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <div>
+
+        <div>
+
+    <a href="{% url 'edit_assignment' a.id %}"
+       class="btn btn-warning btn-sm">
+
+        ✏️ Edit
+
+    </a>
+
+
+    <a href="{% url 'delete_assignment' a.id %}"
+       class="btn btn-danger btn-sm"
+       onclick="return confirm('Are you sure you want to delete this assignment?')">
+
+        🗑 Delete
+
+    </a>
+
+</div>
+
+    </div>
+
+
+</li>
 
                 {% endif %}
 

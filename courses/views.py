@@ -296,9 +296,9 @@ def assignment_create(request):
             due_date=due_date if due_date else None,
             description=description
         )
-        
+
         Notification.objects.create(
-            message=f"📝 Assignment uploaded: {assignment.title}"
+            message=f" Assignment uploaded: {assignment.title}"
         )
 
         messages.success(request, "Assignment created successfully")
@@ -320,6 +320,67 @@ def assignment_confirm_delete(request, pk):
         'assignment': assignment
     })
 
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
+@login_required
+def edit_assignment(request, id):
+
+    teacher = request.user.teacher
+
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=id,
+        course__in=teacher.courses.all()
+    )
+
+
+    courses = teacher.courses.all()
+
+
+    if request.method == "POST":
+
+        assignment.title = request.POST.get('title')
+
+        assignment.description = request.POST.get('description')
+
+        assignment.course_id = request.POST.get('course')
+
+        assignment.due_date = request.POST.get('due_date')
+
+
+        print("FILES:", request.FILES)
+
+        if 'attachment' in request.FILES:
+
+            file = request.FILES['attachment']
+
+            print("UPLOADED FILE:", file.name)
+
+            assignment.attachment = file
+
+            assignment.save()
+
+
+            messages.success(
+                request,
+                "Assignment updated successfully"
+            )
+
+
+        return redirect(
+            'teacher_assignments'
+        )
+
+
+    return render(
+        request,
+        'teachers/edit_assignment.html',
+        {
+            'assignment': assignment,
+            'courses': courses
+        }
+    )
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status

@@ -561,8 +561,6 @@ def view_submissions(request,course_id,assignment_id):
         'submission':submission
     })
 
-
-
 def view_grades(request,course_id,assignments_id):
     student = get_object_or_404(Student,user=request.user)
     course = get_object_or_404(Course,id=course_id)

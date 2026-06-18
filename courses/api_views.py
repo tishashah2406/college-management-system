@@ -17,20 +17,32 @@ from .serializers import (
     SubmissionSerializer
 )
 
+from rest_framework.permissions import IsAuthenticated
 # ===================== COURSE VIEWSET =====================
 
 class CourseViewSet(viewsets.ModelViewSet):
 
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-
+    permission_classes = [IsAuthenticated]
     # ===================== ENROLL =====================
 
     @action(detail=True, methods=['post'])
     def enroll(self, request, pk=None):
 
-        student = Student.objects.get(user=request.user)
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
         course = self.get_object()
+
+        if student.courses.filter(
+            id=course.id
+        ).exists():
+            return Response({
+                "message": "Already enrolled"
+            })
 
         student.courses.add(course)
 
@@ -40,13 +52,18 @@ class CourseViewSet(viewsets.ModelViewSet):
             defaults={'progress': 0}
         )
 
-        return Response({"message": "Enrolled successfully"})
+        return Response({
+            "message": "Enrolled successfully"
+        })
     # ===================== UNENROLL =====================
 
     @action(detail=True, methods=['post'])
     def unenroll(self, request, pk=None):
 
-        student = Student.objects.get(user=request.user)
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
         course = self.get_object()
 
         student.courses.remove(course)
@@ -87,7 +104,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def update_progress(self, request, pk=None):
 
-        student = Student.objects.get(user=request.user)
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
 
         progress, _ = CourseProgress.objects.get_or_create(
             student=student,
@@ -117,6 +137,15 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def add_note(self, request, pk=None):
+       
+       if not Teacher.objects.filter(
+            user=request.user
+        ).exists():
+
+            return Response(
+                {"error": "Only teachers can add notes"},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
        course = self.get_object()
 
@@ -224,8 +253,10 @@ class AssignmentViewSet(viewsets.ModelViewSet):
 
     queryset = Assignment.objects.all()
     serializer_class = AssignmentSerializer
+    permission_classes = [IsAuthenticated]
 
 class NoteViewSet(viewsets.ModelViewSet):
 
     queryset = Note.objects.all()
     serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]

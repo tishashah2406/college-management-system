@@ -584,14 +584,15 @@ def create_assignment(request, course_id):
         title = request.POST.get('title')
         description = request.POST.get('description')
         due_date = request.POST.get('due_date')
+        attachment=request.FILES.get('attachment')
 
         assignment = Assignment.objects.create(
             title=title,
             description=description,
             due_date=due_date,
-            course=course
+            course=course,
+            attachment=attachment
         )
-
         students = Student.objects.filter(
             courses=course
         )
@@ -709,17 +710,81 @@ def delete_assignment(request,assignment_id):
         'assignment':assignment
     })
 
-def edit_assignment(request,assignment_id):
-    assignment = get_object_or_404(Assignment,id=assignment_id)
-    if request.method =="POST":
-        assignment.title =request.POST.get('title')
-        assignment.description = request.POST.get('description')
-        assignment.due_date = request.POST.get('due_date')
+@login_required
+def edit_assignment(request, assignment_id):
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id
+    )
+
+
+    if request.method == "POST":
+
+        assignment.title = request.POST.get(
+            'title'
+        )
+
+        assignment.description = request.POST.get(
+            'description'
+        )
+
+        assignment.due_date = request.POST.get(
+            'due_date'
+        )
+
+
+        # update attachment
+        if request.FILES.get('attachment'):
+
+            assignment.attachment = request.FILES.get(
+                'attachment'
+            )
+
+
         assignment.save()
-        return redirect('teacher_dashboard')
-    return render(request,'teachers/edit_assignment.html',{
-        'assignment':assignment
-    })
+
+
+        messages.success(
+            request,
+            "Assignment updated successfully"
+        )
+
+
+        return redirect(
+            'teacher_dashboard'
+        )
+
+
+    return render(
+        request,
+        'teachers/edit_assignment.html',
+        {
+            'assignment': assignment
+        }
+    )
+
+@login_required
+def delete_assignment(request, assignment_id):
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id
+    )
+
+
+    assignment.delete()
+
+
+    messages.success(
+        request,
+        "Assignment deleted successfully"
+    )
+
+
+    return redirect(
+        'teacher_assignments'
+    )
 
 @login_required
 def teacher_assignments(request):

@@ -164,7 +164,7 @@ table tr:hover td{
 
 canvas{
     width:100% !important;
-    height:100% !important;
+    height:300px !important;
 }
 </style>
 </head>
@@ -174,10 +174,16 @@ canvas{
 <!-- SIDEBAR -->
 <div class="sidebar">
 
-<h4 class="logo mb-3">🎓 College</h4>
+<h4 class="logo mb-3">
+    <i class="bi bi-mortarboard-fill"></i>
+    EduTrack
+</h4>
 
 <div class="menu-section mb-2">MAIN</div>
-<a href="/">🏠 Home</a>
+<a href="/">
+    <i class="bi bi-house-door-fill me-2"></i>
+    Home
+</a>
 
 {% if user.is_authenticated %}
 
@@ -328,7 +334,7 @@ data-bs-toggle="dropdown">
 <div class="hero-section">
     <div class="hero-overlay">
         <div class="hero-content">
-            <h1>Welcome To College Management System</h1>
+            <h1>Welcome To EduTrack – Learning Management System</h1>
             <p>Smart platform for students, teachers, courses, attendance and analytics.</p>
         </div>
     </div>
@@ -394,20 +400,54 @@ data-bs-toggle="dropdown">
 <!-- DASHBOARD -->
 <div class="row mt-4">
 
-    <div class="col-md-3"><div class="dashboard-card">Total Students <h2>{{ students_count }}</h2></div></div>
-    <div class="col-md-3"><div class="dashboard-card">Total Teachers <h2>{{ teachers_count }}</h2></div></div>
-    <div class="col-md-3"><div class="dashboard-card">Total Courses <h2>{{ courses_count }}</h2></div></div>
+    <div class="col-md-4 mb-3">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Total Students</small>
+                    <h2>{{ students_count }}</h2>
+                </div>
+                <i class="bi bi-people-fill fs-1 text-success"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Total Teachers</small>
+                    <h2>{{ teachers_count }}</h2>
+                </div>
+                <i class="bi bi-person-workspace fs-1 text-warning"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Total Courses</small>
+                    <h2>{{ courses_count }}</h2>
+                </div>
+                <i class="bi bi-book-fill fs-1 text-primary"></i>
+            </div>
+        </div>
+    </div>
 
 </div>
 
-<div class="row mt-4">
+<div class="chart-box">
 
-    <div class="col-md-6">
-        <div class="chart-box">
-            <h5>Attendance Overview</h5>
-            <canvas id="attendanceChart"></canvas>
-        </div>
-    </div>
+<h4>
+Student Enrollment Chart
+</h4>
+
+<canvas id="studentCourseChart"></canvas>
+
+</div>
+
 
     <div class="col-md-6">
         <div class="chart-box">
@@ -466,6 +506,63 @@ data-bs-toggle="dropdown">
 {% endblock %}
 
 </div>
+<script>
 
+document.addEventListener(
+"DOMContentLoaded",
+function(){
+
+
+const ctx = document.getElementById(
+'studentCourseChart'
+);
+
+
+new Chart(ctx, {
+
+type:'bar',
+
+data:{
+
+
+labels: JSON.parse('{{ course_names|escapejs }}'),
+
+
+datasets:[{
+
+label:'Students',
+
+data: JSON.parse('{{ course_students|escapejs }}')
+
+}]
+
+},
+
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false,
+
+scales:{
+
+y:{
+
+beginAtZero:true
+
+}
+
+}
+
+}
+
+});
+
+
+});
+
+
+</script>
 </body>
 </html>

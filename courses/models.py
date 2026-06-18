@@ -39,10 +39,25 @@ class Note(models.Model):
 
 #  Assignment 
 class Assignment(models.Model):
+
     title = models.CharField(max_length=200)
+
     description = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE
+    )
+
     due_date = models.DateField()
+
+
+    attachment = models.FileField(
+        upload_to='assignments/',
+        blank=True,
+        null=True
+    )
+
 
     def __str__(self):
         return self.title

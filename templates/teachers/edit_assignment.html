@@ -1,0 +1,126 @@
+{% extends 'home.html' %}
+
+
+{% block content %}
+
+
+<div class="container">
+
+<h2>Edit Assignment</h2>
+
+
+<form method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+
+
+<label>Title</label>
+
+<input 
+class="form-control"
+name="title"
+value="{{ assignment.title }}">
+
+
+
+<label>Description</label>
+
+<textarea
+class="form-control"
+name="description">
+
+{{ assignment.description }}
+
+</textarea>
+
+
+
+<label>Course</label>
+
+<select 
+name="course"
+class="form-control">
+
+
+{% for course in courses %}
+
+<option 
+value="{{course.id}}"
+
+{% if course.id == assignment.course.id %}
+selected
+{% endif %}
+
+>
+
+{{course.name}}
+
+</option>
+
+
+{% endfor %}
+
+</select>
+
+
+
+<label>Due Date</label>
+
+<input 
+type="date"
+class="form-control"
+name="due_date"
+value="{{ assignment.due_date|date:'Y-m-d' }}">
+
+
+<label>
+Current Attachment
+</label>
+
+
+{% if assignment.attachment %}
+
+<p>
+
+<a href="{{ assignment.attachment.url }}"
+class="btn btn-info btn-sm">
+
+📎 View Current Attachment
+
+</a>
+
+</p>
+
+{% else %}
+
+<p>
+No attachment uploaded
+</p>
+
+{% endif %}
+
+
+
+<label>
+Change Attachment
+</label>
+
+
+<input 
+type="file"
+name="attachment"
+class="form-control">
+<button class="btn btn-success mt-3">
+
+Update
+
+</button>
+
+
+</form>
+
+
+</div>
+
+
+{% endblock %}
