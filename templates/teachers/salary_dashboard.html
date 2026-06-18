@@ -43,21 +43,28 @@
   <div class="card-body">
 
     <!-- TOP IMPORTANT SUMMARY -->
-    <div class="row text-center mb-4">
-
       <div class="col-md-4 mb-3">
-        <h6>Base Salary</h6>
-        <h4>₹{{ salary.base_salary }}</h4>
+        <i class="bi bi-cash-stack fs-1 text-success"></i>
+
+<h6>Base Salary</h6>
+<h4>₹{{ salary.base_salary }}</h4>
       </div>
 
       <div class="col-md-4 mb-3">
-        <h6>Deduction</h6>
-        <h4>₹{{ salary.deduction }}</h4>
+        <i class="bi bi-wallet2 fs-1 text-danger"></i>
+
+<h6>Deduction</h6>
+<h4>₹{{ salary.deduction }}</h4>
       </div>
 
       <div class="col-md-4 mb-3">
-        <h6>Final Salary</h6>
-        <h4 class="salary-final">₹{{ salary.final_salary }}</h4>
+       <i class="bi bi-bank fs-1 text-primary"></i>
+
+<h6>Final Salary</h6>
+
+<h4 class="salary-final">
+₹{{ salary.final_salary }}
+</h4>
       </div>
 
     </div>
@@ -68,23 +75,31 @@
     <div class="row text-center mb-3">
 
       <div class="col-md-3 mb-3">
-        <h6>Total Days</h6>
-        <h4>{{ salary.total_days }}</h4>
+        <i class="bi bi-calendar-check fs-2"></i>
+
+<h6>Total Days</h6>
+<h4>{{ salary.total_days }}</h4>
       </div>
 
       <div class="col-md-3 mb-3">
-        <h6>Working Days</h6>
-        <h4>{{ salary.working_days }}</h4>
+        <i class="bi bi-calendar2-week fs-2"></i>
+
+<h6>Working Days</h6>
+<h4>{{ salary.working_days }}</h4>
       </div>
 
       <div class="col-md-3 mb-3">
-        <h6>Leave Days</h6>
-        <h4>{{ salary.total_leave_days }}</h4>
+       <i class="bi bi-calendar-x fs-2 text-warning"></i>
+
+<h6>Leave Days</h6>
+<h4>{{ salary.total_leave_days }}</h4>
       </div>
 
       <div class="col-md-3 mb-3">
-        <h6>Sundays</h6>
-        <h4>{{ salary.sundays }}</h4>
+       <i class="bi bi-sun fs-2 text-warning"></i>
+
+<h6>Sundays</h6>
+<h4>{{ salary.sundays }}</h4>
       </div>
 
     </div>
@@ -93,15 +108,29 @@
     <div class="row text-center">
 
       <div class="col-md-6 mb-3">
-        <h6>Paid Leave</h6>
-        <h4>{{ salary.paid_leave_days }}</h4>
-      </div>
 
-      <div class="col-md-6 mb-3">
-        <h6>Unpaid Leave</h6>
-        <h4>{{ salary.unpaid_leave_days }}</h4>
-      </div>
+    <i class="bi bi-calendar-check fs-1 text-success"></i>
 
+    <h6>Paid Leave</h6>
+
+    <h4>
+        {{ salary.paid_leave_days }}
+    </h4>
+
+</div>
+
+
+<div class="col-md-6 mb-3">
+
+    <i class="bi bi-calendar-x fs-1 text-danger"></i>
+
+    <h6>Unpaid Leave</h6>
+
+    <h4>
+        {{ salary.unpaid_leave_days }}
+    </h4>
+
+</div>
     </div>
 
   </div>

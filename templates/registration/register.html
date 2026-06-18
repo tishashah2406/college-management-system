@@ -4,98 +4,157 @@
 {% block content %}
 
 <style>
-body{
+
+*{
     margin:0;
+    padding:0;
+    box-sizing:border-box;
     font-family:'Segoe UI',sans-serif;
 }
 
-.register-container{
+
+.register-page{
     min-height:100vh;
     display:flex;
-    justify-content:center;
-    align-items:center;
+}
+
+
+/* LEFT */
+
+.register-left-panel{
+    flex:1;
     background:linear-gradient(135deg,#4f46e5,#7c3aed);
-    padding:20px;
+    color:white !important;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:60px;
 }
 
-.register-card{
-    width:450px;
-    background:#fff;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 15px 35px rgba(0,0,0,0.15);
+
+.register-left-panel h1{
+    color:white !important;
+    font-size:42px;
 }
 
-.register-header{
-    text-align:center;
-    margin-bottom:30px;
+
+.register-left-panel p{
+    color:white !important;
+    font-size:18px;
 }
 
-.register-header h2{
-    margin:0;
-    color:#222;
-    font-size:32px;
-}
 
-.register-header p{
-    color:#777;
-    margin-top:8px;
-}
-
-.input-group{
-    margin-bottom:18px;
-}
-
-.input-group label{
-    display:block;
-    margin-bottom:8px;
-    font-weight:600;
-    color:#333;
-}
-
-.input-group input{
-    width:100%;
-    padding:14px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    font-size:15px;
-    outline:none;
-    transition:0.3s;
-}
-
-.input-group input:focus{
-    border-color:#4f46e5;
-    box-shadow:0 0 0 3px rgba(79,70,229,.15);
-}
-
-.role-selection{
+.logo{
+    font-size:60px;
     margin-bottom:20px;
 }
 
-.role-selection label{
-    font-weight:600;
-    color:#333;
-    display:block;
-    margin-bottom:10px;
+
+
+/* RIGHT */
+
+.register-right-panel{
+
+    flex:1;
+    background:#f8fafc;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
 }
+
+
+
+.register-box{
+    width:430px;
+    background:white;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+
+.register-box h2{
+    color:#0f172a !important;
+}
+
+
+.register-box p{
+    color:#64748b !important;
+}
+
+
+.register-box label{
+    color:#222 !important;
+}
+
+
+.register-box input{
+    color:#111 !important;
+    background:white !important;
+}
+
+
+.register-box input::placeholder{
+    color:#777 !important;
+}
+
+
+.login-link{
+    color:#333 !important;
+}
+
+
+.form-group{
+
+    margin-bottom:18px;
+
+}
+
+
+.form-group label{
+
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#222;
+
+}
+
+
+
+.form-group input{
+
+    width:100%;
+    padding:13px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    color:#111;
+}
+
+
+
+.role-selection label{
+
+    color:#222;
+    font-weight:600;
+
+}
+
+
 
 .role-options{
+
     display:flex;
     gap:20px;
+    margin:15px 0;
+
 }
 
-.role-options label{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    cursor:pointer;
-}
 
-#salary_field{
-    display:none;
-}
 
 .register-btn{
+
     width:100%;
     padding:14px;
     border:none;
@@ -104,150 +163,331 @@ body{
     color:white;
     font-size:16px;
     font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
+
 }
+
 
 .register-btn:hover{
+
     background:#4338ca;
+
 }
 
-.error-msg{
-    background:#ffe5e5;
-    color:#d63031;
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:15px;
+
+
+#salary_field{
+
+    display:none;
+
 }
 
-.success-msg{
-    background:#e8f8ec;
-    color:#27ae60;
-    padding:12px;
-    border-radius:8px;
-    margin-bottom:15px;
-}
 
 .login-link{
-    text-align:center;
+
     margin-top:20px;
+    text-align:center;
+    color:#333;
+
 }
 
+
 .login-link a{
+
     color:#4f46e5;
     text-decoration:none;
     font-weight:600;
+
 }
 
-.login-link a:hover{
-    text-decoration:underline;
+
+
+.error-msg{
+
+background:#fee2e2;
+color:#dc2626;
+padding:10px;
+border-radius:8px;
+margin-bottom:15px;
+
 }
+
+
+.success-msg{
+
+background:#dcfce7;
+color:#16a34a;
+padding:10px;
+border-radius:8px;
+margin-bottom:15px;
+
+}
+
+
+
+@media(max-width:768px){
+
+.left-panel{
+display:none;
+}
+
+}
+
 </style>
 
-<div class="register-container">
 
-    <div class="register-card">
 
-        <div class="register-header">
-            <h2>Create Account</h2>
-            <p>Join the EduTrack – Learning Management System Portal</p>
-        </div>
+<div class="register-page">
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
+<div class="register-left-panel">
 
-            <div class="input-group">
-                <label>Username</label>
-                <input type="text" name="username" placeholder="Enter username" required>
-            </div>
+<div class="logo">🎓</div>
 
-            <div class="input-group">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="Enter email address" required>
-            </div>
 
-            <div class="input-group">
-                <label>Password</label>
-                <input type="password" name="password" placeholder="Create password" required>
-            </div>
+<h1>
+EduTrack – Learning Management System
+</h1>
 
-            <div class="input-group">
-                <label>Age</label>
-                <input type="number" name="age" placeholder="Enter age" required>
-            </div>
 
-            <div class="role-selection">
-                <label>Register As</label>
+<p>
 
-                <div class="role-options">
-                    <label>
-                        <input type="radio"
-                               name="user_type"
-                               value="student"
-                               checked>
-                        Student
-                    </label>
+Create your account and manage
+students, teachers, courses,
+attendance and assignments.
 
-                    <label>
-                        <input type="radio"
-                               name="user_type"
-                               value="teacher">
-                        Teacher
-                    </label>
-                </div>
-            </div>
+</p>
 
-            <div class="input-group" id="salary_field">
-                <label>Salary</label>
-                <input type="number"
-                       name="salary"
-                       placeholder="Enter salary">
-            </div>
-
-            <button type="submit" class="register-btn">
-                Create Account
-            </button>
-        </form>
-
-        <div class="login-link">
-            Already have an account?
-            <a href="{% url 'login' %}">
-                Login
-            </a>
-        </div>
-
-    </div>
 
 </div>
 
+
+
+<div class="register-right-panel">
+<div class="register-box">
+
+
+<h2>Create Account</h2>
+
+<p>Join EduTrack Portal</p>
+
+
+
+{% if messages %}
+
+{% for message in messages %}
+
+<div class="{% if message.tags == 'error' %}error-msg{% else %}success-msg{% endif %}">
+
+{{ message }}
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+
+
+
+
+<form method="POST">
+
+{% csrf_token %}
+
+
+
+<div class="form-group">
+
+<label>Username</label>
+
+<input type="text"
+name="username"
+placeholder="Enter username"
+required>
+
+</div>
+
+
+
+
+<div class="form-group">
+
+<label>Email</label>
+
+<input type="email"
+name="email"
+placeholder="Enter email"
+required>
+
+</div>
+
+
+
+
+<div class="form-group">
+
+<label>Password</label>
+
+<input type="password"
+name="password"
+placeholder="Create password"
+required>
+
+</div>
+
+
+
+
+<div class="form-group">
+
+<label>Age</label>
+
+<input type="number"
+name="age"
+placeholder="Enter age"
+required>
+
+</div>
+
+
+
+
+<div class="role-selection">
+
+
+<label>Register As</label>
+
+
+<div class="role-options">
+
+
+<label>
+
+<input type="radio"
+name="user_type"
+value="student"
+checked>
+
+Student
+
+</label>
+
+
+
+<label>
+
+<input type="radio"
+name="user_type"
+value="teacher">
+
+Teacher
+
+</label>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="form-group" id="salary_field">
+
+
+<label>Salary</label>
+
+
+<input type="number"
+name="salary"
+placeholder="Enter salary">
+
+
+</div>
+
+
+
+
+
+<button class="register-btn">
+
+Create Account
+
+</button>
+
+
+</form>
+
+
+
+
+<div class="login-link">
+
+Already have account?
+
+<a href="{% url 'login' %}">
+Login
+</a>
+
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
 <script>
-const userTypeRadios = document.querySelectorAll(
-    'input[name="user_type"]'
+
+const radios =
+document.querySelectorAll(
+'input[name="user_type"]'
 );
 
-const salaryField = document.getElementById(
-    'salary_field'
+
+const salary =
+document.getElementById(
+'salary_field'
 );
 
-userTypeRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
 
-        if(this.value === 'teacher'){
-            salaryField.style.display = 'block';
-        } else {
-            salaryField.style.display = 'none';
-        }
 
-    });
+radios.forEach(r=>{
+
+r.addEventListener('change',()=>{
+
+
+if(r.checked && r.value=="teacher"){
+
+salary.style.display="block";
+
+}
+
+else{
+
+salary.style.display="none";
+
+}
+
+
 });
+
+
+});
+
+
 </script>
+
 
 {% endblock %}

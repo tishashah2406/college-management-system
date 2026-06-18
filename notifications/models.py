@@ -9,6 +9,11 @@ class Notification(models.Model):
         on_delete=models.CASCADE
     )
 
+    title = models.CharField(
+        max_length=100,
+        default="Notification"
+    )
+
     message = models.CharField(
         max_length=255
     )
@@ -21,5 +26,6 @@ class Notification(models.Model):
         auto_now_add=True
     )
 
+
     def __str__(self):
-        return self.message
+        return self.title

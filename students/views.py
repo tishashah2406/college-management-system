@@ -290,7 +290,6 @@ def course_progress(request, course_id):
     })
 
 @login_required
-@login_required
 def student_attendance_dashboard(request):
 
     student = Student.objects.filter(

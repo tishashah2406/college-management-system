@@ -89,7 +89,6 @@ def home(request):
         )
 
 
-
     context = {
 
     'students_count': students_count,

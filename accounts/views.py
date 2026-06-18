@@ -218,14 +218,26 @@ class RegisterView(AuthMixin, View):
                     )
 
                     # Student Notification
-                    Notification.objects.create(
-                        user=user,
-                        message=" Welcome to College Management System"
-                    )
+                    # Student notification
 
                     Notification.objects.create(
-                        message=f" {username} joined as a student"
+                        user=user,
+                        message="Welcome to College Management System"
                     )
+
+
+                    # Notify admins
+
+                    admins = User.objects.filter(
+                        is_superuser=True
+                    )
+
+                    for admin in admins:
+
+                        Notification.objects.create(
+                            user=admin,
+                            message=f"New student joined: {username}"
+                        )
 
                 # TEACHER
                 elif user_type == "teacher":
@@ -243,9 +255,17 @@ class RegisterView(AuthMixin, View):
                         salary=salary
                     )
 
-                    Notification.objects.create(
-                        message=f"{username} joined as a teacher"
+                    admins = User.objects.filter(
+                        is_superuser=True
                     )
+
+
+                    for admin in admins:
+
+                        Notification.objects.create(
+                            user=admin,
+                            message=f"New teacher joined: {username}"
+                        )
 
                     # Teacher Notification
                     Notification.objects.create(
