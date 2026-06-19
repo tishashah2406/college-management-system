@@ -1,0 +1,49 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h3>My Complaints</h3>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Reply</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% for complaint in complaints %}
+
+            <tr>
+                <td>{{ complaint.category }}</td>
+                <td>{{ complaint.title }}</td>
+                <td>{{ complaint.status }}</td>
+                <td>{{ complaint.reply }}</td>
+                <td>{{ complaint.created_at }}</td>
+            </tr>
+
+        {% empty %}
+
+            <tr>
+                <td colspan="5" class="text-center">
+                    No complaints found
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

@@ -79,7 +79,6 @@ def home(request):
             courses=course
         ).count()
 
-
         course_names.append(
             course.name
         )
@@ -130,3 +129,4 @@ def contact(request):
         request,
         'contact.html'
     )
+

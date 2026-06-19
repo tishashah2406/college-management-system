@@ -1,0 +1,70 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card">
+
+        <div class="card-header">
+            <h3>Complaint Details</h3>
+        </div>
+
+        <div class="card-body">
+
+            <p><strong>Student:</strong> {{ complaint.student }}</p>
+
+            <p><strong>Category:</strong> {{ complaint.category }}</p>
+
+            <p><strong>Title:</strong> {{ complaint.title }}</p>
+
+            <p><strong>Description:</strong></p>
+
+            <div class="alert alert-light">
+                {{ complaint.description }}
+            </div>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <label>Status</label>
+
+                <select name="status" class="form-control">
+
+                    <option value="Pending">Pending</option>
+
+                    <option value="In Progress">In Progress</option>
+
+                    <option value="Resolved">Resolved</option>
+
+                </select>
+
+                <br>
+
+                <label>Reply</label>
+
+                <textarea
+                    name="reply"
+                    class="form-control"
+                    rows="5"></textarea>
+
+                <br>
+
+                <button
+                    type="submit"
+                    class="btn btn-success">
+
+                    Save
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

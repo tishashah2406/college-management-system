@@ -718,7 +718,6 @@ def edit_assignment(request, assignment_id):
         id=assignment_id
     )
 
-
     if request.method == "POST":
 
         assignment.title = request.POST.get(
@@ -733,7 +732,6 @@ def edit_assignment(request, assignment_id):
             'due_date'
         )
 
-
         # update attachment
         if request.FILES.get('attachment'):
 
@@ -741,20 +739,16 @@ def edit_assignment(request, assignment_id):
                 'attachment'
             )
 
-
         assignment.save()
-
 
         messages.success(
             request,
             "Assignment updated successfully"
         )
 
-
         return redirect(
             'teacher_dashboard'
         )
-
 
     return render(
         request,
@@ -772,15 +766,12 @@ def delete_assignment(request, assignment_id):
         id=assignment_id
     )
 
-
     assignment.delete()
-
 
     messages.success(
         request,
         "Assignment deleted successfully"
     )
-
 
     return redirect(
         'teacher_assignments'
@@ -925,4 +916,3 @@ def leave_dashboard(request):
             'leaves': leaves
         }
     )
-

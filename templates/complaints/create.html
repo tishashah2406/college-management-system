@@ -1,0 +1,105 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        Raise Complaint
+                    </h4>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST" enctype="multipart/form-data">
+
+                        {% csrf_token %}
+
+                        <!-- Course -->
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Course
+                            </label>
+                            {{ form.course }}
+                        </div>
+
+                        <!-- Category & Priority -->
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Complaint Category
+                                </label>
+                                {{ form.category }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Priority
+                                </label>
+                                {{ form.priority }}
+                            </div>
+
+                        </div>
+
+                        <!-- Title -->
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Complaint Title
+                            </label>
+                            {{ form.title }}
+                        </div>
+
+                        <!-- Description -->
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Description
+                            </label>
+                            {{ form.description }}
+                        </div>
+
+                        <!-- Attachment -->
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Attachment (Optional)
+                            </label>
+                            {{ form.attachment }}
+                        </div>
+
+                        <div class="text-end">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                Submit Complaint
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

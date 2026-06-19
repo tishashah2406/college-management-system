@@ -1,0 +1,44 @@
+{% extends "home.html" %}
+
+{% block content %}
+
+<h3>My Complaints</h3>
+
+<table class="table">
+
+<tr>
+
+    <th>Category</th>
+    <th>Title</th>
+    <th>Status</th>
+    <th>Reply</th>
+
+</tr>
+
+{% for complaint in complaints %}
+
+<tr>
+
+    <td>
+        {{ complaint.category }}
+    </td>
+
+    <td>
+        {{ complaint.title }}
+    </td>
+
+    <td>
+        {{ complaint.status }}
+    </td>
+
+    <td>
+        {{ complaint.reply }}
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock %}

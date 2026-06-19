@@ -194,6 +194,12 @@ canvas{
         <a href="/teachers/">👩‍🏫 Teachers</a>
         <a href="/courses/">📚 Courses</a>
         <a href="/admin/">⚙ Admin Panel</a>
+        <li>
+    <a href="{% url 'admin_complaints' %}">
+        <i class="fas fa-tools"></i>
+        Complaint Management
+    </a>
+</li>
 
     {% elif is_teacher and teacher %}
         <div class="menu-section mt-3 mb-2">TEACHER</div>
@@ -209,6 +215,12 @@ canvas{
         <a href="{% url 'teacher_profile' teacher.id %}">👤 Profile</a>
         <a href="{% url 'salary_dashboard' %}">💰 Salary</a>
        <a href="{% url 'leave_dashboard' %}">📝 Leave</a>
+       <li>
+    <a href="{% url 'teacher_complaints' %}">
+        <i class="fas fa-ticket-alt"></i>
+        Subject Complaints
+    </a>
+</li>
        
     {% elif is_student and student %}
         <div class="menu-section mt-3 mb-2">STUDENT</div>
@@ -220,6 +232,19 @@ canvas{
         <a href="{% url 'student_notes' %}">📖 Notes</a>
         <a href="{% url 'student_submission_dashboard' %}">📂 Submissions</a>
         <a href="{% url 'student_profile' student.id %}">👤 Profile</a>
+        <li>
+    <a href="{% url 'create_complaint' %}">
+        <i class="fas fa-exclamation-circle"></i>
+        Raise Complaint
+    </a>
+</li>
+
+<li>
+    <a href="{% url 'my_complaints' %}">
+        <i class="fas fa-list"></i>
+        My Complaints
+    </a>
+</li>
     {% endif %}
 
 {% endif %}
@@ -303,6 +328,13 @@ data-bs-toggle="dropdown">
 </div>
 
 </div>
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
 <!-- Django Messages -->
 
 {% if messages %}
@@ -329,7 +361,6 @@ data-bs-toggle="dropdown">
 
 {% if not user.is_authenticated %}
 
-<!-- (UNCHANGED CONTENT BELOW) -->
 
 <div class="hero-section">
     <div class="hero-overlay">
