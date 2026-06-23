@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+
 from .models import Contact
 
 def contact(request):
@@ -33,5 +35,22 @@ def contact(request):
 
         {
             'success': success
+        }
+    )
+
+
+def admin_complaints(request):
+
+
+    complaints = complaints.objects.filter(
+        assigned_admin=request.user
+    )
+
+
+    return render(
+        request,
+        "admin/complaints.html",
+        {
+        "complaints":complaints
         }
     )

@@ -20,3 +20,22 @@ def notification_data(request):
         }
 
     return {}
+
+# notifications/context_processors.py
+
+from .models import Notification
+
+def notification_count(request):
+
+    if request.user.is_authenticated:
+
+        unread_notifications = Notification.objects.filter(
+            user=request.user,
+            is_read=False
+        ).count()
+
+        return {
+            "unread_notifications": unread_notifications
+        }
+
+    return {}

@@ -40,4 +40,16 @@ path(
     name='resolve_complaint'
 ),
 
+path(
+    "edit/<int:id>/",
+    views.edit_complaint,
+    name="edit_complaint"
+),
+
+path(
+    "delete/<int:id>/",
+    views.delete_complaint,
+    name="delete_complaint"
+),
+
 ]

@@ -13,27 +13,44 @@
 .login-page{
     min-height:100vh;
     display:flex;
+    background:#090d16;
 }
 
 .left-panel{
-    flex:1;
-    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    flex:1.2;
+    background:radial-gradient(circle at top left, #1e1b4b, #090d16);
     color:white;
     display:flex;
     flex-direction:column;
     justify-content:center;
-    padding:60px;
+    padding:80px;
+    position:relative;
+    border-right:1px solid #1e293b;
+}
+
+.left-panel::before {
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    background:linear-gradient(135deg, rgba(79, 70, 229, 0.1), transparent);
+    pointer-events:none;
 }
 
 .left-panel h1{
     font-size:42px;
     margin-bottom:20px;
+    font-weight:700;
+    letter-spacing:-1px;
 }
 
 .left-panel p{
     font-size:18px;
     line-height:1.8;
     max-width:500px;
+    color:#94a3b8 !important;
 }
 
 .logo{
@@ -46,98 +63,118 @@
     display:flex;
     justify-content:center;
     align-items:center;
-    background:#f8fafc;
+    background:#090d16;
 }
 
 .login-card{
-    width:400px;
-    background:white;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.1);
+    width:420px;
+    background:#111827;
+    padding:50px 40px;
+    border-radius:24px;
+    border:1px solid #1e293b;
+    box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);
 }
 
 .login-card h2{
-    margin-bottom:10px;
-    color:#0f172a;
+    margin-bottom:8px;
+    color:#f8fafc !important;
+    font-size:30px;
+    font-weight:700;
 }
 
 .login-card p{
-    color:#64748b;
-    margin-bottom:25px;
+    color:#64748b !important;
+    margin-bottom:35px;
 }
 
 .form-group{
-    margin-bottom:20px;
+    margin-bottom:24px;
 }
 
 .form-group label{
     display:block;
     margin-bottom:8px;
-    font-weight:600;
+    font-weight:500;
+    color:#94a3b8 !important;
+    font-size:14px;
 }
 
 .form-group input{
     width:100%;
-    padding:14px;
-    border:1px solid #d1d5db;
-    border-radius:10px;
+    padding:14px 16px;
+    border:1px solid #334155;
+    background:#1f2937 !important;
+    color:#f8fafc !important;
+    border-radius:12px;
     outline:none;
+    transition:all 0.2s;
 }
 
 .form-group input:focus{
     border-color:#4f46e5;
+    box-shadow:0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
 .login-btn{
     width:100%;
     padding:14px;
-    background:#4f46e5;
+    background:linear-gradient(135deg, #4f46e5, #6366f1);
     color:white;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
     font-size:16px;
     font-weight:600;
+    transition:opacity 0.2s;
+    box-shadow:0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 .login-btn:hover{
-    background:#4338ca;
+    opacity:0.95;
 }
 
 .extra-links{
-    margin-top:20px;
+    margin-top:24px;
     display:flex;
     justify-content:space-between;
+    font-size:14px;
 }
 
 .extra-links a{
     text-decoration:none;
-    color:#4f46e5;
+    color:#6366f1 !important;
+    font-weight:500;
+}
+
+.extra-links a:hover{
+    text-decoration:underline;
 }
 
 .error-msg{
-    background:#fee2e2;
-    color:#dc2626;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:15px;
+    background:rgba(220, 38, 38, 0.15);
+    color:#f87171 !important;
+    border:1px solid rgba(220, 38, 38, 0.2);
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:14px;
 }
 
 .success-msg{
-    background:#dcfce7;
-    color:#16a34a;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:15px;
+    background:rgba(22, 163, 74, 0.15);
+    color:#4ade80 !important;
+    border:1px solid rgba(22, 163, 74, 0.2);
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-size:14px;
 }
 
-@media(max-width:768px){
+@media(max-width:992px){
     .left-panel{
         display:none;
     }
 }
-/* Fix text visibility */
 
 .left-panel,
 .left-panel h1,
@@ -146,33 +183,12 @@
     color: #ffffff !important;
 }
 
-
 .right-panel {
-    background:#f8fafc !important;
+    background:#090d16 !important;
 }
-
-
-.login-card,
-.login-card h2,
-.login-card p,
-.login-card label {
-    color:#0f172a !important;
-}
-
-
-.form-group input {
-    color:#111827 !important;
-    background:#ffffff !important;
-}
-
 
 .form-group input::placeholder {
-    color:#6b7280 !important;
-}
-
-
-.extra-links a {
-    color:#4f46e5 !important;
+    color:#4b5563 !important;
 }
 </style>
 

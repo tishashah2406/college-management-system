@@ -1,0 +1,41 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-danger text-white">
+            Delete Complaint
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                Are you sure you want to delete:
+                <strong>{{ complaint.title }}</strong> ?
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Delete
+                </button>
+
+                <a href="{% url 'my_complaints' %}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

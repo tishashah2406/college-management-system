@@ -2,48 +2,170 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
 
-    <h3>My Complaints</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Complaints</h2>
 
-    <table class="table table-bordered">
+        <a href="{% url 'create_complaint' %}"
+           class="btn btn-primary">
+            + New Complaint
+        </a>
+    </div>
 
-        <thead>
-            <tr>
-                <th>Category</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Reply</th>
-                <th>Date</th>
-            </tr>
-        </thead>
+    <div class="row mb-4">
 
-        <tbody>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6>Total</h6>
+                    <h3>{{ total }}</h3>
+                </div>
+            </div>
+        </div>
 
-        {% for complaint in complaints %}
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6>Pending</h6>
+                    <h3>{{ pending }}</h3>
+                </div>
+            </div>
+        </div>
 
-            <tr>
-                <td>{{ complaint.category }}</td>
-                <td>{{ complaint.title }}</td>
-                <td>{{ complaint.status }}</td>
-                <td>{{ complaint.reply }}</td>
-                <td>{{ complaint.created_at }}</td>
-            </tr>
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6>In Progress</h6>
+                    <h3>{{ progress }}</h3>
+                </div>
+            </div>
+        </div>
 
-        {% empty %}
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6>Resolved</h6>
+                    <h3>{{ resolved }}</h3>
+                </div>
+            </div>
+        </div>
 
-            <tr>
-                <td colspan="5" class="text-center">
-                    No complaints found
-                </td>
-            </tr>
+    </div>
+    <div class="card shadow border-0">
 
-        {% endfor %}
+    <div class="card-header">
+        Complaint History
+    </div>
 
-        </tbody>
+    <div class="card-body">
 
-    </table>
+        <table class="table table-hover align-middle">
+
+            <thead class="table-light">
+<tr>
+    <th>ID</th>
+    <th>Category</th>
+    <th>Title</th>
+    <th>Status</th>
+    <th>Actions</th>
+    <th>Reply</th>
+    <th>Date</th>
+</tr>
+</thead>
+
+            <tbody>
+
+            {% for complaint in complaints %}
+
+                <tr>
+
+                    <td>#{{ complaint.id }}</td>
+
+                    <td>
+                        {{ complaint.category }}
+                    </td>
+
+                    <td>
+                        {{ complaint.title }}
+                    </td>
+
+                    <td>
+
+                        {% if complaint.status == "Pending" %}
+                            <span class="badge bg-warning">
+                                Pending
+                            </span>
+
+                        {% elif complaint.status == "In Progress" %}
+                            <span class="badge bg-info">
+                                In Progress
+                            </span>
+
+                        {% elif complaint.status == "Resolved" %}
+                            <span class="badge bg-success">
+                                Resolved
+                            </span>
+                        {% endif %}
+
+                    </td>
+                    <td>
+
+    {% if complaint.status == "Pending" %}
+
+        <a href="{% url 'edit_complaint' complaint.id %}"
+           class="btn btn-warning btn-sm">
+           Edit
+        </a>
+
+        <a href="{% url 'delete_complaint' complaint.id %}"
+           class="btn btn-danger btn-sm">
+           Delete
+        </a>
+
+    {% else %}
+
+        <span class="badge bg-secondary">
+            Locked
+        </span>
+
+    {% endif %}
+
+</td>
+
+                    <td>
+
+                        {% if complaint.reply %}
+                            {{ complaint.reply|truncatechars:40 }}
+                        {% else %}
+                            <span class="text-muted">
+                                No Reply
+                            </span>
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ complaint.created_at|date:"d M Y" }}
+                    </td>
+
+                </tr>
+
+            {% empty %}
+
+                <tr>
+                    <td colspan="7" class="text-center">
+                        No complaints found
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
-
 {% endblock %}

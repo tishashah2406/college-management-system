@@ -624,4 +624,4 @@ def edit_submission(request, submission_id):
 
     return render(request, 'students/edit_submission.html', {
         'submission': submission
-    })    
+    }) 

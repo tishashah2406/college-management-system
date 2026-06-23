@@ -68,156 +68,115 @@
 
 <!-- Courses Table -->
 
-<div class="table-card">
+<div class="row">
 
-    <table class="table table-hover align-middle">
+{% for course in courses %}
 
-        <thead>
+<div class="col-lg-4 col-md-6 mb-4">
 
-            <tr>
+    <div class="card border-0 shadow-sm h-100">
 
-                <th>Name</th>
-                <th>Code</th>
-                <th>Duration</th>
-                <th>Fees</th>
-                <th>Actions</th>
+        <div class="card-body">
 
-            </tr>
+            <div class="d-flex justify-content-between">
 
-        </thead>
+                <h5 class="fw-bold">
+                    {{ course.name }}
+                </h5>
 
-        <tbody>
+                <span class="badge bg-primary">
+                    {{ course.code }}
+                </span>
 
-            {% for course in courses %}
+            </div>
 
-            <tr>
+            <hr>
 
-                <td>
+            <p class="mb-2">
+                <i class="bi bi-clock"></i>
+                {{ course.duration }} Months
+            </p>
 
-                    <strong>
-                        {{ course.name }}
-                    </strong>
+            <p class="mb-2">
+                <i class="bi bi-currency-rupee"></i>
+                {{ course.fees }}
+            </p>
 
-                </td>
+            <p class="mb-3">
+                <i class="bi bi-people"></i>
+                {{ course.student_set.count }}
+                Students
+            </p>
 
-                <td>
+            {% if is_student %}
 
-                    <span class="badge bg-secondary">
-                        {{ course.code }}
-                    </span>
+                {% if course in user.student.courses.all %}
 
-                </td>
+                    <form method="POST"
+                          action="{% url 'unenroll_course' course.id %}">
+                        {% csrf_token %}
 
-                <td>
+                        <button class="btn btn-danger w-100">
 
-                    {{ course.duration }} Months
+                            Unenroll
 
-                </td>
+                        </button>
 
-                <td>
+                    </form>
 
-                    ₹ {{ course.fees }}
+                {% else %}
 
-                </td>
+                    <form method="POST"
+                          action="{% url 'enroll_course' course.id %}">
+                        {% csrf_token %}
 
-                <td>
+                        <button class="btn btn-success w-100">
 
-                    {% if is_student %}
+                            Enroll Now
 
-                        {% if course in user.student.courses.all %}
+                        </button>
 
-                            <form
-                                method="POST"
-                                action="{% url 'unenroll_course' course.id %}"
-                                style="display:inline;">
+                    </form>
 
-                                {% csrf_token %}
+                {% endif %}
 
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger btn-sm">
+            {% elif can_edit %}
 
-                                    Unenroll
+                <div class="d-flex gap-2">
 
-                                </button>
+                    <a href="{% url 'course_dashboard' course.id %}"
+                       class="btn btn-primary flex-fill">
 
-                            </form>
+                        View
 
-                        {% else %}
+                    </a>
 
-                            <form
-                                method="POST"
-                                action="{% url 'enroll_course' course.id %}"
-                                style="display:inline;">
+                    <a href="{% url 'edit_course' course.id %}"
+                       class="btn btn-warning">
 
-                                {% csrf_token %}
+                        <i class="bi bi-pencil"></i>
 
-                                <button
-                                    type="submit"
-                                    class="btn btn-success btn-sm">
+                    </a>
 
-                                    Enroll
+                    <a href="{% url 'course_delete' course.id %}"
+                       class="btn btn-danger"
+                       onclick="return confirm('Delete course?')">
 
-                                </button>
+                        <i class="bi bi-trash"></i>
 
-                            </form>
+                    </a>
 
-                        {% endif %}
+                </div>
 
-                    {% elif can_edit %}
+            {% endif %}
 
-                        <a
-                            href="{% url 'course_dashboard' course.id %}"
-                            class="action-icon view-icon"
-                            title="Dashboard">
+        </div>
 
-                            <i class="bi bi-speedometer2"></i>
-
-                        </a>
-
-                        <a
-                            href="{% url 'edit_course' course.id %}"
-                            class="action-icon edit-icon"
-                            title="Edit">
-
-                            <i class="bi bi-pencil-square"></i>
-
-                        </a>
-
-                        <a
-                            href="{% url 'course_delete' course.id %}"
-                            class="action-icon delete-icon"
-                            title="Delete"
-                            onclick="return confirm('Delete this course?');">
-
-                            <i class="bi bi-trash"></i>
-
-                        </a>
-
-                    {% endif %}
-
-                </td>
-
-            </tr>
-
-            {% empty %}
-
-            <tr>
-
-                <td colspan="5" class="text-center text-muted">
-
-                    No courses available.
-
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
 
+{% endfor %}
+
+</div>
 {% endblock %}
