@@ -226,7 +226,6 @@ def delete_note(request, note_id):
     note.delete()
 
     return redirect('course_notes', course_id=course_id)
- 
 # ---------------- ASSIGNMENTS ----------------
 @login_required
 def course_assignments(request, course_id):
@@ -327,7 +326,6 @@ def edit_assignment(request, id):
 
     teacher = request.user.teacher
 
-
     assignment = get_object_or_404(
         Assignment,
         id=id,
@@ -403,7 +401,7 @@ class CourseListCreateAPI(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+       
 class CourseDetailAPI(APIView):
 
     def get(self, request, pk):
@@ -425,4 +423,3 @@ class CourseDetailAPI(APIView):
         course = get_object_or_404(Course, id=pk)
         course.delete()
         return Response({"message": "Deleted successfully"})
-    
