@@ -398,7 +398,9 @@ def mark_attendance(request):
             )
 
             Notification.objects.create(
-                message=f" Attendance marked for {student.name}"
+                user=student.user,
+                title="Attendance Updated",
+                message=f"Attendance marked for {student.name}"
             )
 
         return redirect('attendance_dashboard')
@@ -600,7 +602,8 @@ def create_assignment(request, course_id):
         for student in students:
             Notification.objects.create(
                 user=student.user,
-                message=f" New Assignment: {assignment.title}"
+                title="New Assignment",
+                message=f"Assignment '{assignment.title}' is available."
             )
 
         return redirect('teacher_dashboard')
@@ -626,22 +629,42 @@ def grade_submissions(request,assignment_id):
         
 @login_required
 def grade_assignment(request, assignment_id):
-    assignment = get_object_or_404(Assignment, id=assignment_id)
-    submissions = Submission.objects.filter(assignment=assignment)
+
+    assignment = get_object_or_404(
+        Assignment,
+        id=assignment_id
+    )
+
+    submissions = Submission.objects.filter(
+        assignment=assignment
+    )
 
     if request.method == "POST":
+
         for submission in submissions:
-            grade = request.POST.get(f'grade_{submission.id}')
+
+            grade = request.POST.get(
+                f'grade_{submission.id}'
+            )
+
             if grade:
                 submission.grade = int(grade)
                 submission.save()
 
-        return redirect('teacher_dashboard') 
 
-    return render(request, 'teachers/grade_assignment.html', {
-        'assignment': assignment,
-        'submissions': submissions
-    })
+        return redirect(
+            'teacher_submissions'
+        )
+
+
+    return render(
+        request,
+        'teachers/grade_assignment.html',
+        {
+            'assignment': assignment,
+            'submissions': submissions
+        }
+    )
 
 def view_assignments(request,course_id):
     course = get_object_or_404(Course,id=course_id)
@@ -867,7 +890,7 @@ def save_teacher_salary(teacher, salary_data):
             'final_salary': salary_data["final_salary"],
         }
     )
-    
+
 @login_required
 def salary_dashboard(request):
 
@@ -916,3 +939,4 @@ def leave_dashboard(request):
             'leaves': leaves
         }
     )
+

@@ -31,6 +31,8 @@ urlpatterns = [
      path('api/courses/', include('courses.api_urls')),
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
+    path("api/notifications/", include("notifications.api_urls")),
+    path("api/complaints/", include("complaints.api_urls")),
 ]
 
 #  IMPORTANT FIX

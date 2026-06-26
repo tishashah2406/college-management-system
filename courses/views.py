@@ -297,7 +297,9 @@ def assignment_create(request):
         )
 
         Notification.objects.create(
-            message=f" Assignment uploaded: {assignment.title}"
+            user=Student.user,   # or whoever should receive it
+            title="Assignment Uploaded",
+            message=f"Assignment '{assignment.title}' has been uploaded."
         )
 
         messages.success(request, "Assignment created successfully")
@@ -379,6 +381,7 @@ def edit_assignment(request, id):
             'courses': courses
         }
     )
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status

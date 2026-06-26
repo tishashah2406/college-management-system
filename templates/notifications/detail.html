@@ -1,0 +1,44 @@
+{% extends 'home.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+
+    <!-- Back Button -->
+   <a href="{% url 'notifications' %}"
+   class="btn btn-secondary mb-3">
+    ← Back
+</a>
+
+
+    <div class="card bg-dark text-white p-4">
+
+
+        <!-- Notification Title -->
+        <h3>
+            🔔 {{ notification.title }}
+        </h3>
+
+
+        <hr>
+
+
+        <!-- Message -->
+        <p class="mt-3">
+            {{ notification.message }}
+        </p>
+
+
+        <small class="text-muted">
+            {{ notification.created_at }}
+        </small>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}

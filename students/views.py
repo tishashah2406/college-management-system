@@ -453,9 +453,11 @@ def submit_assignment(request, course_id, assignment_id):
         )
 
         for teacher in teachers:
+
             Notification.objects.create(
                 user=teacher.user,
-                message=f" {student.name} submitted {assignment.title}"
+                title="Assignment Submitted",
+                message=f"{student.name} submitted {assignment.title}"
             )
 
         messages.success(request, "Assignment submitted successfully!")

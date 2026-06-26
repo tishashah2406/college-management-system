@@ -277,15 +277,25 @@ data-bs-toggle="dropdown">
 {% endif %}
 
 </button>
-
 <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary">
 
 {% for notification in recent_notifications %}
 
 <li>
-    <a class="dropdown-item text-light">
-        {{ notification.message }}
+
+    <a class="dropdown-item text-light"
+       href="{% url 'notification_detail' notification.id %}">
+
+
+        {% if not notification.is_read %}
+            🔵
+        {% endif %}
+
+        🔔 {{ notification.title }}
+
+
     </a>
+
 </li>
 
 {% empty %}
@@ -298,7 +308,11 @@ data-bs-toggle="dropdown">
 
 {% endfor %}
 
-<li><hr class="dropdown-divider"></li>
+
+<li>
+    <hr class="dropdown-divider">
+</li>
+
 
 <li>
     <a class="dropdown-item text-info"
@@ -306,7 +320,6 @@ data-bs-toggle="dropdown">
        View All
     </a>
 </li>
-
 
 
 </ul>
