@@ -5,6 +5,7 @@ from .api_views import (
     TeacherComplaintAPIView,
     AdminComplaintAPIView,
     ResolveComplaintAPIView,
+    UpdateComplaintAPIView,   # add this
 )
 
 urlpatterns = [
@@ -13,4 +14,6 @@ urlpatterns = [
     path("teacher/", TeacherComplaintAPIView.as_view(), name="teacher-complaints-api"),
     path("admin/", AdminComplaintAPIView.as_view(), name="admin-complaints-api"),
     path("resolve/<int:id>/", ResolveComplaintAPIView.as_view(), name="resolve-complaint-api"),
+
+    path("update/<int:id>/", UpdateComplaintAPIView.as_view(), name="update-complaint-api"),
 ]

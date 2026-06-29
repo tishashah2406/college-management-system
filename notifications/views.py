@@ -10,7 +10,6 @@ def notification_list(request):
         user=request.user
     ).order_by('-created_at')
 
-
     return render(
         request,
         'notifications/list.html',
@@ -21,7 +20,6 @@ def notification_list(request):
 
 from django.shortcuts import get_object_or_404, redirect
 
-
 @login_required
 def notification_detail(request, id):
 
@@ -31,10 +29,8 @@ def notification_detail(request, id):
         user=request.user
     )
 
-
     notification.is_read = True
     notification.save()
-
 
     return render(
         request,

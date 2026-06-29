@@ -26,7 +26,6 @@ class NotificationListAPIView(APIView):
             status=status.HTTP_200_OK
         )
 
-
 class NotificationDetailAPIView(APIView):
 
     def get(self, request, id):

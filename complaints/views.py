@@ -107,8 +107,6 @@ def create_complaint(request):
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Complaint
 
-
-
 @login_required
 def my_complaints(request):
 
@@ -148,16 +146,13 @@ def my_complaints(request):
 @login_required
 def teacher_complaints(request):
 
-
     teacher = Teacher.objects.get(
         user=request.user
     )
 
-
     complaints = Complaint.objects.filter(
         assigned_teacher=teacher
     )
-
 
     return render(
     request,

@@ -205,7 +205,6 @@ class CourseViewSet(viewsets.ModelViewSet):
         )
 
         return Response(serializer.data)
-
     
     @action(detail=True, methods=['get'])
     def analytics(self, request, pk=None):

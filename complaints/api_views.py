@@ -165,7 +165,7 @@ class AdminComplaintAPIView(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
-    
+
 class ResolveComplaintAPIView(APIView):
 
     def put(self, request, id):
@@ -226,4 +226,37 @@ class ResolveComplaintAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
-    
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Complaint
+from .serializers import ComplaintSerializer
+
+
+class UpdateComplaintAPIView(APIView):
+
+    def patch(self, request, id):
+
+        complaint = Complaint.objects.get(id=id)
+
+        data = {
+            "title": request.data.get("title", complaint.title),
+            "description": request.data.get("description", complaint.description),
+            "reply": request.data.get("reply", complaint.reply),
+        }
+
+        serializer = ComplaintSerializer(
+            complaint,
+            data=data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
