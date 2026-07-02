@@ -1,110 +1,282 @@
 {% extends 'home.html' %}
 {% block content %}
 
+<style>
+
+.dashboard-page{
+    padding:30px;
+    background:#f4f7fb;
+    min-height:100vh;
+}
+
+/* Header */
+
+.page-header{
+    background:linear-gradient(135deg,#4f46e5,#6366f1);
+    color:white;
+    padding:35px;
+    border-radius:18px;
+    margin-bottom:30px;
+    box-shadow:0 10px 30px rgba(79,70,229,.25);
+}
+
+.page-header h2{
+    margin:0;
+    font-weight:700;
+}
+
+.page-header p{
+    margin-top:8px;
+    opacity:.9;
+}
+
+/* Course Card */
+
+.dashboard-card{
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    transition:.3s;
+    border:none;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 18px 35px rgba(0,0,0,.12);
+}
+
+.course-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.section-title{
+    margin:0;
+    font-size:24px;
+    font-weight:700;
+    color:#1f2937;
+}
+
+/* Assignment Card */
+
+.assignment-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 20px;
+    margin-bottom:15px;
+    border-radius:15px;
+    border:1px solid #e5e7eb;
+    background:#fafafa;
+    transition:.3s;
+}
+
+.assignment-card:hover{
+    background:#ffffff;
+    border-color:#4f46e5;
+    transform:translateX(5px);
+}
+
+.assignment-title{
+    font-size:18px;
+    font-weight:700;
+    color:#111827;
+}
+
+.assignment-date{
+    color:#6b7280;
+    font-size:14px;
+}
+
+.assignment-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+/* Buttons */
+
+.btn-modern{
+    border:none;
+    border-radius:10px;
+    padding:8px 15px;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+    text-decoration:none;
+}
+
+.btn-create{
+    background:#16a34a;
+    color:white;
+}
+
+.btn-create:hover{
+    background:#15803d;
+    color:white;
+}
+
+.btn-download{
+    background:#0ea5e9;
+    color:white;
+}
+
+.btn-download:hover{
+    background:#0284c7;
+    color:white;
+}
+
+.btn-edit{
+    background:#f59e0b;
+    color:white;
+}
+
+.btn-edit:hover{
+    background:#d97706;
+    color:white;
+}
+
+.btn-delete{
+    background:#ef4444;
+    color:white;
+}
+
+.btn-delete:hover{
+    background:#dc2626;
+    color:white;
+}
+
+.btn-back{
+    background:#4f46e5;
+    color:white;
+    border-radius:12px;
+    padding:12px 20px;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.btn-back:hover{
+    color:white;
+    background:#4338ca;
+}
+
+.empty{
+    text-align:center;
+    padding:30px;
+    color:#9ca3af;
+    border:2px dashed #d1d5db;
+    border-radius:12px;
+    background:white;
+}
+
+</style>
+
 <div class="dashboard-page">
 
-    <!-- Header -->
     <div class="page-header">
         <h2>📝 Assignments Dashboard</h2>
         <p>Manage and track assignments for each course</p>
     </div>
 
-    <!-- Courses Loop -->
     {% for course in courses %}
 
     <div class="dashboard-card">
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <div class="course-header">
 
             <h3 class="section-title">
                 📚 {{ course.name }}
             </h3>
 
-            <a href="{% url 'create_assignment' course.id %}" class="btn btn-success btn-sm">
+            <a href="{% url 'create_assignment' course.id %}"
+               class="btn-modern btn-create">
                 ➕ Create Assignment
             </a>
 
         </div>
 
-        <ul class="modern-list">
+        {% for a in assignments %}
 
-            {% for a in assignments %}
-                {% if a.course.id == course.id %}
+            {% if a.course.id == course.id %}
 
-                <li class="list-item">
+            <div class="assignment-card">
 
-    <div>
+                <div>
 
-        <strong>{{ a.title }}</strong>
+                    <div class="assignment-title">
+                        {{ a.title }}
+                    </div>
 
-        <br>
+                    <div class="assignment-date">
+                        📅 Due Date : {{ a.due_date }}
+                    </div>
 
-        <small>
-            📅 Due: {{ a.due_date }}
-        </small>
+                    {% if a.attachment %}
 
+                    <div style="margin-top:10px;">
 
-        {% if a.attachment %}
+                        <a href="{{ a.attachment.url }}"
+                           class="btn-modern btn-download">
 
-        <br>
+                            📎 Download Attachment
 
-        <a href="{{ a.attachment.url }}"
-           class="btn btn-info btn-sm mt-2">
+                        </a>
 
-            📎 Download Attachment
+                    </div>
 
-        </a>
+                    {% endif %}
 
-        {% endif %}
+                </div>
 
-    </div>
+                <div class="assignment-actions">
 
-    <div>
+                    <a href="{% url 'edit_assignment' a.id %}"
+                       class="btn-modern btn-edit">
 
-        <div>
+                        ✏ Edit
 
-    <a href="{% url 'edit_assignment' a.id %}"
-       class="btn btn-warning btn-sm">
+                    </a>
 
-        ✏️ Edit
+                    <a href="{% url 'delete_assignment' a.id %}"
+                       class="btn-modern btn-delete"
+                       onclick="return confirm('Delete this assignment?')">
 
-    </a>
+                        🗑 Delete
 
+                    </a>
 
-    <a href="{% url 'delete_assignment' a.id %}"
-       class="btn btn-danger btn-sm"
-       onclick="return confirm('Are you sure you want to delete this assignment?')">
+                </div>
 
-        🗑 Delete
+            </div>
 
-    </a>
+            {% endif %}
 
-</div>
+        {% empty %}
 
-    </div>
+        <div class="empty">
 
+            📭 No assignments found for this course.
 
-</li>
+        </div>
 
-                {% endif %}
-
-            {% empty %}
-                <li class="list-item empty">
-                    No assignments found for this course
-                </li>
-            {% endfor %}
-
-        </ul>
+        {% endfor %}
 
     </div>
 
     {% endfor %}
 
-    <!-- Back Button -->
-    <div style="margin-top:20px;">
-        <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary">
+    <div style="margin-top:30px;">
+
+        <a href="{% url 'teacher_dashboard' %}" class="btn-back">
+
             ⬅ Back to Dashboard
+
         </a>
+
     </div>
 
 </div>

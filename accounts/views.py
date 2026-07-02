@@ -26,6 +26,7 @@ class AuthMixin:
 
         return redirect('home')
 
+
 # ================= LOGIN VIEW =================
 class LoginView(AuthMixin, View):
 
@@ -79,12 +80,32 @@ class LoginView(AuthMixin, View):
                 self.template_name
             )
 
+        # Teacher Approval Check
+        if user.groups.filter(name="Teacher").exists():
+
+            teacher = Teacher.objects.get(
+                user=user
+            )
+
+            if not teacher.is_approved:
+
+                messages.error(
+                    request,
+                    "Your teacher account is waiting for administrator approval."
+                )
+
+                return render(
+                    request,
+                    self.template_name
+                )
+
         login(request, user)
 
         return self.redirect_user(
             request,
             user
         )
+
 
 # ================= REGISTER VIEW =================
 class RegisterView(AuthMixin, View):
@@ -164,6 +185,7 @@ class RegisterView(AuthMixin, View):
 
         try:
             age = int(age) if age else 0
+
         except ValueError:
 
             messages.error(
@@ -178,6 +200,7 @@ class RegisterView(AuthMixin, View):
 
         try:
             salary = float(salary) if salary else 0
+
         except ValueError:
 
             messages.error(
@@ -201,11 +224,11 @@ class RegisterView(AuthMixin, View):
                     password=password
                 )
 
-                # STUDENT
+                # ================= STUDENT =================
                 if user_type == "student":
 
                     group, created = Group.objects.get_or_create(
-                        name='Student'
+                        name="Student"
                     )
 
                     user.groups.add(group)
@@ -217,16 +240,10 @@ class RegisterView(AuthMixin, View):
                         age=age
                     )
 
-                    # Student Notification
-                    # Student notification
-
                     Notification.objects.create(
                         user=user,
                         message="Welcome to College Management System"
                     )
-
-
-                    # Notify admins
 
                     admins = User.objects.filter(
                         is_superuser=True
@@ -239,11 +256,11 @@ class RegisterView(AuthMixin, View):
                             message=f"New student joined: {username}"
                         )
 
-                # TEACHER
+                # ================= TEACHER =================
                 elif user_type == "teacher":
 
                     group, created = Group.objects.get_or_create(
-                        name='Teacher'
+                        name="Teacher"
                     )
 
                     user.groups.add(group)
@@ -252,27 +269,27 @@ class RegisterView(AuthMixin, View):
                         user=user,
                         name=username,
                         email=email,
-                        salary=salary
+                        salary=salary,
+                        is_approved=False
                     )
 
                     admins = User.objects.filter(
                         is_superuser=True
                     )
 
-
                     for admin in admins:
 
                         Notification.objects.create(
                             user=admin,
-                            message=f"New teacher joined: {username}"
+                            message=f"New teacher registration: {username}"
                         )
 
-                    # Teacher Notification
                     Notification.objects.create(
                         user=user,
-                        message=" Welcome to Teacher Portal"
+                        message="Your account has been created and is waiting for admin approval."
                     )
 
+                                    # ================= INVALID ROLE =================
                 else:
 
                     messages.error(
@@ -285,17 +302,17 @@ class RegisterView(AuthMixin, View):
                         self.template_name
                     )
 
-                # Admin Notifications
+                # ================= ADMIN NOTIFICATION =================
                 admins = User.objects.filter(
                     is_superuser=True
                 )
 
                 for admin in admins:
 
-                 Notification.objects.create(
-                    user=admin,
-                    message=f" New {user_type}: {username}"
-                )
+                    Notification.objects.create(
+                        user=admin,
+                        message=f"New {user_type}: {username}"
+                    )
 
         except Exception as e:
 
@@ -311,6 +328,19 @@ class RegisterView(AuthMixin, View):
                 self.template_name
             )
 
+        # ================= REDIRECT AFTER REGISTRATION =================
+
+        # Teacher should NOT login until approved
+        if user_type == "teacher":
+
+            messages.success(
+                request,
+                "Teacher account created successfully. Please wait for administrator approval."
+            )
+
+            return redirect("login")
+
+        # Student logs in immediately
         login(
             request,
             user

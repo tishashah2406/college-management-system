@@ -16,29 +16,25 @@ urlpatterns = [
         name='about'
     ),
 
-    path('accounts/', include('django.contrib.auth.urls')),
     path('students/', include('students.urls')),
      path('teachers/', include('teachers.urls')),
     path('accounts/', include('accounts.urls')),   
     path('courses/', include('courses.urls')),
     path('', include('core.urls')),
     path('notifications/',include('notifications.urls')),
-       path('complaints/', include('complaints.urls')),
-       path('timetable/',include('timetable.urls')),
-          path(
-        "notices/",
-        include("notices.urls")
-    ),
+    path('complaints/', include('complaints.urls')),
+    path('timetable/',include('timetable.urls')),
+    path("notices/",include("notices.urls")),
     
    
-     path('api/', include('teachers.api_urls')),
-     path('api/', include('students.api_urls')),
-     path('api/courses/', include('courses.api_urls')),
+    path('api/', include('teachers.api_urls')),
+    path('api/', include('students.api_urls')),
+    path('api/courses/', include('courses.api_urls')),
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path("api/notifications/", include("notifications.api_urls")),
     path("api/complaints/", include("complaints.api_urls")),
-     path("api/timetable/",include("timetable.api_urls")),
+    path("api/timetable/",include("timetable.api_urls")),
 ]
 
 #  IMPORTANT FIX

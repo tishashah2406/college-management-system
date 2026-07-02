@@ -9,7 +9,16 @@ class Teacher(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     salary = models.DecimalField(max_digits=10, decimal_places=2)
-    courses = models.ManyToManyField(Course, related_name='assigned_teachers', blank=True)
+
+    # NEW FIELD
+    is_approved = models.BooleanField(default=False)
+
+    courses = models.ManyToManyField(
+        Course,
+        related_name='assigned_teachers',
+        blank=True
+    )
+
     phone = models.CharField(max_length=15, blank=True, null=True)
     profile_pic = models.ImageField(upload_to='teacher_profiles/', blank=True, null=True)
 

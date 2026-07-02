@@ -334,9 +334,7 @@ def edit_assignment(request, id):
         course__in=teacher.courses.all()
     )
 
-
     courses = teacher.courses.all()
-
 
     if request.method == "POST":
 
@@ -347,7 +345,6 @@ def edit_assignment(request, id):
         assignment.course_id = request.POST.get('course')
 
         assignment.due_date = request.POST.get('due_date')
-
 
         print("FILES:", request.FILES)
 
@@ -361,17 +358,14 @@ def edit_assignment(request, id):
 
             assignment.save()
 
-
             messages.success(
                 request,
                 "Assignment updated successfully"
             )
 
-
         return redirect(
             'teacher_assignments'
         )
-
 
     return render(
         request,
