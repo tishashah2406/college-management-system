@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-success text-white">
+
+            <h3>My Timetable</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Teacher</th>
+                        <th>Classroom</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for timetable in timetables %}
+
+                    <tr>
+
+                        <td>{{ timetable.day }}</td>
+
+                        <td>{{ timetable.course.name }}</td>
+
+                        <td>{{ timetable.teacher.name }}</td>
+
+                        <td>{{ timetable.classroom }}</td>
+
+                        <td>{{ timetable.start_time }}</td>
+
+                        <td>{{ timetable.end_time }}</td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6" class="text-center text-muted">
+
+                            No timetable available.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -147,7 +147,7 @@ class TeacherComplaintAPIView(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
-    
+
 class AdminComplaintAPIView(APIView):
 
     def get(self, request):

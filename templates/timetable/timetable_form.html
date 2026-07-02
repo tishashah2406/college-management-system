@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+            <h3>Add Timetable</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+{% if form.non_field_errors %}
+<div class="alert alert-danger">
+    {{ form.non_field_errors }}
+</div>
+{% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label">Day</label>
+                    {{ form.day }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Course</label>
+                    {{ form.course }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Teacher</label>
+                    {{ form.teacher }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Classroom</label>
+                    {{ form.classroom }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Start Time</label>
+                    {{ form.start_time }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">End Time</label>
+                    {{ form.end_time }}
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Save Timetable
+                </button>
+
+                <a href="{% url 'timetable-list' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const courseSelect = document.getElementById("id_course");
+    const teacherSelect = document.getElementById("id_teacher");
+
+    courseSelect.addEventListener("change", function () {
+
+        const courseId = this.value;
+
+        if (!courseId) {
+            return;
+        }
+
+        fetch(`/admin/timetable/timetable/get-teachers/?course=${courseId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                teacherSelect.innerHTML = "";
+
+                data.forEach(function (teacher) {
+
+                    const option = document.createElement("option");
+
+                    option.value = teacher.id;
+                    option.textContent = teacher.name;
+
+                    teacherSelect.appendChild(option);
+
+                });
+
+                if (data.length === 1) {
+                    teacherSelect.value = data[0].id;
+                }
+
+            });
+
+    });
+
+});
+</script>
+
+{% endblock %}

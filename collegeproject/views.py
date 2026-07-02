@@ -5,6 +5,8 @@ from students.models import Student
 from teachers.models import Teacher
 from courses.models import Course
 import json
+from datetime import datetime
+from timetable.models import Timetable
 
 
 def home(request):
@@ -13,6 +15,7 @@ def home(request):
     teacher = None
     is_student = False
     is_teacher = False
+    today_classes = []
 
 
     if request.user.is_authenticated:
@@ -39,6 +42,14 @@ def home(request):
 
             recent_students = Student.objects.order_by('-id')[:5]
             recent_teachers = Teacher.objects.order_by('-id')[:5]
+
+            if teacher:
+                today = datetime.now().strftime("%A")
+
+                today_classes = Timetable.objects.filter(
+                    teacher=teacher,
+                    day=today
+                ).order_by("start_time")
 
 
         else:
@@ -108,6 +119,7 @@ def home(request):
 
     'is_student': is_student,
     'is_teacher': is_teacher,
+    'today_classes': today_classes,
 }
 
     return render(
@@ -115,6 +127,8 @@ def home(request):
         'home.html',
         context
     )
+
+
 
 def about(request):
 

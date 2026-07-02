@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="mb-4">Weekly Timetable</h2>
+
+
+<div class="row">
+
+
+{% for day, lectures in grid.items %}
+
+<div class="col-md-4 mb-4">
+
+
+<div class="card shadow">
+
+
+<div class="card-header bg-primary text-white">
+
+<h5>{{ day }}</h5>
+
+</div>
+
+
+<div class="card-body">
+
+
+{% for lecture in lectures %}
+
+
+<div class="border rounded p-3 mb-3">
+
+
+<h5>
+{{ lecture.course }}
+</h5>
+
+
+<p class="mb-1">
+👨‍🏫 {{ lecture.teacher }}
+</p>
+
+
+<p class="mb-1">
+⏰ {{ lecture.time }} - {{ lecture.end }}
+</p>
+
+
+<p>
+🏫 {{ lecture.classroom }}
+</p>
+
+
+</div>
+
+
+{% endfor %}
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+{% endfor %}
+
+
+</div>
+
+
+</div>
+
+
+{% endblock %}

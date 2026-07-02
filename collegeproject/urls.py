@@ -24,6 +24,11 @@ urlpatterns = [
     path('', include('core.urls')),
     path('notifications/',include('notifications.urls')),
        path('complaints/', include('complaints.urls')),
+       path('timetable/',include('timetable.urls')),
+          path(
+        "notices/",
+        include("notices.urls")
+    ),
     
    
      path('api/', include('teachers.api_urls')),
@@ -33,6 +38,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view()),
     path("api/notifications/", include("notifications.api_urls")),
     path("api/complaints/", include("complaints.api_urls")),
+     path("api/timetable/",include("timetable.api_urls")),
 ]
 
 #  IMPORTANT FIX

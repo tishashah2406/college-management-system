@@ -50,6 +50,8 @@ class CourseProgress(models.Model):
 
 
 # ===================== ATTENDANCE =====================
+from timetable.models import Timetable
+
 class Attendance(models.Model):
     STATUS_CHOICES = (
         ('Present', 'Present'),
@@ -60,6 +62,14 @@ class Attendance(models.Model):
         Student,
         on_delete=models.CASCADE,
         related_name="attendance"
+    )
+
+    lecture = models.ForeignKey(
+        Timetable,
+        on_delete=models.CASCADE,
+        related_name="attendance",
+        null=True,
+        blank=True
     )
 
     course = models.ForeignKey(
@@ -73,15 +83,23 @@ class Attendance(models.Model):
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='Absent'
+        default="Absent"
     )
 
     class Meta:
-        unique_together = ('student', 'course', 'date')
+        unique_together = (
+            "student",
+            "lecture",
+            "date"
+        )
 
     def __str__(self):
-        return f"{self.student.name} - {self.course.name} - {self.date} ({self.status})"
-
+        return (
+            f"{self.student.name} - "
+            f"{self.course.name} - "
+            f"{self.lecture.day} "
+            f"({self.lecture.start_time}-{self.lecture.end_time})"
+        )
 # ===================== SUBMISSION =====================
 class Submission(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="submissions")

@@ -17,6 +17,7 @@ from datetime import datetime
 from django.http import JsonResponse
 from .services import calculate_teacher_salary
 from notifications.models import Notification
+from timetable.models import Timetable
 
 # ---------------- Teacher List ----------------
 
@@ -364,52 +365,97 @@ def remove_progress(request, student_id, course_id):
 
     return redirect('teacher_dashboard')  
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.contrib import messages
+
+from teachers.models import Teacher
+from timetable.models import Timetable
+from students.models import Attendance, Student
+from notifications.models import Notification
+
+
 @login_required
 def mark_attendance(request):
-    courses = Course.objects.all()
 
-    course_id = request.GET.get('course')
-    selected_date = request.GET.get('date')
+    teacher = get_object_or_404(
+        Teacher,
+        user=request.user
+    )
 
-    students = []
+    today = timezone.localdate()
 
-    if course_id:
-        course = get_object_or_404(Course, id=course_id)
-        students = course.enrolled_students.all()
+    current_day = today.strftime("%A")
+
+    current_time = timezone.localtime().time()
+
+    lecture = Timetable.objects.filter(
+        teacher=teacher,
+        day=current_day,
+        start_time__lte=current_time,
+        end_time__gte=current_time
+    ).first()
+
+    if lecture is None:
+
+        return render(
+            request,
+            "attendance/mark_attendance.html",
+            {
+                "lecture": None,
+                "students": [],
+                "today": today,
+            }
+        )
+
+    students = Student.objects.filter(
+        courses=lecture.course
+    )
 
     if request.method == "POST":
-        course_id = request.POST.get('course')
-        selected_date = request.POST.get('date')
-
-        course = get_object_or_404(Course, id=course_id)
-        students = course.enrolled_students.all()
 
         for student in students:
-            status = request.POST.get(f"status_{student.id}")
 
-            if not status:
-                status = "Absent"
+            status = request.POST.get(
+                f"status_{student.id}",
+                "Absent"
+            )
 
             Attendance.objects.update_or_create(
                 student=student,
-                course=course,
-                date=selected_date,
-                defaults={'status': status}
+                lecture=lecture,
+                course=lecture.course,
+                date=today,
+                defaults={
+                    "status": status
+                }
             )
 
-            Notification.objects.create(
-                user=student.user,
-                title="Attendance Updated",
-                message=f"Attendance marked for {student.name}"
-            )
+            if status == "Absent":
 
-        return redirect('attendance_dashboard')
+                Notification.objects.create(
+                    user=student.user,
+                    title="Attendance Alert",
+                    message=f"You were marked absent in {lecture.course.name}."
+                )
 
-    return render(request, 'attendance/mark_attendance.html', {
-        'courses': courses,
-        'students': students,
-        'selected_date': selected_date
-    })
+        messages.success(
+            request,
+            "Attendance saved successfully."
+        )
+
+        return redirect("attendance_dashboard")
+
+    return render(
+        request,
+        "attendance/mark_attendance.html",
+        {
+            "lecture": lecture,
+            "students": students,
+            "today": today,
+        }
+    )
 
 @login_required
 def attendance_dashboard(request):
@@ -626,7 +672,6 @@ def grade_submissions(request,assignment_id):
                 'assignment':assignment,
                 'submissions':submissions
             })
-        
 @login_required
 def grade_assignment(request, assignment_id):
 
@@ -644,25 +689,39 @@ def grade_assignment(request, assignment_id):
         for submission in submissions:
 
             grade = request.POST.get(
-                f'grade_{submission.id}'
+                f"grade_{submission.id}"
             )
 
             if grade:
-                submission.grade = int(grade)
-                submission.save()
 
+                grade = int(grade)
+
+                # Send notification only if the grade is new or changed
+                if submission.grade != grade:
+
+                    submission.grade = grade
+                    submission.save()
+
+                    Notification.objects.create(
+                        user=submission.student.user,
+                        title="Assignment Graded",
+                        message=(
+                            f"Your assignment '{submission.assignment.title}' "
+                            f"has been graded.\n"
+                            f"Marks: {submission.grade}"
+                        )
+                    )
 
         return redirect(
-            'teacher_submissions'
+            "teacher_submissions"
         )
-
 
     return render(
         request,
-        'teachers/grade_assignment.html',
+        "teachers/grade_assignment.html",
         {
-            'assignment': assignment,
-            'submissions': submissions
+            "assignment": assignment,
+            "submissions": submissions,
         }
     )
 
@@ -867,8 +926,7 @@ def apply_leave(request):
 
         return redirect('leave_dashboard')  
 
-    return render(request, 'teachers/apply_leave.html')
-
+    return render(request, 'teachers/apply_leave.html') 
 from .models import TeacherSalary
 from django.utils.timezone import now
 from django.utils.timezone import now

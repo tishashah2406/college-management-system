@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Timetable</h2>
+
+        <a href="{% url 'timetable-create' %}" class="btn btn-primary">
+            + Add Timetable
+        </a>
+
+    </div>
+
+    <div class="card shadow">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Teacher</th>
+                        <th>Classroom</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for timetable in timetables %}
+
+                    <tr>
+
+                        <td>{{ timetable.day }}</td>
+
+                        <td>{{ timetable.course.name }}</td>
+
+                        <td>{{ timetable.teacher.name }}</td>
+
+                        <td>{{ timetable.classroom }}</td>
+
+                        <td>{{ timetable.start_time }}</td>
+
+                        <td>{{ timetable.end_time }}</td>
+
+                        <td>
+
+                            <a href="{% url 'timetable-update' timetable.id %}"
+                               class="btn btn-warning btn-sm">
+                                Edit
+                            </a>
+
+                            <a href="{% url 'timetable-delete' timetable.id %}"
+                               class="btn btn-danger btn-sm">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="7" class="text-center text-muted">
+
+                            No timetable available.
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

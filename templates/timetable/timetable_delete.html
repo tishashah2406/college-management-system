@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-danger text-white">
+
+                    <h3>Delete Timetable</h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p class="fs-5">
+
+                        Are you sure you want to delete this timetable?
+
+                    </p>
+
+                    <table class="table table-bordered">
+
+                        <tr>
+                            <th>Day</th>
+                            <td>{{ timetable.day }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Course</th>
+                            <td>{{ timetable.course.name }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Teacher</th>
+                            <td>{{ timetable.teacher.name }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Classroom</th>
+                            <td>{{ timetable.classroom }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Time</th>
+                            <td>
+                                {{ timetable.start_time }}
+                                -
+                                {{ timetable.end_time }}
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <button type="submit" class="btn btn-danger">
+
+                            Delete
+
+                        </button>
+
+                        <a href="{% url 'timetable-list' %}"
+                           class="btn btn-secondary">
+
+                            Cancel
+
+                        </a>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

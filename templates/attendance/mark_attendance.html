@@ -4,69 +4,127 @@
 
 <div class="container mt-4">
 
-<h2>📋 ERP Attendance System</h2>
+    <h2>📋 Mark Attendance</h2>
 
-<!-- 🔹 FILTER -->
-<form method="GET" class="row mb-3">
-    <div class="col-md-4">
-        <label>Select Course</label>
-        <select name="course" class="form-control" onchange="this.form.submit()">
-            <option value="">--Select--</option>
-            {% for c in courses %}
-                <option value="{{ c.id }}"
-                {% if request.GET.course == c.id|stringformat:"s" %}selected{% endif %}>
-                    {{ c.name }}
-                </option>
-            {% endfor %}
-        </select>
+    {% if lecture %}
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+
+            <h4>{{ lecture.course.name }}</h4>
+
+            <p>
+                <strong>Teacher:</strong>
+                {{ lecture.teacher.name }}
+            </p>
+
+            <p>
+                <strong>Day:</strong>
+                {{ lecture.day }}
+            </p>
+
+            <p>
+                <strong>Time:</strong>
+                {{ lecture.start_time }} - {{ lecture.end_time }}
+            </p>
+
+            <p>
+                <strong>Classroom:</strong>
+                {{ lecture.classroom }}
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ today }}
+            </p>
+
+        </div>
     </div>
 
-    <div class="col-md-4">
-        <label>Select Date</label>
-        <input type="date" name="date" value="{{ selected_date }}" class="form-control" onchange="this.form.submit()">
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <table class="table table-bordered text-center">
+
+            <thead class="table-dark">
+
+                <tr>
+
+                    <th>#</th>
+
+                    <th>Student Name</th>
+
+                    <th>Present</th>
+
+                    <th>Absent</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>{{ student.name }}</td>
+
+                    <td>
+
+                        <input
+                            type="radio"
+                            name="status_{{ student.id }}"
+                            value="Present"
+                            checked
+                        >
+
+                    </td>
+
+                    <td>
+
+                        <input
+                            type="radio"
+                            name="status_{{ student.id }}"
+                            value="Absent"
+                        >
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <button
+            type="submit"
+            class="btn btn-success"
+        >
+            💾 Save Attendance
+        </button>
+
+    </form>
+
+    {% else %}
+
+    <div class="alert alert-warning">
+
+        <h4>No lecture is scheduled right now.</h4>
+
+        <p>
+            Attendance can only be marked during an active lecture.
+        </p>
+
     </div>
-</form>
 
-{% if students %}
-<form method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="course" value="{{ request.GET.course }}">
-    <input type="hidden" name="date" value="{{ selected_date }}">
+    {% endif %}
 
-    <table class="table table-bordered text-center">
-        <thead class="table-dark">
-            <tr>
-                <th>#</th>
-                <th>Student Name</th>
-                <th>Present</th>
-                <th>Absent</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for student in students %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ student.name }}</td>
-
-                <td>
-                    <input type="radio" name="status_{{ student.id }}" value="Present" checked>
-                </td>
-
-                <td>
-                    <input type="radio" name="status_{{ student.id }}" value="Absent">
-                </td>
-            </tr>
-            {% endfor %}
-
-        </tbody>
-    </table>
-
-    <button type="submit" class="btn btn-success">
-        💾 Save Attendance
-    </button>
-
-</form>
-{% endif %}
 </div>
+
 {% endblock %}
