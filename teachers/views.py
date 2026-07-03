@@ -981,7 +981,7 @@ def salary_dashboard(request):
             'salaries': salaries,
         }
     )
-
+ 
 @login_required
 def leave_dashboard(request):
     teacher = Teacher.objects.get(user=request.user)
@@ -997,4 +997,3 @@ def leave_dashboard(request):
             'leaves': leaves
         }
     )
-

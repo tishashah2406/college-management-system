@@ -32,7 +32,6 @@ class CreateTimetableAPIView(APIView):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-
 class TimetableListAPIView(APIView):
 
     def get(self, request):
@@ -66,8 +65,6 @@ class StudentTimetableAPIView(APIView):
         )
 
         return Response(serializer.data)
-
-
 
 class TeacherTimetableAPIView(APIView):
 

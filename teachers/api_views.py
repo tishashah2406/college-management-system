@@ -190,7 +190,6 @@ class TeacherViewSet(ModelViewSet):
 
                 "total_courses":
                     total_courses,
-
                 "total_students":
                     total_students,
 
@@ -281,3 +280,24 @@ class TeacherViewSet(ModelViewSet):
             "charts":
                 chart_data
         })
+    
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+
+
+class MyCoursesAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        teacher = Teacher.objects.get(user=request.user)
+
+        courses = teacher.courses.all()
+
+        serializer = CourseSerializer(
+            courses,
+            many=True
+        )
+
+        return Response(serializer.data)
