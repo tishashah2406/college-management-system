@@ -1,25 +1,31 @@
 from django.urls import path
 from . import views
 from .views import notice_board
-from .api_views import NoticeListAPIView
+from .api_views import (
+    NoticeListAPIView,
+    NoticeDetailAPIView,
+)
 
+
+from . import views
 
 
 urlpatterns = [
 
 
-    # HTML
-
     path(
         "",
-        notice_board,
+        views.notice_board,
         name="notice-board"
     ),
+
+
     path(
         "teacher/create/",
         views.teacher_create_notice,
         name="teacher_create_notice"
     ),
+
 
     path(
         "teacher/",
@@ -27,11 +33,20 @@ urlpatterns = [
         name="teacher_notice_board"
     ),
 
+
     path(
         "student/",
         views.student_notice_board,
         name="student_notice_board"
     ),
+
+
+    path(
+        "read/<int:id>/",
+        views.read_notice,
+        name="read_notice"
+    ),
+
 
 
     # API
@@ -41,5 +56,9 @@ urlpatterns = [
         NoticeListAPIView.as_view(),
         name="notice-api"
     ),
+
+    path("notices/", NoticeListAPIView.as_view(), name="notice-list-api"),
+    path("notices/<int:id>/", NoticeDetailAPIView.as_view(), name="notice-detail-api"),
+
 
 ]

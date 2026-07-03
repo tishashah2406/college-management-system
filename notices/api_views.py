@@ -11,8 +11,7 @@ from .serializers import NoticeSerializer
 from teachers.models import Teacher
 from students.models import Student
 
-
-
+from django.shortcuts import get_object_or_404
 class NoticeListAPIView(APIView):
 
     def get(self, request):
@@ -93,4 +92,75 @@ class NoticeListAPIView(APIView):
 
         return Response(
             serializer.data
+        )
+
+class NoticeDetailAPIView(APIView):
+
+    def get(self, request, id):
+
+        user = request.user
+
+        # Admin
+        if user.is_superuser:
+
+            notice = get_object_or_404(
+                Notice,
+                id=id,
+                expiry_date__gte=timezone.now().date()
+            )
+
+        # Teacher
+        elif Teacher.objects.filter(user=user).exists():
+
+            teacher = Teacher.objects.get(user=user)
+
+            notice = get_object_or_404(
+
+                Notice,
+
+                Q(is_admin_notice=True)
+                |
+                Q(
+                    teacher=teacher,
+                    is_admin_notice=False
+                ),
+
+                id=id,
+                expiry_date__gte=timezone.now().date()
+
+            )
+
+        # Student
+        elif Student.objects.filter(user=user).exists():
+
+            student = Student.objects.get(user=user)
+
+            notice = get_object_or_404(
+
+                Notice,
+
+                Q(is_admin_notice=True)
+                |
+                Q(
+                    course__in=student.courses.all(),
+                    is_admin_notice=False
+                ),
+
+                id=id,
+                expiry_date__gte=timezone.now().date()
+
+            )
+
+        else:
+
+            return Response(
+                {"error": "User role not found"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        serializer = NoticeSerializer(notice)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
         )

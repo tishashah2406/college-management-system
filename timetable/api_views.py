@@ -45,7 +45,6 @@ class TimetableListAPIView(APIView):
 
         return Response(serializer.data)
 
-
 class StudentTimetableAPIView(APIView):
 
     def get(self, request):
@@ -85,9 +84,7 @@ class TeacherTimetableAPIView(APIView):
         )
 
         return Response(serializer.data)
-
-
-
+ 
 class UpdateTimetableAPIView(APIView):
 
     def put(self, request, pk):
@@ -112,8 +109,6 @@ class UpdateTimetableAPIView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-
-
 
 class DeleteTimetableAPIView(APIView):
 
