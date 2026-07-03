@@ -125,3 +125,143 @@ class DeleteTimetableAPIView(APIView):
             {"message": "Deleted"},
             status=status.HTTP_204_NO_CONTENT
         )
+    
+class TimetableDetailAPIView(APIView):
+
+    def get(self, request, pk):
+
+        timetable = get_object_or_404(
+            Timetable,
+            pk=pk
+        )
+
+        serializer = TimetableSerializer(
+            timetable
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+    
+class PartialUpdateTimetableAPIView(APIView):
+
+    def patch(self, request, pk):
+
+        timetable = get_object_or_404(
+            Timetable,
+            pk=pk
+        )
+
+        serializer = TimetableSerializer(
+            timetable,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+class CourseTimetableAPIView(APIView):
+
+    def get(self, request, course_id):
+
+        timetables = Timetable.objects.filter(
+            course_id=course_id
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+class DayTimetableAPIView(APIView):
+
+    def get(self, request, day):
+
+        timetables = Timetable.objects.filter(
+            day__iexact=day
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+class TeacherTimetableByIdAPIView(APIView):
+
+    def get(self, request, teacher_id):
+
+        timetables = Timetable.objects.filter(
+            teacher_id=teacher_id
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+class RoomTimetableAPIView(APIView):
+
+    def get(self, request, room):
+
+        timetables = Timetable.objects.filter(
+            room__iexact=room
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+from datetime import datetime
+
+class TodayTimetableAPIView(APIView):
+
+    def get(self, request):
+
+        today = datetime.today().strftime("%A")
+
+        timetables = Timetable.objects.filter(
+            day=today
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+class SearchTimetableAPIView(APIView):
+
+    def get(self, request):
+
+        day = request.query_params.get("day")
+
+        timetables = Timetable.objects.filter(
+            day__icontains=day
+        )
+
+        serializer = TimetableSerializer(
+            timetables,
+            many=True
+        )
+
+        return Response(serializer.data)
