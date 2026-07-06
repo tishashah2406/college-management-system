@@ -5,6 +5,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db.models import Q
 
 from students.models import Student
 from teachers.models import Teacher
@@ -175,6 +176,27 @@ class ResolveComplaintAPIView(APIView):
             id=id
         )
 
+        # ---------------- Permission Check ----------------
+
+        if request.user.is_superuser:
+            pass
+
+        elif (
+            complaint.assigned_teacher
+            and complaint.assigned_teacher.user == request.user
+        ):
+            pass
+
+        else:
+            return Response(
+                {
+                    "error": "You do not have permission to update this complaint."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # --------------------------------------------------
+
         old_status = complaint.status
 
         complaint.status = request.data.get(
@@ -198,6 +220,7 @@ class ResolveComplaintAPIView(APIView):
         complaint.save()
 
         # Status Notification
+
         if old_status != complaint.status:
 
             Notification.objects.create(
@@ -207,17 +230,16 @@ class ResolveComplaintAPIView(APIView):
             )
 
         # Reply Notification
+
         if complaint.reply:
 
             Notification.objects.create(
                 user=complaint.student.user,
                 title="Complaint Reply",
-                message=f"A reply was added to your complaint '{complaint.title}'."
+                message=f"A reply has been added to your complaint '{complaint.title}'."
             )
 
-        serializer = ComplaintSerializer(
-            complaint
-        )
+        serializer = ComplaintSerializer(complaint)
 
         return Response(
             {
@@ -226,7 +248,6 @@ class ResolveComplaintAPIView(APIView):
             },
             status=status.HTTP_200_OK
         )
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -260,3 +281,110 @@ class UpdateComplaintAPIView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+class ComplaintDetailAPIView(APIView):
+
+    def get(self, request, id):
+
+        complaint = get_object_or_404(
+            Complaint,
+            id=id
+        )
+
+        serializer = ComplaintSerializer(
+            complaint
+        )
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
+    
+class DeleteComplaintAPIView(APIView):
+
+    def delete(self, request, id):
+
+        complaint = get_object_or_404(
+            Complaint,
+            id=id
+        )
+
+        complaint.delete()
+
+        return Response(
+            {
+                "message": "Complaint deleted successfully."
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )
+    
+class ComplaintStatisticsAPIView(APIView):
+
+    def get(self, request):
+
+        complaints = Complaint.objects.all()
+
+        return Response({
+
+            "total": complaints.count(),
+
+            "pending": complaints.filter(
+                status="Pending"
+            ).count(),
+
+            "in_progress": complaints.filter(
+                status="In Progress"
+            ).count(),
+
+            "resolved": complaints.filter(
+                status="Resolved"
+            ).count()
+
+        })
+    
+class ComplaintCountAPIView(APIView):
+
+    def get(self, request):
+
+        return Response({
+            "count": Complaint.objects.count()
+        })
+    
+class SearchComplaintAPIView(APIView):
+
+    def get(self, request):
+
+        query = request.query_params.get("q", "")
+        status_filter = request.query_params.get("status")
+        category = request.query_params.get("category")
+
+        complaints = Complaint.objects.all()
+
+        if query:
+
+            complaints = complaints.filter(
+
+                Q(title__icontains=query)
+                |
+                Q(description__icontains=query)
+
+            )
+
+        if status_filter:
+
+            complaints = complaints.filter(
+                status=status_filter
+            )
+
+        if category:
+
+            complaints = complaints.filter(
+                category=category
+            )
+
+        serializer = ComplaintSerializer(
+            complaints,
+            many=True
+        )
+
+        return Response(serializer.data)
