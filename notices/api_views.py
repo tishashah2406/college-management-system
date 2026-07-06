@@ -164,3 +164,84 @@ class NoticeDetailAPIView(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
+    
+class CreateNoticeAPIView(APIView):
+
+    def post(self, request):
+
+        serializer = NoticeSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+class UpdateNoticeAPIView(APIView):
+
+    def put(self, request, id):
+
+        notice = get_object_or_404(
+            Notice,
+            id=id
+        )
+
+        serializer = NoticeSerializer(
+            notice,
+            data=request.data
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    def patch(self, request, id):
+
+        notice = get_object_or_404(
+            Notice,
+            id=id
+        )
+
+        serializer = NoticeSerializer(
+            notice,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+class DeleteNoticeAPIView(APIView):
+
+    def delete(self, request, id):
+
+        notice = get_object_or_404(
+            Notice,
+            id=id
+        )
+
+        notice.delete()
+
+        return Response(
+            {
+                "message": "Notice deleted successfully."
+            },
+            status=status.HTTP_204_NO_CONTENT
+        )

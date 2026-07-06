@@ -84,7 +84,7 @@ class NotificationDeleteAPIView(APIView):
             },
             status=status.HTTP_204_NO_CONTENT
         )
-    
+     
 class DeleteAllNotificationsAPIView(APIView):
 
     def delete(self, request):
@@ -118,7 +118,7 @@ class UnreadNotificationAPIView(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
-    
+
 class NotificationCountAPIView(APIView):
 
     def get(self, request):

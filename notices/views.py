@@ -20,6 +20,7 @@ def notice_board(request):
             "notices": notices
         }
     )
+
 @login_required
 def teacher_create_notice(request):
 

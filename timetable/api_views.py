@@ -10,6 +10,8 @@ from .serializers import TimetableSerializer
 from students.models import Student
 from teachers.models import Teacher
 
+from datetime import datetime
+
 
 class CreateTimetableAPIView(APIView):
 
@@ -84,7 +86,7 @@ class TeacherTimetableAPIView(APIView):
         )
 
         return Response(serializer.data)
- 
+
 class UpdateTimetableAPIView(APIView):
 
     def put(self, request, pk):
@@ -230,8 +232,6 @@ class RoomTimetableAPIView(APIView):
 
         return Response(serializer.data)
     
-from datetime import datetime
-
 class TodayTimetableAPIView(APIView):
 
     def get(self, request):
