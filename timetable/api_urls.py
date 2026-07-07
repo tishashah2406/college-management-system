@@ -10,7 +10,7 @@ from .api_views import (
     TimetableDetailAPIView,
     PartialUpdateTimetableAPIView,
     CourseTimetableAPIView,
-    DayTimetableAPIView,TeacherTimetableByIdAPIView,RoomTimetableAPIView,TodayTimetableAPIView,SearchTimetableAPIView
+    DayTimetableAPIView,TeacherTimetableByIdAPIView,RoomTimetableAPIView,TodayTimetableAPIView,SearchTimetableAPIView,TimetableStatisticsAPIView,TimetableCountAPIView
 )
 
 
@@ -98,5 +98,17 @@ urlpatterns = [
         "search/", 
         SearchTimetableAPIView.as_view(), 
         name="search-timetable-api"
+    ),
+
+    path(
+        "statistics/",
+        TimetableStatisticsAPIView.as_view(),
+        name="timetable_statistics"
+    ),
+
+    path(
+        "count/",
+        TimetableCountAPIView.as_view(),
+        name="timetable_count"
     ),
 ]

@@ -429,6 +429,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
+
     @action(detail=False, methods=["get"])
     def leave_history(self, request):
 

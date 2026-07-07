@@ -265,3 +265,44 @@ class SearchTimetableAPIView(APIView):
         )
 
         return Response(serializer.data)
+    
+class TimetableStatisticsAPIView(APIView):
+
+    def get(self, request):
+
+        timetables = Timetable.objects.all()
+
+        total_classes = timetables.count()
+
+        total_courses = timetables.values(
+            "course"
+        ).distinct().count()
+
+        total_teachers = timetables.values(
+            "teacher"
+        ).distinct().count()
+
+        total_classrooms = timetables.values(
+            "classroom"
+        ).distinct().count()
+
+        return Response(
+            {
+                "total_classes": total_classes,
+                "total_courses": total_courses,
+                "total_teachers": total_teachers,
+                "total_rooms": total_classrooms,
+            },
+            status=status.HTTP_200_OK
+        )
+    
+class TimetableCountAPIView(APIView):
+
+    def get(self, request):
+
+        return Response(
+            {
+                "count": Timetable.objects.count()
+            },
+            status=status.HTTP_200_OK
+        )
