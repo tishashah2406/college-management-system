@@ -41,10 +41,7 @@
         </h2>
 
     </div>
-<div class="chart-box mb-4" style="height:300px;">
-    <h5>📊 Assignment Overview</h5>
-    <canvas id="assignmentChart"></canvas>
-</div>
+
     <!-- Assignment Cards -->
 
     <div class="row">
@@ -133,41 +130,6 @@
     </div>
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-const canvas = document.getElementById('assignmentChart');
-
-if (canvas) {
-    const ctx = canvas.getContext('2d');
-
-    new Chart(ctx, {
-        type: 'bar',
-
-        data: {
-            labels: ['Submitted', 'Pending'],
-
-            datasets: [{
-                label: 'Assignments',
-
-                data: [
-                    {{ chart_submitted|default:0 }},
-                    {{ chart_pending|default:0 }}
-                ],
-
-                backgroundColor: [
-                    '#16cbe3',
-                    '#ff6384'
-                ]
-            }]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-}
-</script>
 
 {% endblock %}

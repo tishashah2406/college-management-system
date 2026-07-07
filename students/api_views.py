@@ -41,7 +41,7 @@ class StudentViewSet(ModelViewSet):
 
         return Student.objects.filter(
             user=self.request.user
-        )
+        )   
     # ================ LOGGED-IN DASHBOARD =================
     @method_decorator(cache_page(60 * 5))
     @method_decorator(vary_on_headers("Authorization"))
@@ -447,3 +447,191 @@ class StudentViewSet(ModelViewSet):
                 leaderboard[:10]
         })
     
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def profile(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        serializer = StudentSerializer(student)
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["patch"], permission_classes=[IsAuthenticated])
+    def update_profile(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        serializer = StudentSerializer(
+            student,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=400)
+    
+    @action(detail=False, methods=["get"])
+    def my_courses(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        serializer = CourseSerializer(
+            student.courses.all(),
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def pending_assignments(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submitted = Submission.objects.filter(
+            student=student
+        ).values_list(
+            "assignment_id",
+            flat=True
+        )
+
+        assignments = Assignment.objects.filter(
+            course__in=student.courses.all()
+        ).exclude(
+            id__in=submitted
+        )
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def submitted_assignments(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        serializer = SubmissionSerializer(
+            Submission.objects.filter(student=student),
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"], url_path="course-progress")
+    def course_progress(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        course = get_object_or_404(
+            student.courses,
+            id=pk
+        )
+
+        total = Assignment.objects.filter(
+            course=course
+        ).count()
+
+        completed = Submission.objects.filter(
+            student=student,
+            assignment__course=course
+        ).count()
+
+        return Response({
+
+            "course": course.name,
+
+            "total": total,
+
+            "completed": completed,
+
+            "progress": round(
+                completed * 100 / total if total else 0,
+            )
+        })
+    
+    @action(detail=False, methods=["get"])
+    def assignment_history(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submissions = Submission.objects.filter(
+            student=student
+        ).order_by("-submitted_at")
+
+        serializer = SubmissionSerializer(
+            submissions,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def average_grade(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        avg = Submission.objects.filter(
+            student=student
+        ).aggregate(
+            Avg("grade")
+        )
+
+        return Response({
+            "average_grade": avg["grade__avg"] or 0
+        })
+    
+    @action(detail=False, methods=["get"])
+    def late_submissions(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        late = []
+
+        for submission in Submission.objects.filter(student=student):
+
+            if (
+                submission.assignment.due_date and
+                submission.submitted_at.date() >
+                submission.assignment.due_date
+            ):
+
+                late.append(submission)
+
+        serializer = SubmissionSerializer(
+            late,
+            many=True
+        )
+
+        return Response(serializer.data)

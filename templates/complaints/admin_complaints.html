@@ -1,0 +1,46 @@
+{% extends "home.html" %}
+
+{% block content %}
+
+<h3>Admin Complaints</h3>
+
+<table class="table table-striped">
+
+    <tr>
+        <th>Student</th>
+        <th>Category</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    {% for complaint in complaints %}
+
+    <tr>
+
+        <td>{{ complaint.student }}</td>
+
+        <td>{{ complaint.category }}</td>
+
+        <td>{{ complaint.title }}</td>
+
+        <td>{{ complaint.status }}</td>
+
+        <td>
+
+            <a href="{% url 'resolve_complaint' complaint.id %}"
+               class="btn btn-success btn-sm">
+
+                Resolve
+
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

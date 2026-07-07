@@ -186,7 +186,7 @@ class CourseTimetableAPIView(APIView):
         )
 
         return Response(serializer.data)
-    
+
 class DayTimetableAPIView(APIView):
 
     def get(self, request, day):

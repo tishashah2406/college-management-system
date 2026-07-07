@@ -84,7 +84,7 @@ class NotificationDeleteAPIView(APIView):
             },
             status=status.HTTP_204_NO_CONTENT
         )
-     
+
 class DeleteAllNotificationsAPIView(APIView):
 
     def delete(self, request):

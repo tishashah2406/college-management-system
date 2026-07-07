@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.utils import timezone
 
 from .models import Course, Note, Assignment, Submission
 from students.models import CourseProgress, Student
@@ -247,6 +248,211 @@ class CourseViewSet(viewsets.ModelViewSet):
                 round(average_progress, 2)
         })
     
+    @action(detail=True, methods=["get"])
+    def dashboard(self, request, pk=None):
+
+        course = self.get_object()
+
+        return Response({
+            "course": CourseSerializer(course).data,
+            "teacher": course.teacher.name if hasattr(course, "teacher") else None,
+            "students": Student.objects.filter(courses=course).count(),
+            "notes": Note.objects.filter(course=course).count(),
+            "assignments": Assignment.objects.filter(course=course).count()
+        })
+    
+    @action(detail=True, methods=["get"])
+    def students(self, request, pk=None):
+
+        course = self.get_object()
+
+        students = Student.objects.filter(
+            courses=course
+        )
+
+        from students.serializers import StudentSerializer
+
+        serializer = StudentSerializer(
+            students,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def search(self, request):
+
+        keyword = request.query_params.get("q", "")
+
+        courses = Course.objects.filter(
+            name__icontains=keyword
+        )
+
+        serializer = CourseSerializer(
+            courses,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def completion(self, request, pk=None):
+
+        course = self.get_object()
+
+        progress = CourseProgress.objects.filter(
+            course=course
+        )
+
+        average = progress.aggregate(
+            Avg("progress")
+        )["progress__avg"] or 0
+
+        return Response({
+            "course": course.name,
+            "completion": round(average, 2)
+        })
+
+    @action(detail=True, methods=["get"])
+    def upcoming_assignments(self, request, pk=None):
+
+        assignments = Assignment.objects.filter(
+            course_id=pk,
+            due_date__gte=timezone.now().date()
+        ).order_by("due_date")
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def expired_assignments(self, request, pk=None):
+
+        assignments = Assignment.objects.filter(
+            course_id=pk,
+            due_date__lt=timezone.now().date()
+        )
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def submission_stats(self, request, pk=None):
+
+        course = self.get_object()
+
+        total = Assignment.objects.filter(
+            course=course
+        ).count()
+
+        submitted = Submission.objects.filter(
+            assignment__course=course
+        ).count()
+
+        return Response({
+
+            "course": course.name,
+
+            "total_assignments": total,
+
+            "total_submissions": submitted
+        })
+    
+    @action(detail=True, methods=["get"])
+    def top_students(self, request, pk=None):
+
+        course = self.get_object()
+
+        data = []
+
+        students = Student.objects.filter(
+            courses=course
+        )
+
+        for student in students:
+
+            avg = Submission.objects.filter(
+                student=student,
+                assignment__course=course
+            ).aggregate(
+                Avg("grade")
+            )["grade__avg"] or 0
+
+            data.append({
+                "student": student.user.username,
+                "average_grade": round(avg, 2)
+            })
+
+        data.sort(
+            key=lambda x: x["average_grade"],
+            reverse=True
+        )
+
+        return Response(data[:10])
+    
+    @action(detail=True, methods=["get"])
+    def student_count(self, request, pk=None):
+
+        course = self.get_object()
+
+        return Response({
+            "students": Student.objects.filter(
+                courses=course
+            ).count()
+        })
+    
+    @action(detail=False, methods=["get"])
+    def teacher_courses(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        serializer = CourseSerializer(
+            teacher.courses.all(),
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def progress_list(self, request, pk=None):
+
+        progress = CourseProgress.objects.filter(
+            course_id=pk
+        )
+
+        serializer = CourseProgressSerializer(
+            progress,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["get"])
+    def notes_download(self, request, pk=None):
+
+        notes = Note.objects.filter(
+            course_id=pk
+        )
+
+        return Response([
+            {
+                "title": note.title,
+                "file": note.file.url if note.file else None
+            }
+            for note in notes
+        ])
+    
+
 # ===================== ASSIGNMENT VIEWSET =====================
 class AssignmentViewSet(viewsets.ModelViewSet):
 

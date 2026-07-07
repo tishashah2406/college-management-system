@@ -182,7 +182,7 @@ class CreateNoticeAPIView(APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+  
 class UpdateNoticeAPIView(APIView):
 
     def put(self, request, id):

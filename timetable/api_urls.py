@@ -100,4 +100,3 @@ urlpatterns = [
         name="search-timetable-api"
     ),
 ]
-

@@ -16,6 +16,7 @@ urlpatterns = [
         name='about'
     ),
 
+  
     path('students/', include('students.urls')),
      path('teachers/', include('teachers.urls')),
     path('accounts/', include('accounts.urls')),   

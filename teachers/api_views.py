@@ -1,3 +1,5 @@
+from time import timezone
+
 from django.db.models import Avg
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -190,6 +192,7 @@ class TeacherViewSet(ModelViewSet):
 
                 "total_courses":
                     total_courses,
+                    
                 "total_students":
                     total_students,
 
@@ -281,6 +284,262 @@ class TeacherViewSet(ModelViewSet):
                 chart_data
         })
     
+    @action(detail=False, methods=["get"])
+    def profile(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        serializer = TeacherSerializer(teacher)
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["patch"])
+    def update_profile(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        serializer = TeacherSerializer(
+            teacher,
+            data=request.data,
+            partial=True
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def students(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        students = Student.objects.filter(
+            courses__in=teacher.courses.all()
+        ).distinct()
+
+        from students.serializers import StudentSerializer
+
+        serializer = StudentSerializer(
+            students,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def pending_submissions(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        submissions = Submission.objects.filter(
+            assignment__course__in=teacher.courses.all(),
+            grade__isnull=True
+        )
+
+        serializer = SubmissionSerializer(
+            submissions,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def checked_submissions(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        submissions = Submission.objects.filter(
+            assignment__course__in=teacher.courses.all()
+        ).exclude(
+            grade__isnull=True
+        )
+
+        serializer = SubmissionSerializer(
+            submissions,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=["patch"])
+    def grade_submission(self, request, pk=None):
+
+        submission = get_object_or_404(
+            Submission,
+            pk=pk
+        )
+
+        submission.grade = request.data.get("grade")
+        submission.feedback = request.data.get("feedback")
+
+        submission.save()
+
+        return Response({
+            "message": "Assignment graded successfully."
+        })
+    
+    @action(detail=False, methods=["get"])
+    def upcoming_assignments(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        assignments = Assignment.objects.filter(
+            course__in=teacher.courses.all(),
+            due_date__gte=timezone.now().date()
+        ).order_by("due_date")
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False,methods=["get"])
+    def upcoming_assignments(self,request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        assignments = Assignment.objects.filter(
+            course__in=teacher.courses.all(),
+            due_date__gte=timezone.now().date()
+        ).order_by("due_date")
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    @action(detail=False, methods=["get"])
+    def leave_history(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        leaves = TeacherLeave.objects.filter(
+            teacher=teacher
+        )
+
+        return Response(list(leaves.values()))
+    
+    @action(detail=False, methods=["get"])
+    def student_count(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        data = []
+
+        for course in teacher.courses.all():
+
+            data.append({
+
+                "course": course.name,
+
+                "students": Student.objects.filter(
+                    courses=course
+                ).count()
+
+            })
+
+        return Response(data)
+    
+    @action(detail=False, methods=["get"])
+    def course_grades(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        data = []
+
+        for course in teacher.courses.all():
+
+            avg = Submission.objects.filter(
+                assignment__course=course
+            ).aggregate(
+                Avg("grade")
+            )["grade__avg"] or 0
+
+            data.append({
+
+                "course": course.name,
+
+                "average_grade": round(avg,2)
+
+            })
+
+        return Response(data)
+    
+    @action(detail=False, methods=["get"])
+    def search_student(self, request):
+
+        keyword = request.query_params.get("q","")
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        students = Student.objects.filter(
+            courses__in=teacher.courses.all(),
+            user__username__icontains=keyword
+        ).distinct()
+
+        from students.serializers import StudentSerializer
+
+        serializer = StudentSerializer(
+            students,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def statistics(self, request):
+
+        teacher = Teacher.objects.get(
+            user=request.user
+        )
+
+        return Response({
+
+            "courses": teacher.courses.count(),
+
+            "students": Student.objects.filter(
+                courses__in=teacher.courses.all()
+            ).distinct().count(),
+
+            "assignments": Assignment.objects.filter(
+                course__in=teacher.courses.all()
+            ).count(),
+
+            "submissions": Submission.objects.filter(
+                assignment__course__in=teacher.courses.all()
+            ).count()
+
+        })
+            
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -301,3 +560,4 @@ class MyCoursesAPIView(APIView):
         )
 
         return Response(serializer.data)
+    

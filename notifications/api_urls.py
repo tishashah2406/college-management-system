@@ -45,5 +45,4 @@ urlpatterns = [
         name="notification-count-api"
     )
 
-
 ]

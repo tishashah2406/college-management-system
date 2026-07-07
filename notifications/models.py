@@ -4,12 +4,6 @@ from django.contrib.auth.models import User
 
 class Notification(models.Model):
 
-    NOTIFICATION_TYPE = [
-        ("personal", "Personal"),
-        ("broadcast", "Broadcast"),
-    ]
-
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE
@@ -22,12 +16,6 @@ class Notification(models.Model):
 
     message = models.CharField(
         max_length=255
-    )
-
-    notification_type = models.CharField(
-        max_length=20,
-        choices=NOTIFICATION_TYPE,
-        default="personal"
     )
 
     is_read = models.BooleanField(
