@@ -411,25 +411,6 @@ class TeacherViewSet(ModelViewSet):
 
         return Response(serializer.data)
     
-    @action(detail=False,methods=["get"])
-    def upcoming_assignments(self,request):
-
-        teacher = Teacher.objects.get(
-            user=request.user
-        )
-
-        assignments = Assignment.objects.filter(
-            course__in=teacher.courses.all(),
-            due_date__gte=timezone.now().date()
-        ).order_by("due_date")
-
-        serializer = AssignmentSerializer(
-            assignments,
-            many=True
-        )
-
-        return Response(serializer.data)
-
     @action(detail=False, methods=["get"])
     def leave_history(self, request):
 
@@ -540,7 +521,7 @@ class TeacherViewSet(ModelViewSet):
             ).count()
 
         })
-            
+    
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
