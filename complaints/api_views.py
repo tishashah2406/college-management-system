@@ -1,11 +1,12 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db.models import Q
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.viewsets import ModelViewSet
 
 from students.models import Student
 from teachers.models import Teacher
@@ -14,169 +15,202 @@ from notifications.models import Notification
 from .models import Complaint
 from .serializers import ComplaintSerializer
 
-class CreateComplaintAPIView(APIView):
 
-    def post(self, request):
+class ComplaintViewSet(ModelViewSet):
+
+    serializer_class = ComplaintSerializer
+    queryset = Complaint.objects.all().order_by("-created_at")
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        # Admin can see all complaints
+        if user.is_superuser:
+            return Complaint.objects.all().order_by("-created_at")
+
+        # Student can see only their complaints
+        elif Student.objects.filter(user=user).exists():
+
+            student = Student.objects.get(user=user)
+
+            return Complaint.objects.filter(
+                student=student
+            ).order_by("-created_at")
+
+        # Teacher can see only assigned complaints
+        elif Teacher.objects.filter(user=user).exists():
+
+            teacher = Teacher.objects.get(user=user)
+
+            return Complaint.objects.filter(
+                assigned_teacher=teacher
+            ).order_by("-created_at")
+
+        return Complaint.objects.none()
+    # -------------------------
+    # CREATE COMPLAINT
+    # -------------------------
+
+    def create(self, request, *args, **kwargs):
 
         student = get_object_or_404(
             Student,
             user=request.user
         )
 
-        serializer = ComplaintSerializer(
+        serializer = self.get_serializer(
             data=request.data
         )
 
-        if serializer.is_valid():
+        serializer.is_valid(
+            raise_exception=True
+        )
 
-            complaint = serializer.save(
-                student=student
+        complaint = serializer.save(
+            student=student
+        )
+
+        # Assign Complaint
+
+        if complaint.category in [
+
+            "Fees",
+            "Technical",
+            "Hostel",
+            "Other"
+
+        ]:
+
+            admin = User.objects.filter(
+                is_superuser=True
+            ).first()
+
+            complaint.assigned_admin = admin
+
+        else:
+
+            teacher = Teacher.objects.filter(
+                courses=complaint.course
+            ).first()
+
+            complaint.assigned_teacher = teacher
+
+        complaint.save()
+
+        # Notifications
+
+        if complaint.assigned_admin:
+
+            Notification.objects.create(
+
+                user=complaint.assigned_admin,
+
+                title="New Complaint",
+
+                message=f"New complaint '{complaint.title}' submitted."
+
             )
 
-            # Assign complaint
-            if complaint.category in [
-                "Fees",
-                "Technical",
-                "Hostel",
-                "Other"
-            ]:
+        if complaint.assigned_teacher:
 
-                admin = User.objects.filter(
-                    is_superuser=True
-                ).first()
+            Notification.objects.create(
 
-                complaint.assigned_admin = admin
+                user=complaint.assigned_teacher.user,
 
-            else:
+                title="New Complaint",
 
-                teacher = Teacher.objects.filter(
-                    courses=complaint.course
-                ).first()
+                message=f"Complaint '{complaint.title}' assigned to you."
 
-                complaint.assigned_teacher = teacher
-
-            complaint.save()
-
-            # Notifications
-            if complaint.assigned_admin:
-
-                Notification.objects.create(
-                    user=complaint.assigned_admin,
-                    title="New Complaint",
-                    message=f"New complaint '{complaint.title}' submitted."
-                )
-
-            if complaint.assigned_teacher:
-
-                Notification.objects.create(
-                    user=complaint.assigned_teacher.user,
-                    title="New Complaint",
-                    message=f"Complaint '{complaint.title}' assigned to you."
-                )
-
-            return Response(
-                {
-                    "message": "Complaint created successfully.",
-                    "data": ComplaintSerializer(complaint).data
-                },
-                status=status.HTTP_201_CREATED
             )
 
         return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
+
+            {
+
+                "message": "Complaint created successfully.",
+
+                "data": self.get_serializer(
+                    complaint
+                ).data
+
+            },
+
+            status=status.HTTP_201_CREATED
+
+        )
+
+    # -------------------------
+    # RETRIEVE
+    # -------------------------
+
+    def retrieve(self, request, *args, **kwargs):
+
+        complaint = self.get_object()
+
+        serializer = self.get_serializer(
+            complaint
+        )
+
+        return Response(
+            serializer.data
+        )
+
+    # -------------------------
+    # UPDATE (PATCH)
+    # -------------------------
+
+    def partial_update(self, request, *args, **kwargs):
+
+        complaint = self.get_object()
+
+        serializer = self.get_serializer(
+
+            complaint,
+
+            data=request.data,
+
+            partial=True
+
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        serializer.save()
+
+        return Response(
+            serializer.data
         )
     
+        # -------------------------
+    # DELETE COMPLAINT
+    # -------------------------
 
-class MyComplaintAPIView(APIView):
+    def destroy(self, request, *args, **kwargs):
 
-    def get(self, request):
+        complaint = self.get_object()
 
-        student = get_object_or_404(
-            Student,
-            user=request.user
-        )
-
-        complaints = Complaint.objects.filter(
-            student=student
-        ).order_by("-created_at")
-
-        serializer = ComplaintSerializer(
-            complaints,
-            many=True
-        )
+        complaint.delete()
 
         return Response(
             {
-                "total": complaints.count(),
-                "pending": complaints.filter(
-                    status="Pending"
-                ).count(),
-
-                "progress": complaints.filter(
-                    status="In Progress"
-                ).count(),
-
-                "resolved": complaints.filter(
-                    status="Resolved"
-                ).count(),
-
-                "complaints": serializer.data
+                "message": "Complaint deleted successfully."
             },
-            status=status.HTTP_200_OK
-        )
-    
-class TeacherComplaintAPIView(APIView):
-
-    def get(self, request):
-
-        teacher = get_object_or_404(
-            Teacher,
-            user=request.user
+            status=status.HTTP_204_NO_CONTENT
         )
 
-        complaints = Complaint.objects.filter(
-            assigned_teacher=teacher
-        ).order_by("-created_at")
+    # -------------------------
+    # RESOLVE COMPLAINT
+    # -------------------------
 
-        serializer = ComplaintSerializer(
-            complaints,
-            many=True
-        )
+    @action(detail=True, methods=["put"])
+    def resolve(self, request, pk=None):
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
-    
-class AdminComplaintAPIView(APIView):
+        complaint = self.get_object()
 
-    def get(self, request):
-
-        complaints = Complaint.objects.filter(
-            assigned_admin=request.user
-        ).order_by("-created_at")
-
-        serializer = ComplaintSerializer(
-            complaints,
-            many=True
-        )
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
-
-class ResolveComplaintAPIView(APIView):
-
-    def put(self, request, id):
-
-        complaint = get_object_or_404(
-            Complaint,
-            id=id
-        )
-
-        # ---------------- Permission Check ----------------
+        # Permission Check
 
         if request.user.is_superuser:
             pass
@@ -188,14 +222,13 @@ class ResolveComplaintAPIView(APIView):
             pass
 
         else:
+
             return Response(
                 {
                     "error": "You do not have permission to update this complaint."
                 },
                 status=status.HTTP_403_FORBIDDEN
             )
-
-        # --------------------------------------------------
 
         old_status = complaint.status
 
@@ -215,6 +248,7 @@ class ResolveComplaintAPIView(APIView):
         )
 
         if complaint.status == "Resolved":
+
             complaint.resolved_at = timezone.now()
 
         complaint.save()
@@ -239,91 +273,111 @@ class ResolveComplaintAPIView(APIView):
                 message=f"A reply has been added to your complaint '{complaint.title}'."
             )
 
-        serializer = ComplaintSerializer(complaint)
+        serializer = self.get_serializer(
+            complaint
+        )
 
         return Response(
             {
                 "message": "Complaint updated successfully.",
                 "data": serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Complaint
-from .serializers import ComplaintSerializer
-
-
-class UpdateComplaintAPIView(APIView):
-
-    def patch(self, request, id):
-
-        complaint = Complaint.objects.get(id=id)
-
-        data = {
-            "title": request.data.get("title", complaint.title),
-            "description": request.data.get("description", complaint.description),
-            "reply": request.data.get("reply", complaint.reply),
-        }
-
-        serializer = ComplaintSerializer(
-            complaint,
-            data=data,
-            partial=True
+            }
         )
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+    # -------------------------
+    # MY COMPLAINTS
+    # -------------------------
 
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-class ComplaintDetailAPIView(APIView):
+    @action(detail=False, methods=["get"])
+    def my(self, request):
 
-    def get(self, request, id):
-
-        complaint = get_object_or_404(
-            Complaint,
-            id=id
+        student = get_object_or_404(
+            Student,
+            user=request.user
         )
 
-        serializer = ComplaintSerializer(
-            complaint
+        complaints = Complaint.objects.filter(
+            student=student
+        ).order_by("-created_at")
+
+        serializer = self.get_serializer(
+            complaints,
+            many=True
         )
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
-    
-class DeleteComplaintAPIView(APIView):
-
-    def delete(self, request, id):
-
-        complaint = get_object_or_404(
-            Complaint,
-            id=id
-        )
-
-        complaint.delete()
 
         return Response(
             {
-                "message": "Complaint deleted successfully."
-            },
-            status=status.HTTP_204_NO_CONTENT
+                "total": complaints.count(),
+
+                "pending": complaints.filter(
+                    status="Pending"
+                ).count(),
+
+                "progress": complaints.filter(
+                    status="In Progress"
+                ).count(),
+
+                "resolved": complaints.filter(
+                    status="Resolved"
+                ).count(),
+
+                "complaints": serializer.data
+            }
+        )
+
+    # -------------------------
+    # TEACHER COMPLAINTS
+    # -------------------------
+
+    @action(detail=False, methods=["get"])
+    def teacher(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        complaints = Complaint.objects.filter(
+            assigned_teacher=teacher
+        ).order_by("-created_at")
+
+        serializer = self.get_serializer(
+            complaints,
+            many=True
+        )
+
+        return Response(
+            serializer.data
+        )
+
+    # -------------------------
+    # ADMIN COMPLAINTS
+    # -------------------------
+
+    @action(detail=False, methods=["get"])
+    def admin(self, request):
+
+        complaints = Complaint.objects.filter(
+            assigned_admin=request.user
+        ).order_by("-created_at")
+
+        serializer = self.get_serializer(
+            complaints,
+            many=True
+        )
+
+        return Response(
+            serializer.data
         )
     
-class ComplaintStatisticsAPIView(APIView):
+        # -------------------------
+    # COMPLAINT STATISTICS
+    # -------------------------
 
-    def get(self, request):
+    @action(detail=False, methods=["get"])
+    def statistics(self, request):
 
-        complaints = Complaint.objects.all()
-
+        complaints = self.get_queryset()
         return Response({
 
             "total": complaints.count(),
@@ -341,31 +395,50 @@ class ComplaintStatisticsAPIView(APIView):
             ).count()
 
         })
-    
-class ComplaintCountAPIView(APIView):
 
-    def get(self, request):
+    # -------------------------
+    # COMPLAINT COUNT
+    # -------------------------
+
+    @action(detail=False, methods=["get"])
+    def count(self, request):
 
         return Response({
-            "count": Complaint.objects.count()
+
+            "count": self.get_queryset().count()
+
         })
-    
-class SearchComplaintAPIView(APIView):
 
-    def get(self, request):
+    # -------------------------
+    # SEARCH COMPLAINT
+    # -------------------------
 
-        query = request.query_params.get("q", "")
-        status_filter = request.query_params.get("status")
-        category = request.query_params.get("category")
+    @action(detail=False, methods=["get"])
+    def search(self, request):
 
-        complaints = Complaint.objects.all()
+        query = request.query_params.get(
+            "q",
+            ""
+        )
+
+        status_filter = request.query_params.get(
+            "status"
+        )
+
+        category = request.query_params.get(
+            "category"
+        )
+
+        complaints = self.get_queryset().count()
 
         if query:
 
             complaints = complaints.filter(
 
                 Q(title__icontains=query)
+
                 |
+
                 Q(description__icontains=query)
 
             )
@@ -382,9 +455,14 @@ class SearchComplaintAPIView(APIView):
                 category=category
             )
 
-        serializer = ComplaintSerializer(
+        serializer = self.get_serializer(
+
             complaints,
+
             many=True
+
         )
 
-        return Response(serializer.data)
+        return Response(
+            serializer.data
+        )

@@ -1,59 +1,37 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
-
-from django.shortcuts import get_object_or_404
 
 from .models import Notification
 from .Serializers import NotificationSerializer
 
 
-class NotificationListAPIView(APIView):
+class NotificationViewSet(ModelViewSet):
 
-    def get(self, request):
+    serializer_class = NotificationSerializer
 
-        notifications = Notification.objects.filter(
-            user=request.user
+    def get_queryset(self):
+        return Notification.objects.filter(
+            user=self.request.user
         ).order_by("-created_at")
 
-        serializer = NotificationSerializer(
-            notifications,
-            many=True
-        )
- 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
+    def retrieve(self, request, *args, **kwargs):
 
-class NotificationDetailAPIView(APIView):
+        notification = self.get_object()
 
-    def get(self, request, id):
+        if not notification.is_read:
+            notification.is_read = True
+            notification.save()
 
-        notification = get_object_or_404(
-            Notification,
-            id=id,
-            user=request.user
-        )
+        serializer = self.get_serializer(notification)
 
-        notification.is_read = True
-        notification.save()
+        return Response(serializer.data)
 
-        serializer = NotificationSerializer(
-            notification
-        )
+    @action(detail=False, methods=["patch"])
+    def mark_all_read(self, request):
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
-    
-class MarkAllNotificationsReadAPIView(APIView):
-
-    def patch(self, request):
-
-        Notification.objects.filter(
-            user=request.user,
+        self.get_queryset().filter(
             is_read=False
         ).update(
             is_read=True
@@ -62,75 +40,47 @@ class MarkAllNotificationsReadAPIView(APIView):
         return Response(
             {
                 "message": "All notifications marked as read."
-            },
-            status=status.HTTP_200_OK
-        )
-    
-class NotificationDeleteAPIView(APIView):
-
-    def delete(self, request, id):
-
-        notification = get_object_or_404(
-            Notification,
-            id=id,
-            user=request.user
+            }
         )
 
-        notification.delete()
+    @action(detail=False, methods=["delete"])
+    def delete_all(self, request):
 
-        return Response(
-            {
-                "message": "Notification deleted successfully."
-            },
-            status=status.HTTP_204_NO_CONTENT
-        )
-
-class DeleteAllNotificationsAPIView(APIView):
-
-    def delete(self, request):
-
-        Notification.objects.filter(
-            user=request.user
-        ).delete()
+        self.get_queryset().delete()
 
         return Response(
             {
                 "message": "All notifications deleted."
-            },
-            status=status.HTTP_204_NO_CONTENT
+            }
         )
-    
-class UnreadNotificationAPIView(APIView):
 
-    def get(self, request):
+    @action(detail=False, methods=["get"])
+    def unread(self, request):
 
-        notifications = Notification.objects.filter(
-            user=request.user,
+        notifications = self.get_queryset().filter(
             is_read=False
-        ).order_by("-created_at")
+        )
 
-        serializer = NotificationSerializer(
+        serializer = self.get_serializer(
             notifications,
             many=True
         )
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
+        return Response(serializer.data)
 
-class NotificationCountAPIView(APIView):
+    @action(detail=False, methods=["get"])
+    def count(self, request):
 
-    def get(self, request):
-
-        unread_count = Notification.objects.filter(
-            user=request.user,
-            is_read=False
-        ).count()
+        notifications = self.get_queryset()
 
         return Response(
             {
-                "unread_notifications": unread_count
-            },
-            status=status.HTTP_200_OK
+                "total_notifications": notifications.count(),
+                "read_notifications": notifications.filter(
+                    is_read=True
+                ).count(),
+                "unread_notifications": notifications.filter(
+                    is_read=False
+                ).count(),
+            }
         )

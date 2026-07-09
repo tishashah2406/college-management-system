@@ -36,6 +36,7 @@ urlpatterns = [
     path("api/notifications/", include("notifications.api_urls")),
     path("api/complaints/", include("complaints.api_urls")),
     path("api/timetable/",include("timetable.api_urls")),
+    path("api/notices/",include("notices.api_urls")),
 ]
 
 #  IMPORTANT FIX

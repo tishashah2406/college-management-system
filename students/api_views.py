@@ -456,9 +456,9 @@ class StudentViewSet(ModelViewSet):
         )
 
         serializer = StudentSerializer(student)
-
+                                                                                  
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["patch"], permission_classes=[IsAuthenticated])
     def update_profile(self, request):
 
@@ -536,7 +536,7 @@ class StudentViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=True, methods=["get"], url_path="course-progress")
     def course_progress(self, request, pk=None):
 
@@ -608,7 +608,7 @@ class StudentViewSet(ModelViewSet):
         return Response({
             "average_grade": avg["grade__avg"] or 0
         })
-    
+
     @action(detail=False, methods=["get"])
     def late_submissions(self, request):
 

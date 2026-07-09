@@ -335,7 +335,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def pending_submissions(self, request):
 
@@ -542,4 +542,3 @@ class MyCoursesAPIView(APIView):
         )
 
         return Response(serializer.data)
-    

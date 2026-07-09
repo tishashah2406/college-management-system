@@ -1,13 +1,12 @@
 from rest_framework.routers import DefaultRouter
-
-from .api_views import ComplaintViewSet
+from .api_views import NoticeViewSet
 
 router = DefaultRouter()
 
 router.register(
-    "complaints",
-    ComplaintViewSet,
-    basename="complaints"
+    "notices",
+    NoticeViewSet,
+    basename="notices"
 )
 
 urlpatterns = router.urls
