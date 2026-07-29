@@ -14,12 +14,23 @@ from notifications.models import Notification
 
 from .models import Complaint
 from .serializers import ComplaintSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 class ComplaintViewSet(ModelViewSet):
 
     serializer_class = ComplaintSerializer
     queryset = Complaint.objects.all().order_by("-created_at")
+
+    permission_classes = [
+        IsAuthenticated
+    ]
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser
+    ]
 
     def get_queryset(self):
 
@@ -53,25 +64,30 @@ class ComplaintViewSet(ModelViewSet):
     # -------------------------
 
     def create(self, request, *args, **kwargs):
-
         student = get_object_or_404(
             Student,
             user=request.user
         )
 
+
         serializer = self.get_serializer(
             data=request.data
         )
+
 
         serializer.is_valid(
             raise_exception=True
         )
 
+
         complaint = serializer.save(
             student=student
         )
 
-        # Assign Complaint
+
+        # -------------------------
+        # ASSIGN COMPLAINT
+        # -------------------------
 
         if complaint.category in [
 
@@ -86,7 +102,12 @@ class ComplaintViewSet(ModelViewSet):
                 is_superuser=True
             ).first()
 
-            complaint.assigned_admin = admin
+
+            if admin:
+
+                complaint.assigned_admin = admin
+
+
 
         else:
 
@@ -94,11 +115,24 @@ class ComplaintViewSet(ModelViewSet):
                 courses=complaint.course
             ).first()
 
-            complaint.assigned_teacher = teacher
+
+            if teacher:
+
+                complaint.assigned_teacher = teacher
+
+
+
+        # Save assignment
 
         complaint.save()
 
-        # Notifications
+
+
+        # -------------------------
+        # NOTIFICATIONS
+        # -------------------------
+
+        # Notify Admin
 
         if complaint.assigned_admin:
 
@@ -111,6 +145,9 @@ class ComplaintViewSet(ModelViewSet):
                 message=f"New complaint '{complaint.title}' submitted."
 
             )
+
+
+        # Notify Teacher
 
         if complaint.assigned_teacher:
 
@@ -141,28 +178,40 @@ class ComplaintViewSet(ModelViewSet):
         )
 
     # -------------------------
-    # RETRIEVE
-    # -------------------------
-
-    def retrieve(self, request, *args, **kwargs):
-
-        complaint = self.get_object()
-
-        serializer = self.get_serializer(
-            complaint
-        )
-
-        return Response(
-            serializer.data
-        )
-
-    # -------------------------
     # UPDATE (PATCH)
     # -------------------------
 
     def partial_update(self, request, *args, **kwargs):
 
         complaint = self.get_object()
+
+
+        # Only complaint owner can edit
+
+        if complaint.student.user != request.user:
+
+            return Response(
+
+                {
+                    "error": "You cannot edit this complaint."
+                },
+
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+
+        # Only Pending complaints can edit
+
+        if complaint.status != "Pending":
+
+            return Response(
+
+                {
+                    "error": "Only Pending complaints can be edited."
+                },
+
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = self.get_serializer(
 
@@ -174,23 +223,49 @@ class ComplaintViewSet(ModelViewSet):
 
         )
 
+
         serializer.is_valid(
             raise_exception=True
         )
 
+
         serializer.save()
 
+
         return Response(
-            serializer.data
+
+            {
+                "message": "Complaint updated successfully.",
+                "data": serializer.data
+            }
+
         )
     
-        # -------------------------
+    # -------------------------
     # DELETE COMPLAINT
     # -------------------------
 
     def destroy(self, request, *args, **kwargs):
 
         complaint = self.get_object()
+
+        # Only owner can delete
+        if complaint.student.user != request.user:
+            return Response(
+                {
+                    "error": "You cannot delete this complaint."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Only Pending complaint delete allowed
+        if complaint.status != "Pending":
+            return Response(
+                {
+                    "error": "Only Pending complaints can be deleted."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         complaint.delete()
 
@@ -230,6 +305,7 @@ class ComplaintViewSet(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        old_reply = complaint.reply
         old_status = complaint.status
 
         complaint.status = request.data.get(
@@ -242,14 +318,20 @@ class ComplaintViewSet(ModelViewSet):
             complaint.reply
         )
 
-        complaint.admin_remarks = request.data.get(
-            "admin_remarks",
-            complaint.admin_remarks
-        )
+        if request.user.is_superuser:
+
+            complaint.admin_remarks = request.data.get(
+                "admin_remarks",
+                complaint.admin_remarks
+            )
 
         if complaint.status == "Resolved":
 
             complaint.resolved_at = timezone.now()
+
+        else:
+
+            complaint.resolved_at = None
 
         complaint.save()
 
@@ -265,7 +347,7 @@ class ComplaintViewSet(ModelViewSet):
 
         # Reply Notification
 
-        if complaint.reply:
+        if old_reply != complaint.reply and complaint.reply:
 
             Notification.objects.create(
                 user=complaint.student.user,
@@ -332,10 +414,20 @@ class ComplaintViewSet(ModelViewSet):
     @action(detail=False, methods=["get"])
     def teacher(self, request):
 
-        teacher = get_object_or_404(
-            Teacher,
-            user=request.user
-        )
+        try:
+
+            teacher = Teacher.objects.get(
+                user=request.user
+            )
+
+        except Teacher.DoesNotExist:
+
+            return Response(
+                {
+                    "error":"Only teachers can access this."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         complaints = Complaint.objects.filter(
             assigned_teacher=teacher
@@ -357,20 +449,31 @@ class ComplaintViewSet(ModelViewSet):
     @action(detail=False, methods=["get"])
     def admin(self, request):
 
+        if not request.user.is_superuser:
+            return Response(
+                {
+                    "error":"Only admin can access this."
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+
         complaints = Complaint.objects.filter(
             assigned_admin=request.user
         ).order_by("-created_at")
+
 
         serializer = self.get_serializer(
             complaints,
             many=True
         )
 
+
         return Response(
             serializer.data
         )
     
-        # -------------------------
+    # -------------------------
     # COMPLAINT STATISTICS
     # -------------------------
 
@@ -395,7 +498,7 @@ class ComplaintViewSet(ModelViewSet):
             ).count()
 
         })
-
+    
     # -------------------------
     # COMPLAINT COUNT
     # -------------------------
@@ -429,7 +532,7 @@ class ComplaintViewSet(ModelViewSet):
             "category"
         )
 
-        complaints = self.get_queryset().count()
+        complaints = self.get_queryset()
 
         if query:
 

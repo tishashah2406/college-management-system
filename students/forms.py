@@ -1,6 +1,6 @@
 from django import forms
-from .models import Student
-from courses.models import Course, Submission
+from students.models import Student, Submission
+from courses.models import Course
 
 class StudentForm(forms.ModelForm):
     # Optional: make courses a multi-select with checkboxes

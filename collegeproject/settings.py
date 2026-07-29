@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'courses',
     'students',
     'teachers',
@@ -48,7 +49,8 @@ INSTALLED_APPS = [
     'notifications',
     'complaints',
     'timetable',
-    'notices'
+    'notices',
+    
     
 ]
 
@@ -171,20 +173,17 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 
-    'DEFAULT_THROTTLE_CLASSES': [
-
+    'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.AnonRateThrottle',
-
         'rest_framework.throttling.UserRateThrottle',
-
-    ],
+    ),
 
     'DEFAULT_THROTTLE_RATES': {
-
         'anon': '10/minute',
-
         'user': '100/minute',
-    }
+    },
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 SIMPLE_JWT = {
@@ -200,5 +199,17 @@ CACHES = {
         "BACKEND":
         "django.core.cache.backends.locmem.LocMemCache",
     }
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "College Management API",
+    "DESCRIPTION": "College Management System APIs",
+    "VERSION": "1.0.0",
+    "SERVERS": [
+        {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local Development Server",
+        }
+    ],
 }
 

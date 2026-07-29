@@ -4,8 +4,8 @@ from importlib.resources import contents
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 
-from courses.serializers import AssignmentSerializer, CourseProgressSerializer, CourseSerializer,SubmissionSerializer
-from .models import Student, Submission
+from courses.serializers import AssignmentSerializer, CourseProgressSerializer, CourseSerializer
+from students.models import Student, Submission
 from .forms import StudentForm
 from courses.models import Assignment, Course, Note
 from teachers.models import Teacher

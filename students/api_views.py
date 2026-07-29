@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -12,15 +14,14 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
 from teachers.models import Teacher
 
-from .models import Student, CourseProgress, Submission
-from courses.models import Assignment
-from .models import Student
-from .serializers import StudentSerializer
+from .models import Attendance, Student, CourseProgress, Submission
+from courses.models import Assignment, Note
+from .serializers import StudentSerializer, SubmissionSerializer
 from courses.serializers import (
     AssignmentSerializer,
     CourseProgressSerializer,
     CourseSerializer,
-    SubmissionSerializer
+    NoteSerializer,
 )
 
 class StudentViewSet(ModelViewSet):
@@ -458,7 +459,7 @@ class StudentViewSet(ModelViewSet):
         serializer = StudentSerializer(student)
                                                                                   
         return Response(serializer.data)
-
+    
     @action(detail=False, methods=["patch"], permission_classes=[IsAuthenticated])
     def update_profile(self, request):
 
@@ -478,7 +479,7 @@ class StudentViewSet(ModelViewSet):
             return Response(serializer.data)
 
         return Response(serializer.errors, status=400)
-    
+
     @action(detail=False, methods=["get"])
     def my_courses(self, request):
 
@@ -590,7 +591,7 @@ class StudentViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def average_grade(self, request):
 
@@ -635,3 +636,368 @@ class StudentViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
+    
+    @action(
+    detail=False,
+    methods=["get"],
+    permission_classes=[IsAuthenticated]
+    )
+    def student_notes(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        courses = student.courses.all()
+
+        notes = Note.objects.filter(
+            course__in=courses
+        )
+
+        return Response({
+            "student": StudentSerializer(student).data,
+            "notes": NoteSerializer(notes, many=True).data
+        })
+
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="course-assignments"
+    )
+    def course_assignments(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        course = get_object_or_404(
+            student.courses,
+            id=pk
+        )
+
+        assignments = Assignment.objects.filter(
+            course=course
+        )
+
+        submissions = Submission.objects.filter(
+            student=student,
+            assignment__course=course
+        )
+
+        return Response({
+
+            "course": CourseSerializer(course).data,
+
+            "assignments": AssignmentSerializer(
+                assignments,
+                many=True
+            ).data,
+
+            "submissions": SubmissionSerializer(
+                submissions,
+                many=True
+            ).data,
+
+            "total_assignments": assignments.count(),
+
+            "submitted": submissions.count(),
+
+            "pending": (
+                assignments.count() -
+                submissions.count()
+            )
+        })
+    
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="view-submission"
+    )
+    def view_submission(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission.objects.select_related(
+                "assignment",
+                "assignment__course"
+            ),
+            id=pk,
+            student=student
+        )
+
+        return Response({
+
+            "course": CourseSerializer(
+                submission.assignment.course
+            ).data,
+
+            "assignment": AssignmentSerializer(
+                submission.assignment
+            ).data,
+
+            "submission": SubmissionSerializer(
+                submission
+            ).data
+        })
+    
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="view-grades"
+    )
+    def view_grades(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission.objects.select_related(
+                "assignment",
+                "assignment__course"
+            ),
+            id=pk,
+            student=student
+        )
+
+        return Response({
+
+            "course": CourseSerializer(
+                submission.assignment.course
+            ).data,
+
+            "assignment": AssignmentSerializer(
+                submission.assignment
+            ).data,
+
+            "grade": submission.grade,
+
+            "feedback": submission.feedback,
+
+            "submitted_at": submission.submitted_at
+        })
+    
+    @action(
+    detail=True,
+    methods=["patch"],
+    permission_classes=[IsAuthenticated],
+    url_path="edit-submission"
+    )
+    def edit_submission(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission,
+            id=pk,
+            student=student
+        )
+
+        serializer = SubmissionSerializer(
+            submission,
+            data=request.data,
+            partial=True
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response({
+
+                "message": "Submission updated successfully.",
+
+                "submission": serializer.data
+            })
+
+        return Response(
+            serializer.errors,
+            status=400
+        )
+    
+    @action(
+    detail=True,
+    methods=["delete"],
+    permission_classes=[IsAuthenticated],
+    url_path="delete-submission"
+    )
+    def delete_submission(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission,
+            id=pk,
+            student=student
+        )
+
+        submission.delete()
+
+        return Response({
+            "message": "Submission deleted successfully."
+        })
+    
+    @action(
+    detail=True,
+    permission_classes=[IsAuthenticated],
+    url_path="delete-submission"
+    )
+    def delete_submission(self, request, pk=None):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission,
+            id=pk,
+            student=student
+        )
+
+        submission.delete()
+
+        return Response({
+            "message":"Submission deleted Successfully."
+        })
+    
+    @action(
+    detail=False,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="attendance-dashboard"
+    )
+    def attendance_dashboard(self, request):
+
+        student = get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        courses = student.courses.all()
+
+        selected_course_id = request.GET.get("course")
+        month_input = request.GET.get("month")
+
+        if not month_input:
+            month_input = datetime.now().strftime("%Y-%m")
+
+        year, month = month_input.split("-")
+
+        attendance_data = []
+
+        for course in courses:
+
+            if (
+                selected_course_id and
+                int(selected_course_id) != course.id
+            ):
+                continue
+
+            records = Attendance.objects.filter(
+                student=student,
+                course=course,
+                date__year=int(year),
+                date__month=int(month)
+            ).order_by("-date")
+
+            total = records.count()
+
+            present = records.filter(
+                status="Present"
+            ).count()
+
+            absent = records.filter(
+                status="Absent"
+            ).count()
+
+            attendance_data.append({
+
+                "course_id": course.id,
+
+                "course_name": course.name,
+
+                "total_classes": total,
+
+                "present": present,
+
+                "absent": absent,
+
+                "attendance_percentage": round(
+                    (present * 100 / total),
+                    2
+                ) if total else 0,
+
+                "records": [
+                    {
+                        "date": record.date,
+                        "status": record.status
+                    }
+                    for record in records
+                ]
+            })
+
+        all_records = Attendance.objects.filter(
+            student=student
+        )
+
+        if selected_course_id:
+
+            all_records = all_records.filter(
+                course_id=selected_course_id
+            )
+
+        total_classes = all_records.count()
+
+        present_classes = all_records.filter(
+            status="Present"
+        ).count()
+
+        absent_classes = all_records.filter(
+            status="Absent"
+        ).count()
+
+        overall_percentage = round(
+            (present_classes * 100 / total_classes),
+            2
+        ) if total_classes else 0
+
+        return Response({
+
+            "student": StudentSerializer(
+                student
+            ).data,
+
+            "month": month_input,
+
+            "selected_course": selected_course_id,
+
+            "overall": {
+
+                "total_classes": total_classes,
+
+                "present": present_classes,
+
+                "absent": absent_classes,
+
+                "attendance_percentage": overall_percentage
+            },
+
+            "courses": attendance_data
+        })

@@ -1,5 +1,6 @@
 from django.db import models
-from courses.models import Course, Student
+from courses.models import Course
+
 from django.contrib.auth.models import User
 from notifications.models import Notification
 

@@ -9,18 +9,18 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.utils import timezone
 from django.db.models import Avg
-
-from .models import Course, Note, Assignment, Submission
+from students.models import Submission
+from .models import Course, Note, Assignment
 from .serializers import (
     CourseSerializer,
     NoteSerializer,
     AssignmentSerializer,
-    CourseProgressSerializer,
-    SubmissionSerializer,
+    CourseProgressSerializer
 )
 
 from students.models import Student, CourseProgress
 from teachers.models import Teacher
+from notifications.models import Notification
 
 
 class CourseViewSet(ModelViewSet):
@@ -80,7 +80,6 @@ class CourseViewSet(ModelViewSet):
                 "message": "Enrolled successfully"
             }
         )
-
     # ------------------------
     # UNENROLL
     # ------------------------
@@ -93,11 +92,57 @@ class CourseViewSet(ModelViewSet):
 
         student.courses.remove(course)
 
+        CourseProgress.objects.filter(
+            student=student,
+            course=course
+        ).delete()
+
         return Response(
             {
-                "message": "Unenrolled successfully"
+                "message":"Unenrolled successfully"
             }
         )
+    
+    @action(
+    detail=True,
+    methods=["delete"],
+    url_path="remove-teacher/(?P<teacher_id>[^/.]+)"
+    )
+    def remove_teacher(self, request, pk=None, teacher_id=None):
+
+        course = self.get_object()
+
+        teacher = get_object_or_404(
+            Teacher,
+            id=teacher_id
+        )
+
+        teacher.courses.remove(course)
+
+        return Response({
+            "message":"Teacher removed successfully"
+        })
+
+    @action(
+    detail=True,
+    methods=["delete"],
+    url_path="remove-student/(?P<student_id>[^/.]+)"
+    )
+    def remove_student(self, request, pk=None, student_id=None):
+
+        course = self.get_object()
+
+        student = get_object_or_404(
+            Student,
+            id=student_id
+        )
+
+        student.courses.remove(course)
+
+
+        return Response({
+            "message":"Student removed successfully"
+        })
 
     # ------------------------
     # COURSE PROGRESS
@@ -147,6 +192,44 @@ class CourseViewSet(ModelViewSet):
                 "progress": progress.progress
             }
         )
+    
+    @action(detail=True, methods=["post"])
+    def teacher_update_progress(self,request,pk=None):
+
+        course=self.get_object()
+
+        teacher=self.get_teacher()
+
+        if not teacher.courses.filter(id=course.id).exists():
+
+            return Response(
+                {
+                    "error":"Not assigned"
+                },
+                status=403
+            )
+
+
+        for student in course.enrolled_students.all():
+
+            progress,_=CourseProgress.objects.get_or_create(
+                student=student,
+                course=course
+            )
+
+            progress.progress=min(
+                progress.progress+10,
+                100
+            )
+
+            progress.save()
+
+
+        return Response(
+            {
+                "message":"Progress updated"
+            }
+        )
 
     # ------------------------
     # COURSE NOTES
@@ -164,7 +247,44 @@ class CourseViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def my_notes(self, request):
 
+        student = self.get_student()
+
+        notes = Note.objects.filter(
+            course__in=student.courses.all()
+        )
+
+        serializer = NoteSerializer(
+            notes,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=["get"])
+    def filter(self, request):
+
+        queryset = self.get_queryset()
+
+        duration = request.query_params.get("duration")
+        min_fees = request.query_params.get("min_fees")
+
+        if duration:
+            queryset = queryset.filter(duration=duration)
+
+        if min_fees:
+            queryset = queryset.filter(fees__gte=min_fees)
+
+        serializer = self.get_serializer(
+            queryset,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
     # ------------------------
     # ADD NOTE
     # ------------------------
@@ -201,7 +321,29 @@ class CourseViewSet(ModelViewSet):
             },
             status=status.HTTP_201_CREATED
         )
+    
+    @action(
+    detail=True,
+    methods=["delete"],
+    url_path="delete-note/(?P<note_id>[^/.]+)"
+    )
+    def delete_note(self, request, pk=None, note_id=None):
 
+        self.get_teacher()
+
+        course = self.get_object()
+
+        note = get_object_or_404(
+            Note,
+            id=note_id,
+            course=course
+        )
+
+        note.delete()
+
+        return Response({
+            "message": "Note deleted successfully"
+        })
     # ------------------------
     # ASSIGNMENTS
     # ------------------------
@@ -231,8 +373,8 @@ class CourseViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-
-        # ------------------------
+    
+    # ------------------------
     # ANALYTICS
     # ------------------------
 
@@ -265,7 +407,6 @@ class CourseViewSet(ModelViewSet):
                     Avg("progress")
                 )["progress__avg"] or 0,
 
-                2
             )
 
         })
@@ -344,7 +485,7 @@ class CourseViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-
+    
     # ------------------------
     # COMPLETION %
     # ------------------------
@@ -532,7 +673,7 @@ class CourseViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-
+    
     # ------------------------
     # NOTES DOWNLOAD
     # ------------------------
@@ -551,7 +692,58 @@ class CourseViewSet(ModelViewSet):
             }
             for note in notes
         ])
+
+    @action(detail=False, methods=["get"])
+    def my_progress(self, request):
+
+        student = self.get_student()
+
+        progress = CourseProgress.objects.filter(
+            student=student
+        )
+
+        serializer = CourseProgressSerializer(
+            progress,
+            many=True
+        )
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=["get"])
+    def teachers(self, request, pk=None):
+
+        course = self.get_object()
+
+        from teachers.serializers import TeacherSerializer
+
+        serializer = TeacherSerializer(
+            course.assigned_teachers.all(),
+            many=True
+        )
+
+        return Response(serializer.data)
     
+    @action(detail=True, methods=["get"])
+    def teacher_progress_dashboard(self, request, pk=None):
+
+        course = self.get_object()
+
+        return Response({
+
+            "course": course.name,
+
+            "teachers": [
+                teacher.name
+                for teacher in course.assigned_teachers.all()
+            ],
+
+            "students": CourseProgressSerializer(
+                CourseProgress.objects.filter(course=course),
+                many=True
+            ).data
+
+        })
+
 # ====================================================
 # ASSIGNMENT VIEWSET
 # ====================================================
@@ -562,7 +754,148 @@ class AssignmentViewSet(ModelViewSet):
     serializer_class = AssignmentSerializer
     permission_classes = [IsAuthenticated]
 
+    def perform_create(self, serializer):
 
+        assignment = serializer.save()
+
+        students = Student.objects.filter(
+            courses=assignment.course
+        )
+
+        for student in students:
+
+            Notification.objects.create(
+
+                user=student.user,
+
+                title="New Assignment",
+
+                message=f"{assignment.title} uploaded"
+
+            )
+
+    @action(
+    detail=True,
+    methods=["get"]
+    )
+    def detail(self, request, pk=None):
+
+        assignment = self.get_object()
+
+        submission = None
+
+        if hasattr(request.user,'student'):
+
+            submission = Submission.objects.filter(
+                student=request.user.student,
+                assignment=assignment
+            ).first()
+
+        return Response({
+
+            "assignment":
+            AssignmentSerializer(assignment).data,
+
+            "submission":
+            SubmissionSerializer(submission).data
+            if submission else None
+
+        })
+    
+    @action(detail=True, methods=["put"])
+    def edit_assignment(self, request, pk=None):
+
+        assignment = self.get_object()
+
+        serializer = AssignmentSerializer(
+            assignment,
+            data=request.data
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response(
+                {
+                    "message":"Assignment updated successfully",
+                    "data":serializer.data
+                }
+            )
+        
+        return Response(
+            serializer.errors,
+            status=400
+        )
+    
+    def destroy(self,request,*args,**kwargs):
+
+        assignment=self.get_object()
+
+        teacher=request.user.teacher
+
+        if not teacher.courses.filter(
+            id=assignment.course.id
+        ).exists():
+
+            return Response(
+                {
+                    "error":"You cannot delete this assignment"
+                },
+                status=403
+            )
+
+        assignment.delete()
+
+        return Response(
+            {
+                "message":"Assignment deleted"
+            }
+        )
+    
+    @action(detail=True, methods=["post"])
+    def submit(self, request, pk=None):
+
+        assignment=self.get_object()
+
+        student=get_object_or_404(
+            Student,
+            user=request.user
+        )
+
+        submission=Submission.objects.create(
+            assignment=assignment,
+            student=student,
+            file=request.FILES.get("file")
+        )
+
+        return Response(
+            {
+                "message":"Assignment submitted",
+                "id":submission.id
+            },
+            status=201
+        )
+
+    @action(detail=False, methods=["get"])
+    def my_assignments(self,request):
+
+        teacher=get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        assignments=Assignment.objects.filter(
+            course__in=teacher.courses.all()
+        )
+
+        serializer=AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
 # ====================================================
 # NOTE VIEWSET
 # ====================================================

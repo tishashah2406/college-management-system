@@ -42,7 +42,7 @@ class NotificationViewSet(ModelViewSet):
                 "message": "All notifications marked as read."
             }
         )
-
+    
     @action(detail=False, methods=["delete"])
     def delete_all(self, request):
 
@@ -67,7 +67,7 @@ class NotificationViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-
+    
     @action(detail=False, methods=["get"])
     def count(self, request):
 

@@ -6,6 +6,11 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -15,6 +20,13 @@ urlpatterns = [
         views.about,
         name='about'
     ),
+    path(
+    "api/schema/",
+    SpectacularAPIView.as_view(api_version="v1"),
+    name="schema",
+    ),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 
   
     path('students/', include('students.urls')),

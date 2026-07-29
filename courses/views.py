@@ -3,11 +3,11 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-from .models import Assignment, Course, Note, Submission
+from .models import Assignment, Course, Note
 from .forms import CourseForm
 
 from teachers.models import Teacher
-from students.models import Student, CourseProgress
+from students.models import Student, CourseProgress,Submission
 from notifications.models import Notification
 
 # ---------------- HOME ----------------
@@ -273,7 +273,6 @@ def assignment_create(request):
         due_date = request.POST.get('due_date')
         description = request.POST.get('description')
 
-        #  Validation
         if not title or not course_id:
             messages.error(request, "Title and Course are required")
             return render(request, 'courses/assignment_create.html', {
@@ -297,7 +296,7 @@ def assignment_create(request):
         )
 
         Notification.objects.create(
-            user=Student.user,   # or whoever should receive it
+            user=Student.user,   
             title="Assignment Uploaded",
             message=f"Assignment '{assignment.title}' has been uploaded."
         )

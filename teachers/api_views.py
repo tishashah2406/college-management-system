@@ -13,11 +13,11 @@ from .serializers import TeacherSerializer
 
 from courses.models import Assignment
 from students.models import Submission, Student
+from students.serializers import SubmissionSerializer
 
 from courses.serializers import (
     CourseSerializer,
-    AssignmentSerializer,
-    SubmissionSerializer
+    AssignmentSerializer
 )
 
 
@@ -375,6 +375,22 @@ class TeacherViewSet(ModelViewSet):
 
         return Response(serializer.data)
     
+    @action(detail=False, methods=["get"])
+    def total_submissions(self, request):
+
+        teacher = Teacher.objects.get(user=request.user)
+
+        submissions = Submission.objects.filter(
+            assignment__course__in=teacher.courses.all()
+        )
+
+        serializer = SubmissionSerializer(
+            submissions,
+            many=True
+        )
+
+        return Response(serializer.data)
+
     @action(detail=True, methods=["patch"])
     def grade_submission(self, request, pk=None):
 
@@ -391,7 +407,7 @@ class TeacherViewSet(ModelViewSet):
         return Response({
             "message": "Assignment graded successfully."
         })
-    
+
     @action(detail=False, methods=["get"])
     def upcoming_assignments(self, request):
 
@@ -521,6 +537,264 @@ class TeacherViewSet(ModelViewSet):
             ).count()
 
         })
+    
+    @action(detail=False, methods=["get"], permission_classes=[IsAuthenticated])
+    def all_leaves(self, request):
+
+        if not request.user.is_superuser:
+            return Response(
+                {"error": "Only admin can view all teacher leaves."},
+                status=403
+            )
+
+        leaves = TeacherLeave.objects.all()
+
+        return Response(list(leaves.values()))
+
+    @action(
+    detail=False,
+    methods=["post"],
+    permission_classes=[IsAuthenticated]
+    )
+    def create_assignment(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        serializer = AssignmentSerializer(
+            data=request.data
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        course = serializer.validated_data["course"]
+
+        # Teacher can create assignment only for their own courses
+        if course not in teacher.courses.all():
+
+            return Response(
+                {
+                    "error": "You are not assigned to this course."
+                },
+                status=403
+            )
+
+        assignment = serializer.save()
+
+        students = Student.objects.filter(
+            courses=course
+        )
+
+        from notifications.models import Notification
+
+        for student in students:
+
+            Notification.objects.create(
+                user=student.user,
+                title="New Assignment",
+                message=f"Assignment '{assignment.title}' has been uploaded."
+            )
+
+        return Response(
+            AssignmentSerializer(assignment).data,
+            status=201
+        )
+    
+    @action(
+    detail=True,
+    methods=["patch"],
+    permission_classes=[IsAuthenticated],
+    url_path="edit-assignment"
+    )
+    def edit_assignment(self, request, pk=None):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        assignment = get_object_or_404(
+            Assignment,
+            pk=pk
+        )
+
+        # Security check
+        if assignment.course not in teacher.courses.all():
+
+            return Response(
+                {
+                    "error": "You cannot edit this assignment."
+                },
+                status=403
+            )
+
+        serializer = AssignmentSerializer(
+            assignment,
+            data=request.data,
+            partial=True
+        )
+
+        serializer.is_valid(raise_exception=True)
+
+        serializer.save()
+
+        return Response(serializer.data)
+    
+
+    @action(
+    detail=True,
+    methods=["delete"],
+    permission_classes=[IsAuthenticated],
+    url_path="delete-assignment"
+    )
+    def delete_assignment(self, request, pk=None):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        assignment = get_object_or_404(
+            Assignment,
+            pk=pk
+        )
+
+        # Teacher can delete only assignments of their own courses
+        if assignment.course not in teacher.courses.all():
+
+            return Response(
+                {
+                    "error": "You cannot delete this assignment."
+                },
+                status=403
+            )
+
+        assignment.delete()
+
+        return Response(
+            {
+                "message": "Assignment deleted successfully."
+            },
+            status=200
+        )
+    
+    @action(
+    detail=False,
+    methods=["get"],
+    permission_classes=[IsAuthenticated]
+    )
+    def assignments(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        assignments = Assignment.objects.filter(
+            course__in=teacher.courses.all()
+        ).order_by("-id")
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(
+    detail=False,
+    methods=["get"],
+    permission_classes=[IsAuthenticated]
+    )
+    def submissions(self, request):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        submissions = Submission.objects.filter(
+            assignment__course__in=teacher.courses.all()
+        ).select_related(
+            "student",
+            "assignment"
+
+        ).order_by("-submitted_at")
+
+        serializer = SubmissionSerializer(
+            submissions,
+            many=True
+        )
+
+        return Response(serializer.data)
+    
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="submission-details"
+    )
+    def submission_details(self, request, pk=None):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        submission = get_object_or_404(
+            Submission,
+            pk=pk
+        )
+
+        # Security check
+        if submission.assignment.course not in teacher.courses.all():
+
+            return Response(
+                {
+                    "error": "You are not allowed to view this submission."
+                },
+                status=403
+            )
+
+        serializer = SubmissionSerializer(submission)
+
+        return Response(serializer.data)
+    
+    @action(
+    detail=True,
+    methods=["get"],
+    permission_classes=[IsAuthenticated],
+    url_path="assignment-details"
+    )
+    def assignment_details(self, request, pk=None):
+
+        teacher = get_object_or_404(
+            Teacher,
+            user=request.user
+        )
+
+        assignment = get_object_or_404(
+            Assignment,
+            pk=pk
+        )
+
+        # Security check
+        if assignment.course not in teacher.courses.all():
+
+            return Response(
+                {
+                    "error": "You are not allowed to view this assignment."
+                },
+                status=403
+            )
+
+        serializer = AssignmentSerializer(
+            assignment
+        )
+
+        return Response(serializer.data)
     
 from rest_framework.views import APIView
 from rest_framework.response import Response
