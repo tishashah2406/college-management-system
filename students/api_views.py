@@ -852,7 +852,7 @@ class StudentViewSet(ModelViewSet):
         return Response({
             "message": "Submission deleted successfully."
         })
-    
+
     @action(
     detail=True,
     permission_classes=[IsAuthenticated],

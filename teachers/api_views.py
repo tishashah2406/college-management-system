@@ -354,7 +354,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def checked_submissions(self, request):
 
@@ -374,7 +374,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def total_submissions(self, request):
 
@@ -426,6 +426,25 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"])
+    def upcoming_assignments(self,request):
+
+        teacher = teacher.objects.get(
+            user=request.user
+        )
+
+        assignments = Assignment.objects.filter(
+            course__in=teacher.courses.all(),
+            due_date__gte=timezone.now().date()
+        ).order_by("due_date")
+
+        serializer = AssignmentSerializer(
+            assignments,
+            many=True
+        )
+
+        return Response(serializer.data)
     
     @action(detail=False, methods=["get"])
     def leave_history(self, request):
@@ -462,7 +481,7 @@ class TeacherViewSet(ModelViewSet):
             })
 
         return Response(data)
-    
+
     @action(detail=False, methods=["get"])
     def course_grades(self, request):
 
@@ -489,7 +508,7 @@ class TeacherViewSet(ModelViewSet):
             })
 
         return Response(data)
-    
+
     @action(detail=False, methods=["get"])
     def search_student(self, request):
 
@@ -512,7 +531,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(detail=False, methods=["get"])
     def statistics(self, request):
 
@@ -702,7 +721,7 @@ class TeacherViewSet(ModelViewSet):
         )
 
         return Response(serializer.data)
-    
+
     @action(
     detail=False,
     methods=["get"],

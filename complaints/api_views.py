@@ -69,21 +69,17 @@ class ComplaintViewSet(ModelViewSet):
             user=request.user
         )
 
-
         serializer = self.get_serializer(
             data=request.data
         )
-
 
         serializer.is_valid(
             raise_exception=True
         )
 
-
         complaint = serializer.save(
             student=student
         )
-
 
         # -------------------------
         # ASSIGN COMPLAINT
@@ -102,12 +98,9 @@ class ComplaintViewSet(ModelViewSet):
                 is_superuser=True
             ).first()
 
-
             if admin:
 
                 complaint.assigned_admin = admin
-
-
 
         else:
 
@@ -115,18 +108,13 @@ class ComplaintViewSet(ModelViewSet):
                 courses=complaint.course
             ).first()
 
-
             if teacher:
 
                 complaint.assigned_teacher = teacher
 
-
-
         # Save assignment
 
         complaint.save()
-
-
 
         # -------------------------
         # NOTIFICATIONS
@@ -145,7 +133,6 @@ class ComplaintViewSet(ModelViewSet):
                 message=f"New complaint '{complaint.title}' submitted."
 
             )
-
 
         # Notify Teacher
 
@@ -185,7 +172,6 @@ class ComplaintViewSet(ModelViewSet):
 
         complaint = self.get_object()
 
-
         # Only complaint owner can edit
 
         if complaint.student.user != request.user:
@@ -198,7 +184,6 @@ class ComplaintViewSet(ModelViewSet):
 
                 status=status.HTTP_403_FORBIDDEN
             )
-
 
         # Only Pending complaints can edit
 
@@ -223,14 +208,11 @@ class ComplaintViewSet(ModelViewSet):
 
         )
 
-
         serializer.is_valid(
             raise_exception=True
         )
 
-
         serializer.save()
-
 
         return Response(
 
@@ -457,22 +439,19 @@ class ComplaintViewSet(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-
         complaints = Complaint.objects.filter(
             assigned_admin=request.user
         ).order_by("-created_at")
-
 
         serializer = self.get_serializer(
             complaints,
             many=True
         )
 
-
         return Response(
             serializer.data
         )
-    
+
     # -------------------------
     # COMPLAINT STATISTICS
     # -------------------------
@@ -498,7 +477,6 @@ class ComplaintViewSet(ModelViewSet):
             ).count()
 
         })
-    
     # -------------------------
     # COMPLAINT COUNT
     # -------------------------
